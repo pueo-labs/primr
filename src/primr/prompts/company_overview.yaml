@@ -11,6 +11,10 @@ meta:
   description: "Comprehensive company research for pre-meeting preparation"
   output_format: "markdown"
   expected_pages: "50-70"
+
+# The shared default persona still tells every claim to be a hypothesis.
+# The overview uses its own persona so that instruction does not ride along.
+persona: overview_analyst
   
 # Dependencies on shared components:
 #   - shared/epistemic_rules.yaml
@@ -25,8 +29,8 @@ document_purpose: |
   
   This is NOT a client deliverable. It is strategic analysis designed to get a consultant maximally up to speed
   before talking with the company, so they can be sharper, more useful, and faster in conversation.
-  Write with analytical depth. Surface uncomfortable hypotheses. Prioritize clarity over diplomacy.
-  Treat strong claims as working hypotheses unless explicitly supported by cited sources.
+  Write with analytical depth. State the positions the evidence supports, including uncomfortable ones. Prioritize clarity over diplomacy.
+  A claim without a cited source is a labeled Hypothesis, not a softer sentence.
   
   IMPORTANT - Build, Don't Restate:
   This is a long-form document, typically 50+ pages with clear sections. Each section has its
@@ -99,9 +103,9 @@ epistemic_rules:
     - Present speculation about internal dynamics as confirmed
     
     DO:
-    - Frame internal dynamics as hypotheses: "If PE exit pressure is driving decisions..."
-    - Acknowledge what you can't know from outside: "Internal prioritization is unclear"
-    - Use conditional language: "This could suggest..." not "This proves..."
+    - State what the public record supports, and label the rest Hypothesis
+    - Name what cannot be known from outside: "Internal prioritization is not public"
+    - Take the position in plain language. A thin record gets a label, not a softer verb on every line.
 
 formatting:
   paragraphs: "Write in full paragraphs with evidence and strategic interpretation"
@@ -127,9 +131,9 @@ sections:
     covers:
       - "What this company does and their market position (2-3 paragraphs)"
       - "Key financial metrics and growth trajectory with specific numbers"
-      - "What they appear to be good at - their core competitive advantages"
+      - "What they are good at, and the evidence for those advantages"
       - "2-3 areas where consulting support could create meaningful impact"
-      - "The central hypothesis about how they create value (to validate with them)"
+      - "The governing view of how they create value, the evidence it rests on, and the question that would change it"
     depth: |
       This should be 2-3 pages of substantive analysis, NOT a bullet list.
       Write in flowing prose. Synthesize the document's key insights.
@@ -268,8 +272,8 @@ sections:
       - "Direct competitors with brief profiles"
       - "Market share estimates (with sources)"
       - "Head-to-head comparison on key dimensions"
-      - "Where they appear to win deals (and why)"
-      - "Where they appear to lose deals (and why)"
+      - "Where they win deals, and why"
+      - "Where they lose deals, and why"
       - "Emerging competitors or disruptors to watch"
     depth: |
       REQUIRED: Include a competitor comparison table with at least 5 competitors.
@@ -288,7 +292,7 @@ sections:
       - "Reinforcing mechanisms: What creates flywheel effects?"
       - "Key assumptions: What must remain true for this model to work?"
       - "Vulnerabilities: Where could the logic break down?"
-    depth: "Frame as an initial theory to test in conversation"
+    depth: "State the value-creation logic directly. Label any assumption that is not a fact."
 
   - id: swot_analysis
     name: "SWOT Analysis"
@@ -424,14 +428,14 @@ sections:
       strategic findings for 30 minutes, what would they likely conclude? What
       would remain unresolved? What decisions would they defer?
 
-      NOTE: Frame all executive perspectives as hypotheses based on public information.
-      Label as (Hypothesis) — we don't know what they actually think.
+      These perspectives are inferences from public information. Label each one
+      (Hypothesis). Write the likely priority directly.
 
   - id: engagement_opportunities
     name: "Where They're Likely to Say Yes"
     part: 4
     position: middle
-    purpose: "Tie hypotheses to decision ownership and budget reality"
+    purpose: "Tie the analysis to decision ownership and budget reality"
     covers:
       - "Budget-Adjacent Areas: Where spend is already happening or planned"
       - "Budget-Resistant Areas: Where we'd need to create the case from scratch"
@@ -499,15 +503,15 @@ sections:
     name: "Strategic Positioning Hypothesis"
     part: 5
     position: closing  # This is the final section - ties everything together
-    purpose: "Initial hypothesis about their strategic position"
+    purpose: "The governing view of their strategic position, and what would change it"
     covers:
       - "Are they competing on cost leadership, differentiation, or focus?"
       - "Is their strategy coherent (do the pieces reinforce each other)?"
       - "Where might the strategy be under pressure?"
     depth: |
-      FALSIFICATION REQUIRED: Frame explicitly as a hypothesis to validate in conversation.
-      
-      For your main strategic positioning hypothesis, include:
+      State the position directly. Label it Hypothesis. Do not wrap every sentence in a softer verb.
+
+      For the main view of their strategic position, include:
       
       **Primary Hypothesis**: [Your main thesis about their strategic position]
       
@@ -637,8 +641,8 @@ accordion_method:
     - Do NOT introduce new observations in framework sections
     
     **AUDIENCE CONSISTENCY**: Write for a consulting partner preparing for discovery.
-    - Analytical and curious tone
-    - Hypothesis-driven approach
+    - Analytical tone
+    - Direct analysis, with uncertainty labeled rather than spread across every sentence
     - Comfortable with uncertainty
     - Evidence-based reasoning
     - Consultant-grade strategic analysis designed to get a consultant maximally up to speed before helping the company, not a thin fact sheet
@@ -686,8 +690,8 @@ accordion_method:
     AVOID OVERREACH:
     - Don't state internal priorities as if you have inside knowledge
     - Don't claim precise market share in opaque markets
-    - Don't assert causal certainty - use conditional language
-    - Frame internal dynamics as hypotheses, not facts
+    - Don't assert a cause the record does not show
+    - Label an inference about internal dynamics as Hypothesis. Do not state it as fact, and do not soften every sentence around it.
     
     BUILD, DON'T RESTATE:
     - When a theme from an earlier section matters here, refer back to it in a clause

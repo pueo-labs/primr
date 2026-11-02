@@ -123,12 +123,14 @@ unapproved paid runs, a deterministic prose-quality gate, memory, and a new
 public command.
 
 **Implementation status (2026-11-02):** steps 1 to 4 below are on main for the
-standard writer and the deep-research overview prompts (higher section floors,
-build-don't-restate, disclosed financial anchors, load-bearing labels, no
-stray scaffolding, and one analytical voice). They are unreleased until step 5
-compares outputs side by side. That comparison needs an approved, capped paid
-run because the Standard writer is provider-backed. Frozen evidence can avoid
-a new collection, and it does not make the rewrite free.
+standard writer, the fast-mode system prompt, and the deep-research overview
+prompts (higher section floors, build-don't-restate, disclosed financial
+anchors, load-bearing labels, no stray scaffolding, and one analytical voice).
+The composed overview selects its own persona, and the section briefs use that
+same voice. Strategy prompts are unchanged. These steps are unreleased until
+step 5 compares outputs side by side. That comparison needs an approved,
+capped paid run because the Standard writer is provider-backed. Frozen
+evidence can avoid a new collection, and it does not make the rewrite free.
 
 **Next, in order (2026-10-29):**
 

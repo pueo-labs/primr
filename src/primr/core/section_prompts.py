@@ -122,7 +122,7 @@ state the method and a range.
 
 4. **Competitive Landscape**
    - At least 5 competitors with: name, estimated size, key differentiator
-   - Where {company_name} appears to win and lose (from external evidence, not their claims)
+   - Where {company_name} wins and loses (from external evidence, not their claims)
    - Emerging disruptors
    - Include competitors the company DOESN'T mention but should
 
@@ -159,7 +159,7 @@ state the method and a range.
    For each:
    - The tension (a tradeoff they must manage, e.g., "Scale vs Customization")
    - Evidence from the data
-   - How they appear to be managing it currently
+   - How they are managing it now, and the evidence
 
 10. **Narrative Gaps** (3-5)
     For each:
@@ -247,7 +247,7 @@ SOURCES CONSULTED:
 
 REQUIREMENTS:
 - Use specific facts, numbers, examples, and strategic comparisons — cite sources with [cite: N]
-- Be analytical and hypothesis-driven, not just descriptive
+- Be analytical, not just descriptive. Take a position and show what it rests on.
 - Label load-bearing factual claims with confidence levels (Confirmed/Reported/Estimated/Hypothesis).
   Write the strategic analysis itself directly and confidently; do not hedge every sentence or
   label every line. This is consultant preparation, not a fact check
@@ -466,7 +466,7 @@ SOURCES CONSULTED:
 
 REQUIREMENTS:
 - Use specific facts, numbers, examples, and strategic comparisons — cite sources with [cite: N]
-- Be analytical and hypothesis-driven, not just descriptive
+- Be analytical, not just descriptive. Take a position and show what it rests on.
 - Label load-bearing factual claims with confidence levels (Confirmed/Reported/Estimated/Hypothesis).
   Write the strategic analysis itself directly and confidently; do not hedge every sentence or
   label every line. This is consultant preparation, not a fact check

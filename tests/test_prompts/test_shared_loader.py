@@ -49,6 +49,11 @@ class TestSharedComponentLoader:
         components = loader.load()
         assert len(components.personas) > 0
         assert "senior_consultant" in components.personas
+        assert "overview_analyst" in components.personas
+        overview = components.personas["overview_analyst"]
+        senior = components.personas["senior_consultant"]
+        assert "do not treat every claim as a hypothesis" in overview.lower()
+        assert "Treat strong claims as working hypotheses unless explicitly supported" in senior
 
     def test_caching(self):
         """Should cache loaded components."""

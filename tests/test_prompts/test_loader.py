@@ -597,6 +597,17 @@ class TestYAMLLoadingRoundTrip:
         assert not missing_rules, f"Missing epistemic rules in output: {missing_rules}"
         assert "do not hedge every sentence" in prompt.lower()
         assert 'Use language like "appears to"' not in prompt
+        # The overview persona replaces the shared default. Strategy prompts
+        # keep senior_consultant; that hedge must not ride along here.
+        assert "Do not hedge every sentence, and do not treat every claim as a hypothesis" in prompt
+        assert "Treat strong claims as working hypotheses unless explicitly supported" not in prompt
+        assert "What they are good at, and the evidence for those advantages" in prompt
+        assert "appear to be good at" not in prompt
+        assert "Where they win deals, and why" in prompt
+        assert "appear to win deals" not in prompt
+        assert "Frame explicitly as a hypothesis" not in prompt
+        assert "Frame all executive perspectives as hypotheses" not in prompt
+        assert "Hypothesis-driven approach" not in prompt
 
     def test_all_formatting_rules_appear_in_output(self):
         """
@@ -857,6 +868,11 @@ class TestYAMLLoadingRoundTrip:
         # All sections should appear
         for section in config.sections:
             assert section.name in composed.content, f"Missing section: {section.name}"
+        # Strategy voice stays on senior_consultant until its own pass.
+        assert (
+            "Treat strong claims as working hypotheses unless explicitly supported"
+            in composed.content
+        )
 
     # =========================================================================
     # PROPERTY-BASED TESTS WITH HYPOTHESIS
