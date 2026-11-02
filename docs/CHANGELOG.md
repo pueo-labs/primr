@@ -20,6 +20,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   boto3 and botocore 1.43.122, curl-cffi 0.17.0, msgpack 1.2.4, patchright
   1.64.3, pytest-asyncio 1.4.1, and hypothesis 6.170.14. The runtime container
   export is regenerated to match the lock.
+- Reviewed dependency updates: google-genai 2.34.0, opentelemetry-api 1.45.2,
+  pydantic 2.14.2, pydantic-settings 2.16.2, pytest 9.2.0, mypy 2.4.1, boto3
+  and botocore 1.43.123, azure-storage-blob 12.31.1, azure-keyvault-secrets
+  4.12.0, and cyclonedx-bom 7.6.0. pydantic 2.14.2 is now a direct floor
+  (GHSA-qpmf-fgh3-ff25, GHSA-3r8g-cqwr-jr29). Both container exports are
+  regenerated to match the lock. GitHub Actions `setup-uv` moves to 10.3.3.
+  The uv tool pin stays 0.13.5.
+- Cap the optional Anthropic extra at `anthropic>=0.109.1,<1`. SDK 1.0
+  removed `temperature` from `messages.create`, and SDK 2.0 sends API version
+  2026-10-21, which rejects that parameter on every model. Older Claude tiers
+  still receive temperature as a top-level argument. Install hints point at
+  `primr[anthropic]` so a bare install does not select SDK 2.x.
 
 ### Changed
 

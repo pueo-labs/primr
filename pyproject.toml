@@ -108,12 +108,14 @@ dependencies = [
     #   python-multipart  CVE-2026-53538/53539/53540  quadratic-time DoS
     #   msgpack           GHSA-6v7p-g79w-8964
     #   pydantic-settings GHSA-4xgf-cpjx-pc3j
+    #   pydantic          GHSA-qpmf-fgh3-ff25, GHSA-3r8g-cqwr-jr29 (need ≥2.14.2)
     #   pillow            October 2026 decoder/encoder advisories (fixed in 13.0.0)
     "cryptography>=50.0.0",
     "h2>=4.4.1",
     "python-multipart>=0.0.31",
     "msgpack>=1.2.1",
     "pydantic-settings>=2.14.2",
+    "pydantic>=2.14.2",
     "pillow>=13.0.0",
 ]
 
@@ -136,7 +138,9 @@ dev = [
 ]
 api = [
     "fastapi>=0.100.0",
-    "pydantic>=2.0.0",
+    # Same floor as the core dependency. 2.14.2 closes GHSA-qpmf-fgh3-ff25
+    # and GHSA-3r8g-cqwr-jr29.
+    "pydantic>=2.14.2",
     "uvicorn>=0.20.0",
 ]
 fast = [
@@ -150,7 +154,11 @@ anthropic = [
     # `primr doctor` flags a set ANTHROPIC_API_KEY whose SDK is missing and can
     # install this for you. The July 2026 floor is needed for current Messages
     # request fields such as output_config.effort and adaptive thinking config.
-    "anthropic>=0.109.1",
+    # Capped below 1.0. SDK 1.0 removed temperature from messages.create, and
+    # SDK 2.0 sends API version 2026-10-21, which rejects temperature on every
+    # model. Older Claude tiers still receive it as a top-level argument.
+    # Lifting the cap requires that call to move and the provider to be retested.
+    "anthropic>=0.109.1,<1",
 ]
 bedrock = [
     # Optional: enables the Amazon Bedrock provider via the boto3 bedrock-runtime

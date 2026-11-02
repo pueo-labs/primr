@@ -72,7 +72,7 @@ KEY_ALIASES: dict[str, str] = {
 KEY_HELP: dict[str, str] = {
     "XAI_API_KEY": "Grok standard reasoning and strategy pipeline",
     "GEMINI_API_KEY": "Gemini writing, utility, premium mode, and scrape summaries",
-    "ANTHROPIC_API_KEY": "Anthropic Claude provider (reasoning/writing/pro; needs `pip install anthropic`)",
+    "ANTHROPIC_API_KEY": "Anthropic Claude provider (reasoning/writing/pro; needs `pip install 'primr[anthropic]'`)",
     "OPENAI_API_KEY": "OpenAI GPT provider (utility/reasoning/writing; needs `pip install openai`)",
     "OPENROUTER_API_KEY": "Preferred OpenRouter gateway default provider route (utility, writing, reasoning)",
     "OLLAMA_API_KEY": "Optional key for Ollama or another local OpenAI-compatible endpoint",
