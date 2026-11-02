@@ -22,7 +22,7 @@ unrequested downstream workflow.
 
 ## Strategic Overview (the primary deliverable)
 
-What just landed: a 21k-word markdown + DOCX at `output/<company>/<Company>_Strategic_Overview_<date>.md`, with 23 structured sections, SWOT, competitive landscape, discovery questions, citation appendix.
+What just landed: a markdown and DOCX of about 25,500 words at `output/<company>/<Company>_Strategic_Overview_<date>.md`, with 23 structured sections, SWOT, competitive landscape, discovery questions, citation appendix.
 
 Proactive offers (pick the one that matches the user's role / next visible meeting):
 
@@ -75,6 +75,6 @@ When a user updates a hypothesis from a conversation, use `save_hypothesis` (MCP
 ## What NOT to do after a run
 
 - **Do not re-run primr to "verify" findings.** The cost gate forbids this without a fresh estimate and approval, and the report's confidence annotations already convey uncertainty.
-- **Do not paste the full markdown into the conversation.** It's 21k words; the conversation will OOM or the user will scroll past everything important. Always summarize.
+- **Do not paste the full markdown into the conversation.** It is about 25,500 words, so the conversation will drop context or the user will scroll past everything important. Always summarize.
 - **Do not strip confidence annotations** when summarizing. "(Hypothesis)" is load-bearing - readers learn to trust the parts marked `(Confirmed)` / `(Reported)` more than the parts marked `(Estimated)` / `(Hypothesis)`.
 - **Do not promise updates.** primr is a snapshot tool. If the user asks "will this update when news happens," the answer is no - they'd need to re-run periodically (and that's a fresh estimate + approval each time).

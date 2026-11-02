@@ -21,6 +21,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   1.64.3, pytest-asyncio 1.4.1, and hypothesis 6.170.14. The runtime container
   export is regenerated to match the lock.
 
+### Changed
+
+- Strategic Overview sections are longer and build on each other. Section
+  word floors rise from 1,200 and 800 to 1,500 and 1,000 words (about 25,500
+  words, or 50+ pages, across the default 23 sections), with output limits
+  raised to match. Writers are told to refer back to an earlier theme in a
+  clause and spend their words on what is new through their section's lens,
+  never to shorten a section to avoid overlap.
+- Financial sections anchor on the most recent disclosed figures, with period
+  and source, and show the numerator and denominator behind any ratio. Ranges
+  are reserved for genuine estimates with a stated method.
+- Confidence labels apply to load-bearing factual claims. Strategic analysis is
+  written directly, without a hedge on every sentence; the rules that required
+  "appears to" phrasing and rewriting every risk as a scenario are replaced by
+  an analytical-voice rule.
+- Engagement sections ask for budget signals instead of inviting invented
+  dollar ranges, and use a relative time horizon instead of hardcoded years.
+- The default estimate rises from about $1.24 to about $1.26 ($1.08 without the
+  AI Strategy) to cover the longer sections. Current tables match that plan:
+  two-platform about $1.45, xAI-only about $5.99 ($5.24 without the AI
+  Strategy), MAX about $10.05 ($8.65 without it), and OpenRouter about $0.68.
+  Dated routing snapshots stay as history.
+- Operator and skill guidance describe the Strategic Overview as direct
+  analysis with cited sources. The length guidepost is about 25,500 words.
+  The roadmap's current Standard mode names Grok 4.7 reasoning and Gemini
+  3.5 Flash-Lite writing.
+
 ### Fixed
 
 - Repository, package metadata, installer, support, agent-plugin, and runtime
@@ -30,6 +57,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   author attribution, and historical release records are unchanged.
 - Claude Code setup now loads the checked-in plugin directory instead of
   advertising a marketplace catalog that the repository does not publish.
+- Reports no longer gain a stray "(Reported)" line on sections that had no
+  parenthesized label.
+- A section's own "What to validate" question is kept when the writer emits it
+  as a heading, bullet, or bold label, instead of being replaced by a generic
+  default line.
 
 ## [1.39.34] - 2026-10-29
 

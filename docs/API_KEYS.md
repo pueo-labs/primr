@@ -364,9 +364,9 @@ recipe directly.
 |------|--------|---------------|--------|-------|
 | scrape | ~$0.05 | -- | ~$0.04 | ~$0.10 |
 | deep | Sequential Flash writing and strategy included | ~$2.50 planning point | -- | ~$5.38 with one integrated AI Strategy; ~$2.88 base |
-| full, xAI plus Gemini | provider-token based | -- | DuckDuckGo default | ~$1.24 with one integrated AI Strategy |
-| full, xAI only | provider-token based | -- | DuckDuckGo default | ~$5.84 with one integrated AI Strategy |
-| full, OpenRouter preview | provider-token based | -- | DuckDuckGo default | ~$1.07 with one integrated AI Strategy (2026-10-12 dry run; $1.0655 before display rounding; cache savings and credit-purchase fees excluded) |
+| full, xAI plus Gemini | provider-token based | -- | DuckDuckGo default | ~$1.26 with one integrated AI Strategy |
+| full, xAI only | provider-token based | -- | DuckDuckGo default | ~$5.99 with one integrated AI Strategy |
+| full, OpenRouter preview | provider-token based | -- | DuckDuckGo default | ~$0.68 with one integrated AI Strategy on the current static plan; cache savings and credit-purchase fees excluded |
 | premium | Structured collection, sequential Flash writing, and strategy included | ~$2.50 planning point | DuckDuckGo default | ~$6.71 with one integrated AI Strategy |
 
 Gemini Deep Research is billed from the underlying model tokens and tools, so

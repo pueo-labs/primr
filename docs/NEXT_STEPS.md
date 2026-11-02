@@ -43,7 +43,8 @@ product.
 v1.39.34 is the released baseline. It orders the roadmap around Primr's
 outputs: Overview depth, the strategy library, skill packs, and Primr Zero
 parity. Model defaults and prices were rechecked against every provider on
-2026-10-29 with no change; the default full run estimates $1.24.
+2026-10-29 with no catalog change. Longer Strategic Overview sections move
+the default full run from $1.24 to about $1.26 ($1.08 without the AI Strategy).
 v1.39.33 states plainly that Primr's reports mix
 cited facts with reasoned strategy and that Primr is not only a fact checker.
 v1.39.32 refocuses v1.40 on making the
@@ -120,6 +121,12 @@ paid run needs a fresh estimate, explicit approval, and a cost cap.
 **Explicitly outside this card:** shortening the report, provider promotion,
 unapproved paid runs, a deterministic prose-quality gate, memory, and a new
 public command.
+
+**Implementation status (2026-10-30):** steps 1 to 4 below are implemented in
+the writer prompts and YAML (higher section floors, build-don't-restate,
+disclosed financial anchors, load-bearing labels, no stray scaffolding). They
+are unreleased until step 5 compares outputs side by side, which needs an
+approved, capped paid run because the Standard writer is provider-backed.
 
 **Next, in order (2026-10-29):**
 
