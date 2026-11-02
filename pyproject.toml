@@ -252,6 +252,10 @@ constraint-dependencies = [
     "filelock>=4.2.1",
     # Reached through recon-tool DNS lookups; CVE-2026-114605 is fixed in 2.9.0.
     "dnspython>=2.9.0",
+    # Reached through pyasn1-modules (cryptography and cloud auth).
+    # CVE-2026-119194, CVE-2026-119195, CVE-2026-119196, and CVE-2026-119197
+    # are quadratic decoder DoS issues fixed in 0.6.5.
+    "pyasn1>=0.6.5",
     # Older vendored parsers import sre_constants, removed in Python 3.15.
     "pip-api>=0.0.35",
     # pip vendors its own CA bundle, independent of application certifi.
