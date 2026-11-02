@@ -292,6 +292,10 @@ class PromptComposer:
         if is_strategy_config:
             epistemic_rules = data.get("epistemic_rules", epistemic_rules)
             formatting_rules = data.get("formatting", formatting_rules)
+        elif isinstance(data.get("epistemic_rules"), dict):
+            # company_overview.yaml owns the keys it sets. Shared rules still
+            # fill any key this file does not replace.
+            epistemic_rules = data["epistemic_rules"]
 
         return PromptConfig(
             meta=data.get("meta", {}),

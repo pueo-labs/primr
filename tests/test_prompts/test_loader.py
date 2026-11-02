@@ -568,27 +568,35 @@ class TestYAMLLoadingRoundTrip:
 
     def test_all_epistemic_rules_appear_in_output(self):
         """
-        Property: ALL epistemic rules from shared components MUST appear in the output.
+        Shared epistemic rules appear unless company_overview.yaml replaces that key.
 
-        Note: The composer uses shared/epistemic_rules.yaml, not the prompt-specific YAML.
-        The composer adds "- " prefix to each rule.
-
-        **Feature: deep-research-prompt-architecture, Property 1: YAML Loading Round-Trip**
-        **Validates: Requirements 1.1**
+        The composer prefixes each rule with "- ". An overview override replaces
+        the shared text for that key and must not leave the old text in place.
         """
+        from primr.prompts.composer import PromptComposer
         from primr.prompts.shared_loader import load_shared_components
 
         shared = load_shared_components()
+        composer = PromptComposer()
+        overrides = composer._load_config("company_overview").epistemic_rules_override
         prompt = build_company_overview_prompt("Test Corp")
 
         missing_rules = []
         for rule_name, rule_text in shared.epistemic_rules.items():
-            # The composer adds "- " prefix to each rule
+            if rule_name in overrides:
+                override = overrides[rule_name].strip()
+                if f"- {override}" not in prompt:
+                    missing_rules.append(f"override:{rule_name}")
+                if rule_text.strip() != override and f"- {rule_text.strip()}" in prompt:
+                    missing_rules.append(f"stale:{rule_name}")
+                continue
             formatted_rule = f"- {rule_text.strip()}"
             if formatted_rule not in prompt:
                 missing_rules.append(rule_name)
 
         assert not missing_rules, f"Missing epistemic rules in output: {missing_rules}"
+        assert "do not hedge every sentence" in prompt.lower()
+        assert 'Use language like "appears to"' not in prompt
 
     def test_all_formatting_rules_appear_in_output(self):
         """

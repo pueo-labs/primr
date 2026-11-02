@@ -53,6 +53,34 @@ epistemic_rules:
     Write like a senior consultant preparing a partner: take clear positions, explain the
     reasoning, and name the evidence they rest on. Qualify where evidence is genuinely thin,
     but do not hedge every sentence with "appears to" or "worth exploring".
+  section_confidence_reset: |
+    Each section starts fresh. Do not inherit a confidence label from an earlier
+    section. A hypothesis stays a hypothesis until this section has new evidence.
+    Label load-bearing facts. Do not label every interpretive sentence.
+  hedging_language: |
+    Qualify a claim where the evidence is thin, and name that evidence.
+    Do not put "appears to" or "worth exploring" on every sentence.
+    Avoid "definitely", "certainly", "always", and "never" when the record
+    does not support them.
+  transformation_rule: |
+    If a sentence implies inevitability or failure, replace the certainty with
+    the evidence and the consequence. Do not rewrite every risk as a scenario.
+    A thin record gets a label and a question, not a softer verb on every line.
+  risk_framing: |
+    State the risk and the evidence. Where the outcome is not knowable from
+    public sources, say what is unknown and what would change the view.
+    Do not turn every risk into an open question.
+  hypothesis_framing: |
+    A hypothesis is a labeled interpretation, not the default voice of the
+    section. Cite the evidence, state the position, and mark Hypothesis when
+    the claim is not a fact.
+  narrative_ceiling: |
+    Keep the stakes steady. Do not escalate drama as the document progresses,
+    and do not upgrade an opportunity into a transformation without new evidence
+    in this section. Measured language still takes a position. "Worth exploring"
+    is not a substitute for the recommendation. Rewrite "transformational",
+    "revolutionary", "paradigm shift", or "industry-defining" as the specific
+    consequence for this company.
   numeric_precision: |
     For numbers not directly from filings or official sources:
     - Use ranges: "$800M-$1.2B" not "$1B"
@@ -571,17 +599,17 @@ accordion_method:
   section_writing_prompt: |
     You are writing a section of a strategic company overview for {company_name}.
     
-    PURPOSE: This is for internal sensemaking and go-to-market preparation - helping 
-    us understand how this company creates value and where we might help them. It's 
-    NOT a client deliverable. Frame insights as hypotheses to explore, not conclusions.
+    PURPOSE: This is internal preparation for a discovery conversation. It is not a
+    client deliverable. Write the analysis directly, label load-bearing facts, and
+    qualify only where the evidence is thin.
 
     {stage1_context}
 
     ## RESEARCH DOSSIER (Deep Research Findings)
     The research dossier below contains compressed facts gathered by Deep Research.
-    Your job is to take these facts and write them out properly - developing the 
-    analysis, surfacing implications, identifying patterns worth exploring, and reasoning
-    like an expert strategist even when direct company evidence is incomplete.
+    Your job is to take these facts and write them out properly: develop the
+    analysis, name the implication, and reason like an expert strategist even
+    when direct company evidence is incomplete.
 
     {research_dossier}
 
@@ -624,15 +652,15 @@ accordion_method:
     {position_guidance}
 
     ## WRITING APPROACH
-    
-    This is exploratory analysis, not authoritative prescription:
-    - Frame findings as hypotheses: "This suggests..." not "They must..."
-    - Surface patterns worth exploring, questions to ask
+
+    Write like a senior consultant preparing a partner:
+    - Take a clear position, explain the reasoning, and name the evidence
+    - Qualify a point only where the evidence is thin
+    - Do not hedge every sentence with "appears to" or "worth exploring"
     - Be specific with evidence (numbers, names, comparisons)
     - Keep source density readable in the narrative. Prefer compact paragraph-end citations and a dense final appendix over cluttering every sentence.
-    - Acknowledge uncertainty - what we don't know matters too
-    - For major hypotheses, consider the counter-case: what evidence would disprove this?
-    - Write for someone preparing to engage, not delivering a verdict
+    - Say what the public record does not show
+    - For a major position, name the evidence that would change it
     - If direct company evidence is limited, do NOT collapse into a short overview. Use
       industry structure, buyer logic, competitor analogs, operating economics, and news
       context to build a deep strategic section with clear uncertainty labeling.
@@ -661,17 +689,17 @@ accordion_method:
     - Don't assert causal certainty - use conditional language
     - Frame internal dynamics as hypotheses, not facts
     
-    AVOID REPETITION:
-    - Check the previous sections - don't restate points already made
-    - Each insight should live in ONE section
-    - Reference other sections rather than restating: "As noted in the SWOT analysis..."
+    BUILD, DON'T RESTATE:
+    - When a theme from an earlier section matters here, refer back to it in a clause
+    - Spend the words on what is new through this section's lens
+    - Never shorten a section to avoid overlap
     
     Write as much as the content needs to produce maximally useful strategic analysis for a consultant preparing to help the company.
     Let the material guide you, but default toward depth, synthesis, and decision-useful analysis rather than brevity.
     
     GOOD:
-    - "NIM of 2.46% vs First Hawaiian's 3.19% (Confirmed - Q3 filings) suggests potential pricing constraints worth exploring"
-    - "The Cetera partnership may signal a pivot toward fee income (Hypothesis) - worth validating in conversation"
+    - "NIM of 2.46% versus the named peer at 3.19% (Confirmed, Q3 filings) is a pricing constraint in the core book"
+    - "The distribution partnership may be a pivot toward fee income (Hypothesis). Validate the mix shift in conversation."
     - "Revenue estimated at $800M-$1.2B (Reported - industry sources vary)"
     
     NOT THIS:
@@ -718,12 +746,12 @@ accordion_method:
   # Position guidance templates for narrative flow
   position_guidance:
     opening: |
-      This is the OPENING section. Set the exploratory tone for the report.
-      Surface the key hypotheses that subsequent sections will develop.
+      This is the OPENING section. State the governing view and the facts later
+      sections will develop.
     middle: |
       This is section {section_number} of {total_sections}.
-      Build naturally on the previous sections. Reference earlier points where relevant.
-      Develop themes and surface questions worth exploring.
+      Build on the previous sections. When a theme recurs, add a new angle,
+      evidence, consequence, or question.
     framework: |
       This is a FRAMEWORK section - apply the analytical framework rigorously.
       Consulting frameworks like SWOT, Porter's Five Forces, and Value Chain are 
@@ -734,5 +762,5 @@ accordion_method:
       - Connect to the broader strategic picture
       This is where structured analysis adds real value.
     closing: |
-      This is the CLOSING section. Synthesize the key hypotheses and patterns.
-      Highlight the most important questions to explore in engagement.
+      This is the CLOSING section. State the position the report earned and the
+      questions still open for the conversation.

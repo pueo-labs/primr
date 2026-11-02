@@ -362,6 +362,10 @@ class TestAccordionMethodPrompts:
             assert placeholder in section_prompt, (
                 f"section_writing_prompt missing {placeholder} placeholder"
             )
+        assert "BUILD, DON'T RESTATE" in section_prompt
+        assert "AVOID REPETITION" not in section_prompt
+        assert "Frame findings as hypotheses" not in section_prompt
+        assert "do not hedge every sentence" in section_prompt.lower()
 
     def test_position_guidance_is_substantive(self):
         """Position guidance should have meaningful content."""
