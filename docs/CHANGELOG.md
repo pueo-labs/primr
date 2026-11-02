@@ -62,6 +62,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The Strategic Overview voice now covers the fast-mode system prompt, the
+  composed overview persona, and the section briefs. Those paths no longer
+  tell the writer to treat every claim as a hypothesis or to hedge wins,
+  losses, and executive perspectives. A claim that is not a fact stays a
+  labeled Hypothesis. Strategy prompts are unchanged.
 - Repository, package metadata, installer, support, agent-plugin, and runtime
   identity links now point to `pueo-labs/primr` after the repository transfer.
   The documentation site uses `https://pueo-labs.github.io/primr/`; GitHub does

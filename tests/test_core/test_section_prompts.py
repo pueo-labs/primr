@@ -163,6 +163,13 @@ class TestBuildFastAnalysisPrompt:
         prompt = _build_fast_analysis_prompt("UniqueCo", "https://u.example", "r", "e")
         assert prompt.count("UniqueCo") >= 2
 
+    def test_workbook_states_wins_and_management_directly(self):
+        prompt = _build_fast_analysis_prompt("Acme", "https://a.example", "r", "e")
+        assert "wins and loses" in prompt
+        assert "appears to win and lose" not in prompt
+        assert "How they are managing it now, and the evidence" in prompt
+        assert "appear to be managing it" not in prompt
+
 
 # ---------------------------------------------------------------------------
 # _build_fast_batch_prompt
@@ -202,6 +209,11 @@ class TestBuildFastBatchPrompt:
         # gate strips (ROADMAP Active Queue #2).
         prompt = self._build()
         assert SCAFFOLDING_PROHIBITION_GUIDANCE in prompt
+
+    def test_requirements_take_a_position(self):
+        prompt = self._build()
+        assert "Take a position and show what it rests on." in prompt
+        assert "hypothesis-driven" not in prompt
 
     def test_no_previous_sections_message(self):
         prompt = self._build(previous_sections=[])
@@ -305,6 +317,11 @@ class TestBuildFastSectionPrompt:
         # Single-section writer carries the same prohibition as the batch writer.
         prompt = self._build()
         assert SCAFFOLDING_PROHIBITION_GUIDANCE in prompt
+
+    def test_requirements_take_a_position(self):
+        prompt = self._build()
+        assert "Take a position and show what it rests on." in prompt
+        assert "hypothesis-driven" not in prompt
 
     def test_first_section_message_when_no_previous(self):
         prompt = self._build(written_sections=[])

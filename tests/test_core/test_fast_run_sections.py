@@ -263,6 +263,12 @@ class TestChainAndMetrics:
         _call(seams)
         assert seams["calls"][0]["system"] == REPORT_SYSTEM_PROMPT
 
+    def test_report_system_prompt_labels_non_facts_without_hedging_every_claim(self):
+        assert "Label it Hypothesis when it is not a fact." in REPORT_SYSTEM_PROMPT
+        assert "Frame every major claim as a hypothesis" not in REPORT_SYSTEM_PROMPT
+        assert "Use wide ranges" not in REPORT_SYSTEM_PROMPT
+        assert "most recent disclosed figures" in REPORT_SYSTEM_PROMPT
+
     def test_writing_model_threaded(self, seams):
         _call(seams, grok_writing="special-writer")
         assert seams["writer"].call_args.kwargs["model"] == "special-writer"

@@ -365,7 +365,32 @@ class TestAccordionMethodPrompts:
         assert "BUILD, DON'T RESTATE" in section_prompt
         assert "AVOID REPETITION" not in section_prompt
         assert "Frame findings as hypotheses" not in section_prompt
+        assert "Hypothesis-driven approach" not in section_prompt
         assert "do not hedge every sentence" in section_prompt.lower()
+
+        # Section briefs are injected as the deep writer's instructions.
+        # They state the analysis directly and label a non-fact Hypothesis.
+        assert config.persona_override == "overview_analyst"
+        assert "working hypotheses unless explicitly supported" not in config.document_purpose
+        brief = "\n".join(
+            "\n".join(
+                [
+                    section.purpose or "",
+                    *(section.covers or []),
+                    section.depth or "",
+                ]
+            )
+            for section in config.sections
+        )
+        for banned in (
+            "appear to be good at",
+            "appear to win deals",
+            "Frame explicitly as a hypothesis",
+            "Frame all executive perspectives as hypotheses",
+        ):
+            assert banned not in brief, banned
+        assert "What they are good at, and the evidence for those advantages" in brief
+        assert "Where they win deals, and why" in brief
 
     def test_position_guidance_is_substantive(self):
         """Position guidance should have meaningful content."""
