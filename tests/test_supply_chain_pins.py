@@ -134,6 +134,7 @@ def test_dependency_security_floors_exclude_affected_versions(
         ("virtualenv", "21.14.12", "21.14.13"),
         ("filelock", "3.29.0", "4.2.1"),
         ("dnspython", "2.8.0", "2.9.0"),
+        ("pyasn1", "0.6.4", "0.6.5"),
         ("pip", "26.2.1", "26.2.2"),
     ],
 )
