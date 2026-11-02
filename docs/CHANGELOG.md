@@ -57,6 +57,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   author attribution, and historical release records are unchanged.
 - Claude Code setup now loads the checked-in plugin directory instead of
   advertising a marketplace catalog that the repository does not publish.
+- The composed Strategic Overview prompt and the deep-research section
+  template now use the analytical voice. Shared rules that required "appears
+  to" phrasing, "worth exploring" as the confident line, and rewriting every
+  risk as a scenario no longer ride along. The section template deepens a
+  recurring theme instead of cutting it.
 - Reports no longer gain a stray "(Reported)" line on sections that had no
   parenthesized label.
 - A section's own "What to validate" question is kept when the writer emits it
