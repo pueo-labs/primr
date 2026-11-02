@@ -39,7 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Engagement sections ask for budget signals instead of inviting invented
   dollar ranges, and use a relative time horizon instead of hardcoded years.
 - The default estimate rises from about $1.24 to about $1.26 ($1.08 without the
-  AI Strategy) to cover the longer sections.
+  AI Strategy) to cover the longer sections. Current tables match that plan:
+  two-platform about $1.45, xAI-only about $5.99 ($5.24 without the AI
+  Strategy), MAX about $10.05 ($8.65 without it), and OpenRouter about $0.68.
+  Dated routing snapshots stay as history.
+- Operator and skill guidance describe the Strategic Overview as direct
+  analysis with cited sources. The length guidepost is about 25,500 words.
+  The roadmap's current Standard mode names Grok 4.7 reasoning and Gemini
+  3.5 Flash-Lite writing.
 
 ### Fixed
 

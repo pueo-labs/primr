@@ -48,6 +48,12 @@ disclose such scheduled changes so an approval made before the date is not
 silently repriced. Grok 4.7 has a 500k context window, half of Grok 4.3's,
 so the analysis fallback chain keeps Grok 4.3 as its 1M-context second step.
 
+Longer Strategic Overview section floors move this static estimator again.
+xAI plus Gemini HYBRID is about $1.08 ($1.26 with the AI Strategy). xAI-only
+is about $5.24 ($5.99 with the AI Strategy). MAX is about $8.65 ($10.05 with
+the AI Strategy). The OpenRouter default full run is about $0.68. The table
+above remains the 2026-10-28 flagship record.
+
 Rules that still hold: tiers name exact versions, never provider aliases;
 superseded models stay registered and priced for historical accounting and
 explicit selection; retired models are marked unavailable with their

@@ -29,7 +29,7 @@ Heuristics:
 |------|--------------|------|
 | `fast` | Grok 4.7 (reasoning_effort=low) with the routed writing provider | Re-estimate |
 | `hybrid` (default) | Grok 4.7 for reasoning + Gemini 3.5 Flash-Lite writing when Gemini is configured | ~$1.08-$1.26 by default |
-| `max` | Grok 4.7 everywhere (version-pinned high-cost tier; re-estimate) | ~$9.93 with the default strategy |
+| `max` | Grok 4.7 everywhere (version-pinned high-cost tier; re-estimate) | ~$10.05 with the default strategy |
 
 `fast` saves tokens on reasoning (low effort). `max` uses the version-pinned
 Grok 4.7 route for every Grok stage and costs materially more than hybrid. Only pick `max` when the user explicitly requests it and has
@@ -52,7 +52,7 @@ Without an explicit platform, no strong recon signal produces one agnostic
 strategy, one strong signal emphasizes that ecosystem, and multiple strong
 signals produce one integrated vendor-neutral strategy. Multi-platform fan-out
 is explicit: `--platform aws azure`. A second standard strategy adds about
-$0.12 in the common xAI plus Gemini recipe; premium additions cost more and
+$0.19 in the common xAI plus Gemini recipe; premium additions cost more and
 must be re-estimated.
 
 Heuristics:

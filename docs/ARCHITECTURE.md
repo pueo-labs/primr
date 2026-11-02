@@ -1463,8 +1463,8 @@ the base Strategic Overview and **$1.26** when the default AI Strategy is
 included. The earlier Grok 4.3 recipe measured $0.79 in the v1.24.0 eval.
 
 `--grok-tier max` routes writing through Grok 4.7 as well as reasoning. It is
-a higher-cost opt-in: the current static MAX plan is about **$8.53** for the
-base report or **$9.93** with the default AI Strategy. Grok 4.7 has a 500k
+a higher-cost opt-in: the current static MAX plan is about **$8.65** for the
+base report or **$10.05** with the default AI Strategy. Grok 4.7 has a 500k
 context window, so Grok 4.3 (1M) is the next analysis fallback.
 
 XAI-only setups still work with the legacy writing/utility fallback path.

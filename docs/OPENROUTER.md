@@ -2,10 +2,11 @@
 
 OpenRouter is the preferred single-key gateway for Primr research. When configured,
 it serves as the default provider route across utility, writing, and reasoning roles.
-On 2026-10-12 the default full report plus AI Strategy dry run displays about
-$1.07. That is the estimator total of $1.0655 shown to two decimals. The estimate
-does not assume prompt-cache savings, and it does not include OpenRouter
-credit-purchase fees. The live `primr --dry-run` output is authoritative.
+On the current static token plan the default full report plus AI Strategy
+dry run is about $0.68. The same route was about $0.67 on 2026-10-28, and
+about $1.07 on 2026-10-12. The estimate does not assume prompt-cache savings,
+and it does not include OpenRouter credit-purchase fees. The live
+`primr --dry-run` output is authoritative.
 
 Configuring `OPENROUTER_API_KEY` activates OpenRouter routing by default, while
 preserving Primr's mandatory dry-run estimate and explicit spend approval gates.
@@ -125,9 +126,9 @@ The default OpenRouter route uses a balanced role recipe:
 | Writing | `openai/gpt-6-luna` | `$0.10 / $0.50` (`$0.20 / $0.75` above 272K) |
 | Reasoning | `deepseek/deepseek-v4.1-flash-1017` | `$0.30 / $1.20` (highest scheduled rate) |
 
-The default full report plus AI Strategy dry run estimated about `$0.67` on
-2026-10-28, down from about `$1.07` with the previous GPT-4.1 Mini and
-DeepSeek V3.2 recipe. Prompt-cache savings are not
+The default full report plus AI Strategy dry run is about `$0.68` on the
+current static plan. It was about `$0.67` on 2026-10-28, down from about
+`$1.07` with the previous GPT-4.1 Mini and DeepSeek V3.2 recipe. Prompt-cache savings are not
 assumed, and OpenRouter credit-purchase fees are not included. The command's
 live dry-run is authoritative because selected features, token plans, pricing,
 and historical floors can change.

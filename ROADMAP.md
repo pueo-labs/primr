@@ -373,8 +373,8 @@ into generic agent middleware.
 - Circuit breaker pattern (skips failing tiers after 3 failures)
 - Soft block detection (catches "200 OK" traps, browser blocks)
 
-**Standard Mode** (default when `XAI_API_KEY` is set): Grok 4.3 reasoning,
-with Gemini 3.1 Flash-Lite writing when `GEMINI_API_KEY` is also configured.
+**Standard Mode** (default when `XAI_API_KEY` is set): Grok 4.7 reasoning,
+with Gemini 3.5 Flash-Lite writing when `GEMINI_API_KEY` is also configured.
 Research deepening, bounded concurrent section batches with prior-batch
 context, cross-validation, a guarded coherence pass, and strategy enrichment.
 Use the command's dry run and [Run Modes and Costs](docs/RUN_MODES.md) for the

@@ -1005,7 +1005,7 @@ class TestGrokTier:
 
     def test_fast_tier_cost_range_xai_only(self, monkeypatch):
         """Fast tier in legacy XAI-only mode: grok-4.7 reasoning + grok-4.20-nr writing,
-        currently $5.185 on the static token plan."""
+        currently $5.235 on the static token plan."""
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
@@ -1023,13 +1023,13 @@ class TestGrokTier:
         assert est.total_cost == pytest.approx(5.235)
 
     def test_hybrid_tier_cost_range_with_gemini(self, monkeypatch):
-        """Hybrid tier with GEMINI_API_KEY set: writing routed to gemini-3.1-flash-lite,
-        total drops into the sub-$1 band that the v1.24.0 default targets."""
+        """Hybrid tier with GEMINI_API_KEY set: writing uses the current Gemini
+        writing model. This call prices the base plan, about $1.08, and stays
+        under $2. The same plan with the AI Strategy is about $1.26."""
         monkeypatch.setenv("GEMINI_API_KEY", "fake-test-key")
         monkeypatch.setenv("XAI_API_KEY", "fake-test-key")
         est = estimate_cost("complete", fast_mode=True, use_historical=False, grok_tier="hybrid")
-        # Sub-$2 (with strategy/hiring overhead included); without overhead,
-        # the v1.24.0 stage-1 eval landed at $0.79.
+        # Base plan only. The v1.24.0 stage-1 eval landed at $0.79.
         assert est.total_cost < 2.00
 
     def test_standard_estimate_routes_openai_only(self, monkeypatch):

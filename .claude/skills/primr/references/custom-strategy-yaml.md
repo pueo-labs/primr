@@ -95,7 +95,7 @@ The dry run validates the YAML, reports estimated cost (with the strategy's sect
 - One strategy = one deliverable. Don't try to combine FinOps + security + AI into one file; that produces 80-page reports nobody reads.
 - 4-7 sections is the sweet spot. Fewer feels thin, more dilutes signal.
 - Make at least one section explicitly *evidence* and at least one explicitly *recommendation*. Don't blur them into "analysis."
-- Build the prompt to encourage hedging. primr reports always say "appears to," "suggests," "consistent with" - your custom strategy should match that voice.
+- Match the Strategic Overview voice. Label load-bearing facts, and write the recommendation directly. Do not hedge every sentence with "appears to" or "worth exploring."
 - Test against a known company first. Pick someone you actually understand and check whether the output reads like an expert. If it reads like generic content marketing, tighten the section descriptions.
 
 ## When to ship it back
