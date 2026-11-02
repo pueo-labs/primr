@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Raise the transitive `pyasn1` floor to 0.6.5. Versions before 0.6.5 spend
+  quadratic CPU while decoding crafted ASN.1 (CVE-2026-119194,
+  CVE-2026-119195, CVE-2026-119196, CVE-2026-119197). The package is reached
+  through `pyasn1-modules`; the constraint covers locked source and container
+  installs, and pip consumers resolve their own transitive versions.
 - Reviewed dependency updates: openai 3.41.0 (major: HTTPX2 replaces httpx as
   the SDK's default client; Primr's bounded transport still constructs it with
   redirects disabled and retries owned by Primr), azure-identity 1.27.0,
