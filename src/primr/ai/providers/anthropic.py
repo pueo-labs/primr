@@ -222,7 +222,7 @@ class AnthropicProvider(Provider):
             detail = (
                 f"{self._api_key_env} not set"
                 if key_missing
-                else "anthropic package not installed (pip install anthropic)"
+                else "anthropic package not installed (pip install 'primr[anthropic]')"
             )
             return CredentialCheck(provider=self.name, ok=False, detail=detail)
         start = time.monotonic()
@@ -258,7 +258,7 @@ class AnthropicProvider(Provider):
         except ImportError as exc:
             raise ProviderUnavailableError(
                 "The 'anthropic' package is required for the anthropic provider. "
-                "Install it with: pip install anthropic"
+                "Install it with: pip install 'primr[anthropic]'"
             ) from exc
 
         api_key = os.getenv(self._api_key_env)

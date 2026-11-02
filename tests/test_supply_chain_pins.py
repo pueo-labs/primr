@@ -96,6 +96,7 @@ def test_docker_base_images_are_digest_pinned() -> None:
         (None, "urllib3", "2.7.0", "2.8.0"),
         (None, "pillow", "12.3.0", "13.0.0"),
         (None, "certifi", "2026.5.20", "2026.10.19"),
+        (None, "pydantic", "2.14.1", "2.14.2"),
         (None, "opentelemetry-api", "1.44.0", "1.45.1"),
         (None, "opentelemetry-api", "1.45.0", "1.45.1"),
         ("docs", "mkdocs-material", "9.7.6", "9.7.7"),
@@ -152,6 +153,24 @@ def test_transitive_security_constraints_and_locked_versions(
     assert patched in specifier
     assert versions, f"{package} must remain in the existing dependency graph"
     assert all(version in specifier for version in versions)
+
+
+def test_anthropic_sdk_stays_below_messages_api_break() -> None:
+    """SDK 1.0 drops temperature from messages.create; SDK 2.0 rejects it on every model."""
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    requirement = next(
+        Requirement(value)
+        for value in project["optional-dependencies"]["anthropic"]
+        if Requirement(value).name == "anthropic"
+    )
+    lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
+    versions = [entry["version"] for entry in lock["package"] if entry["name"] == "anthropic"]
+
+    assert "0.109.1" in requirement.specifier
+    assert "1.0.0" not in requirement.specifier
+    assert "2.3.0" not in requirement.specifier
+    assert versions, "anthropic must remain available as the optional Claude extra"
+    assert all(version in requirement.specifier for version in versions)
 
 
 def test_scheduled_audits_and_grouped_dependency_proposals() -> None:
