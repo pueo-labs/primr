@@ -54,6 +54,12 @@ is about $5.24 ($5.99 with the AI Strategy). MAX is about $8.65 ($10.05 with
 the AI Strategy). The OpenRouter default full run is about $0.68. The table
 above remains the 2026-10-28 flagship record.
 
+Catalog recheck (2026-11-02): the xAI models page, the Gemini pricing page,
+the OpenAI pricing page, and the Claude Sonnet 5.5 and Haiku 5.5 pages list
+the same default IDs and rates. No default moves.
+`grok-4.20-non-reasoning` remains the documented alias of
+`grok-4.20-0309-non-reasoning`.
+
 Rules that still hold: tiers name exact versions, never provider aliases;
 superseded models stay registered and priced for historical accounting and
 explicit selection; retired models are marked unavailable with their
@@ -68,8 +74,9 @@ flagship. Primr had already standardized on **Grok 4.3** for hybrid reasoning
 after the v1.24.0 cross-provider eval (sub-$1 default with Gemini writing), and
 had pinned the explicit MAX tier to **Grok 4.5**.
 
-The README demo shows a dry-run for **“Grok 4.3 hybrid”**. That is intentional:
-it matches the default CLI path, not the newest marketing model.
+The README demo of that period showed a dry-run for **“Grok 4.3 hybrid”**,
+matching the default CLI path at the time. The current demo shows Grok 4.7
+hybrid.
 
 ## API currency checkpoint (2026-08-13)
 

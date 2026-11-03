@@ -158,9 +158,9 @@ class ModelRegistry:
         tier_threshold_inclusive=True,
     )
 
-    # GROK 4.6 - xAI current flagship (released 2026-08-12)
-    # USE FOR: Registered promotion candidate only. It is not silently routed
-    # into Standard or MAX until a bounded quality and cost evaluation passes.
+    # GROK 4.6 - previous xAI flagship (released 2026-08-12)
+    # USE FOR: Explicit selection and historical accounting. Standard and MAX
+    # use Grok 4.7, which has the same rates and context.
     # Pricing: $2.00/$0.50 cached/$6.00 below 200k prompt tokens;
     # $4.00/$1.00 cached/$12.00 at or above 200k. Context: 500k tokens.
     # xAI publishes no text output limit; 131k remains Primr's conservative cap.
@@ -184,7 +184,7 @@ class ModelRegistry:
         tier_threshold_inclusive=True,
     )
 
-    # GROK 4.7 - xAI current flagship (docs.x.ai, checked 2026-10-28)
+    # GROK 4.7 - xAI current flagship (docs.x.ai, rechecked 2026-11-02)
     # USE FOR: Default reasoning in every tier. Same rates, 500k context, and
     # cached input as 4.6; reasoning_effort low/medium/high/xhigh (default high).
     GROK_4_7 = replace(GROK_4_6, name="grok-4.7", display_name="Grok 4.7")

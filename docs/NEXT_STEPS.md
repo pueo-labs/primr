@@ -45,6 +45,8 @@ outputs: Overview depth, the strategy library, skill packs, and Primr Zero
 parity. Model defaults and prices were rechecked against every provider on
 2026-10-29 with no catalog change. Longer Strategic Overview sections move
 the default full run from $1.24 to about $1.26 ($1.08 without the AI Strategy).
+Catalogs were rechecked on 2026-11-02. No newer generally available flagship
+and no price change. Scheduled Gemini steps are unchanged.
 v1.39.33 states plainly that Primr's reports mix
 cited facts with reasoned strategy and that Primr is not only a fact checker.
 v1.39.32 refocuses v1.40 on making the

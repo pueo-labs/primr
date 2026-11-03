@@ -258,7 +258,8 @@ def pick_model_for_role(role: Role | str) -> str:
     #   XAI > GEMINI > OPENROUTER > OPENAI > ANTHROPIC > PRO_MODEL fallback
     #   XAI leads because the continuous-reasoning session lands a high
     #   cache hit rate on Grok cached input. Every provider defaults to its
-    #   current flagship reasoner (checked 2026-10-28).
+    #   current flagship reasoner (rechecked 2026-11-02; unchanged since
+    #   2026-10-28).
 
     has_openrouter = _openrouter_is_ready()
     provider_env = os.getenv("PRIMR_PROVIDER", "").strip().lower()
