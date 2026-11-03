@@ -60,7 +60,7 @@ REPORT_SYSTEM_PROMPT = (
     "- CONFIDENCE RESET per section: don't inherit confidence from prior sections\n"
     "- NARRATIVE CEILING: don't escalate stakes. 'Opportunity' stays 'opportunity', "
     "not 'transformational opportunity'. Keep scope realistic.\n"
-    "- NUMERIC PRECISION: ranges for estimates ('$800M-$1.2B'), note source/date\n"
+    "- NUMERIC PRECISION: keep a disclosed or reported figure. A range is only for an estimate, with the method and source.\n"
     "- AVOID OVERREACH: don't claim inside knowledge of board decisions, precise "
     "market share in opaque markets, or causal certainty\n"
     "- REASON UNDER CONSTRAINT: if company-specific evidence is thin, still produce deep strategic analysis by combining "

@@ -268,6 +268,8 @@ class TestChainAndMetrics:
         assert "Frame every major claim as a hypothesis" not in REPORT_SYSTEM_PROMPT
         assert "Use wide ranges" not in REPORT_SYSTEM_PROMPT
         assert "most recent disclosed figures" in REPORT_SYSTEM_PROMPT
+        assert "A range is only for an estimate" in REPORT_SYSTEM_PROMPT
+        assert "$800M-$1.2B" not in REPORT_SYSTEM_PROMPT
 
     def test_writing_model_threaded(self, seams):
         _call(seams, grok_writing="special-writer")

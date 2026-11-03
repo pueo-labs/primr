@@ -86,11 +86,14 @@ epistemic_rules:
     "revolutionary", "paradigm shift", or "industry-defining" as the specific
     consequence for this company.
   numeric_precision: |
-    For numbers not directly from filings or official sources:
-    - Use ranges: "$800M-$1.2B" not "$1B"
-    - Soften phrasing: "reported," "management commentary suggests," "estimated at"
-    - Note the source and date: "(per industry reports, Q3 2024)"
-    This protects credibility if challenged. Overconfident precision undermines trust.
+    State a disclosed or reported figure as given, with its period and source.
+    Do not replace that figure with a wide band.
+    Use a range only for a genuine estimate, and state the method:
+    - Filing or company figure: "$1.03B revenue, FY2025 10-K"
+    - Reported figure: "$1B revenue (Reported, industry note, Sept 2025)"
+    - Estimate: "$800M-$1.2B (Estimated from headcount and peer revenue per employee)"
+    A sourced point figure is more precise than a band. An unsourced precise
+    figure is not. Say "Not publicly disclosed" when nothing credible exists.
   measurement_uncertainty: |
     For impacts that are necessarily speculative (conversion rates, attribution, ROI projections),
     explicitly acknowledge measurement uncertainty: "If tracking exists...", "Absent strong 
@@ -193,10 +196,12 @@ sections:
       - "Current valuation (if known)"
       - "Capital structure and debt profile"
     depth: |
-      REQUIRED: Include a financial summary table with columns for Metric, Value, 
-      Source, and Confidence Level. If public financials unavailable, estimate 
-      using employee count, funding rounds, and market signals. Always note 
-      confidence level for each data point.
+      REQUIRED: Include a financial summary table with columns for Metric, Value,
+      Source, and Confidence Level. State a disclosed or reported figure directly,
+      with its period and source. Do not replace a disclosed or reported figure with a wide band.
+      Estimate from employee count, funding, or market signals
+      only when nothing is disclosed, and label that estimate. Note the confidence
+      level for each data point.
 
   - id: company_history
     name: "Company History and Evolution"
@@ -596,6 +601,7 @@ accordion_method:
     OUTPUT FORMAT: Detailed markdown notes organized by section above.
     Include specific numbers, dates, and citations for every fact.
     Note confidence levels (confirmed/estimated/unclear) for key figures.
+    Keep a disclosed or reported figure as stated. Use a range only for an estimate.
     Do NOT write polished prose - this is raw research material.
 
   # Phase 2: Section Writing prompt template
@@ -683,8 +689,9 @@ accordion_method:
     - "Integration debt may be limiting R&D velocity (Hypothesis)"
     
     NUMERIC PRECISION:
-    - For numbers from filings/official sources: state directly with source
-    - For estimates: use ranges ("$800M-$1.2B") and note source
+    - State a disclosed or reported figure directly, with period and source
+    - Do not replace that figure with a wide band
+    - Use a range only for a genuine estimate, and state the method
     - For speculative impacts: acknowledge measurement uncertainty explicitly
     
     AVOID OVERREACH:
@@ -704,11 +711,12 @@ accordion_method:
     GOOD:
     - "NIM of 2.46% versus the named peer at 3.19% (Confirmed, Q3 filings) is a pricing constraint in the core book"
     - "The distribution partnership may be a pivot toward fee income (Hypothesis). Validate the mix shift in conversation."
-    - "Revenue estimated at $800M-$1.2B (Reported - industry sources vary)"
+    - "Revenue of $1.03B (Confirmed, FY2025 10-K). A separate industry note near $1B agrees (Reported, Sept 2025)."
     
     NOT THIS:
     - "They must improve their margins" (too prescriptive)
-    - "Revenue is exactly $1.03B" (false precision without source)
+    - "Revenue is exactly $1.03B" (a precise figure with no source)
+    - "Revenue is $800M-$1.2B (Reported)" when a filing states $1.03B
     - "The board has decided to prioritize X" (claiming inside knowledge)
     
     Use natural section titles (not numbered). Cite sources with [cite: X] format.

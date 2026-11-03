@@ -443,7 +443,7 @@ RULES:
 - Do NOT delete, summarize, or condense any sections, paragraphs, or content
 - Make ONLY surgical edits to the specific contradictory values/numbers
 - Do NOT rewrite prose; change only the conflicting data points
-- When evidence is ambiguous, use the most conservative estimate with a range
+- When sources disagree and neither is a filing, keep the more conservative labeled estimate. Do not replace a filing figure with a band.
 - Add "(Estimated)" or "(Reported)" labels to standardized values
 - Preserve all ## headings, [cite: N] references, and structure
 - Output MUST contain at least 98% of the original word count

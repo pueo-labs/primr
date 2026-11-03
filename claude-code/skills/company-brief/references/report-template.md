@@ -1,6 +1,6 @@
 # Company brief template (lite primr method)
 
-Target length: 2,000-5,000 words depending on signal. Every section that makes a non-obvious claim labels it and cites it. Keep references numbered inline in the house format `[cite: N]` with one consolidated `## Sources` list at the end (`[cite: N] Title — URL`); do not scatter full URLs through the body.
+Target length: 2,000-5,000 words depending on signal. Cite the claims the brief relies on. Label a load-bearing fact, and write the analysis directly. Keep references numbered inline in the house format `[cite: N]` with one consolidated `## Sources` list at the end (`[cite: N] Title - URL`); do not scatter full URLs through the body.
 
 ---
 
@@ -39,7 +39,7 @@ Current posting count and mix, the 3-5 most telling roles, repeated technology m
 
 ## 8. Financial Indicators
 
-Public: latest reported revenue/margin direction with filing citation. Private: funding history, investor names, and any credible revenue reporting, all labeled. If nothing credible exists, one honest sentence beats three speculative ones.
+State the most recent disclosed or reported revenue, margin, or funding figure with its period and source. Use a range only for a genuine estimate, and name the method. Do not replace a sourced figure with a wide band. If nothing credible exists, one sentence that says so is the section.
 
 ## 9. Strategic Initiatives and Momentum
 
