@@ -35,6 +35,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Living roadmap text that still called the current hybrid default Grok 4.3
+  now names Grok 4.7 with Gemini 3.5 Flash-Lite writing. The continuous-reasoning
+  pilot numbers stay attributed to the Grok 4.3 run that produced them. The
+  design principle now matches the shipped Overview voice: label a load-bearing
+  fact, label a non-fact Hypothesis, and do not hedge every sentence.
+- A 2026-11-02 catalog recheck found no newer generally available flagship and
+  no price change on the default routes. xAI still lists Grok 4.7 at $2/$6 per
+  million tokens ($0.50 cached; $4/$12 at or above 200k).
+  `grok-4.20-non-reasoning` remains the alias of the dated non-reasoning model.
+  Gemini 4 Argon still steps up on 2026-12-01, and Gemini 3.8 Flash on
+  2027-01-01.
 - Strategic Overview sections are longer and build on each other. Section
   word floors rise from 1,200 and 800 to 1,500 and 1,000 words (about 25,500
   words, or 50+ pages, across the default 23 sections), with output limits

@@ -418,7 +418,7 @@ from run history.
 - Provider-aware fallback chain: WRITING/UTILITY prefer GEMINI > OPENAI > ANTHROPIC > XAI; REASONING prefers XAI (cached) > GEMINI > OPENAI > ANTHROPIC
 - Cross-provider dispatch in `grok_llm` and `llm()` so writing-tier calls reach the right provider when the resolved model is non-Grok
 - Quota-aware `ModelCircuitBreaker.execute_with_fallback()` with midnight-UTC reset (callable; production call-site integration still pending - see queue below)
-- Continuous reasoning session is the default: workbook generation and cross-validation share a single Grok 4.3 session so the validator inherits corpus + workbook reasoning. ~81% reduction in leaked-instruction lines, average ~+12% cost. Escape hatch: `--no-continuous-reasoning` or `PRIMR_CONTINUOUS_REASONING=0`.
+- Continuous reasoning is the default: workbook generation and cross-validation share one session on the tier's reasoning model (Grok 4.7 by default) so the validator inherits the corpus and workbook reasoning. The n=3 pilot, run on Grok 4.3, measured about 81 percent fewer leaked-instruction lines at about 12 percent higher cost. Escape hatch: `--no-continuous-reasoning` or `PRIMR_CONTINUOUS_REASONING=0`.
 - Known runtime gap: provider/routing and dry-run estimates cover OpenAI-only and Anthropic-only configurations, but the main full-report preflight and continuous-reasoning session still assume the xAI/Gemini-era execution path. Full no-xAI report execution remains in backlog item #26 / Backend Freedom rather than being claimed as shipped.
 - **Planned, not urgent: broad model coverage + estimate-vs-actual evals.** The
   seven-provider transport can *reach* any of these services; filling in the model
@@ -527,7 +527,7 @@ from run history.
 ## Design Philosophy
 
 - Strategic analysis over raw data - deep outputs you can act on, not link dumps
-- Hypothesis generation over premature conclusions - confidence levels on every claim
+- Distinguish evidence, inference, and hypothesis. Label a load-bearing fact, and label a non-fact Hypothesis. Write the analysis directly, without a hedge or a confidence label on every sentence.
 - Transparency about uncertainty - what's confirmed, what's inferred, what's speculation
 - Epistemic separation before prose - captured evidence, source-grounded findings, strategic inferences, and testable hypotheses remain distinct even when the final report reads as one argument
 - Deterministic verification before AI judgment - check structure, citations, and epistemic labels with code before asking a model to score prose quality
@@ -605,7 +605,7 @@ The job is "URL in, consultant-grade artifact out," done well.
 
 | Version | Exit criteria (must hold before the next band) |
 |---------|--------------------------------------------------|
-| **1.39.x** | Current: hybrid default Grok 4.3, governed OpenRouter preview, truthful dry-run and budget decisions, Python 3.15 preview containment, Primr Zero front door, and one-way stage ownership. |
+| **1.39.x** | Current: hybrid default Grok 4.7 with Gemini 3.5 Flash-Lite writing, governed OpenRouter preview, truthful dry-run and budget decisions, Python 3.11 through 3.15, Primr Zero front door, and one-way stage ownership. |
 | **1.40** | Strategic Overview visibly deeper and better for the bare company-and-website run (50+ pages, every section adding depth), confirmed by side by side reads; claim-label checks stay diagnostic. |
 | **1.41** | Every listed strategy complete, role-agnostic, and 30+ pages, AI Strategy first; placeholders finished or clearly marked. |
 | **1.42** | Skill packs specific to the company's roles and tied to its strategy. |
@@ -1958,7 +1958,7 @@ Three execution profiles:
 - `--inference hybrid`: local for high-volume/low-complexity stages, cloud for deep research and trust-critical synthesis - the sweet spot for most users with a GPU
 - `--inference local`: all compatible stages on local inference, $0 API cost, runtime and quality measured per hardware profile
 
-Stage routing hypothesis (validated by eval, not assumed):
+Stage routing hypothesis (validated by eval, not assumed). The cloud column is the v1.24-era hypothesis. The live cloud default is Grok 4.7 reasoning with Gemini 3.5 Flash-Lite writing.
 
 | Stage | Local (RTX 4090) | Hybrid | Cloud |
 |---|---|---|---|

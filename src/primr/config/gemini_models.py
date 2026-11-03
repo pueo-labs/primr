@@ -78,13 +78,9 @@ def build_gemini_models() -> dict[str, ModelConfig]:
     )
 
     # GEMINI 3.5 FLASH-LITE - Successor to 3.1 Flash-Lite (GA July 21, 2026)
-    # USE FOR: bulk writing / utility. Outperforms 3.1 Flash-Lite and exceeds
-    # Gemini 3 Flash on several benchmarks (SWE-Bench Pro 54.2% vs 49.6%,
-    # OSWorld-Verified 74.0% vs 65.1%); ~350 output tokens/sec.
-    # $0.30 input / $2.50 output per 1M tokens. Context: 1M, Output: 65k.
-    # Registered as AVAILABLE; NOT a default. Output is dearer than
-    # gemini-3.1-flash-lite ($1.50), so a writing-tier repoint is eval-gated.
-    # Standard cached input is $0.03 per 1M tokens.
+    # USE FOR: the Gemini writing default. Utility stays on Gemini 3.8 Flash.
+    # $0.30 input / $2.50 output per 1M tokens. Cached input $0.03.
+    # Context: 1M, Output: 65k. Rechecked 2026-11-02.
     models["GEMINI_3_5_FLASH_LITE"] = ModelConfig(
         name="gemini-3.5-flash-lite",
         display_name="Gemini 3.5 Flash-Lite",
