@@ -13,12 +13,13 @@ Be honest with the user about the trade: this is the lite method. The full primr
 ## Ground rules (read first, apply throughout)
 
 1. **Never fabricate.** Every factual claim in the brief comes from something you fetched or a search result you can cite. If you cannot source it, either label it as inference or leave it out.
-2. **Confidence labels on non-obvious claims**, using primr's vocabulary exactly:
+2. **Label a load-bearing fact, and write the analysis directly.** Use primr's vocabulary on the fact, not on every sentence:
    - `(Confirmed)` - stated by a primary source or by two independent third-party sources
    - `(Reported)` - stated by one third-party source (news, analyst, review site)
    - `(Estimated)` - your inference from evidence, e.g. headcount from posting volume; say what it is triangulated from
    - `(Hypothesis)` - a plausible reading of weak signals, framed as something to validate, never as fact
-3. **Number your citations in the house format.** Mark citations inline as `[cite: 1]`, `[cite: 2]`; list the full URLs under a `## Sources` heading at the end as `[cite: N] Title — URL`. A bare inline `[1]` is not the scored format.
+   A claim that is not a fact, and that the brief relies on, is a labeled Hypothesis. Do not hedge every sentence.
+3. **Number your citations in the house format.** Mark citations inline as `[cite: 1]`, `[cite: 2]`; list the full URLs under a `## Sources` heading at the end as `[cite: N] Title - URL`. A bare inline `[1]` is not the scored format.
 4. **Note absences.** What a company does not publish (no pricing page, no leadership page, no engineering blog) is itself a signal; say so rather than padding.
 5. **Thin signal = thin brief.** If the company has a four-page website and no postings, deliver a short honest brief plus a list of what could not be determined. Do not inflate.
 
@@ -78,7 +79,8 @@ Cross-check: when a third-party claim contradicts the company's own framing, kee
 
 Use the template in `references/report-template.md` (about 12 sections). Rules that make it primr-like rather than a generic summary:
 
-- Lead the executive summary with a position statement (what they are, for whom, against whom) plus 3-5 key insights, each labeled and cited.
+- Lead the executive summary with a position statement (what they are, for whom, against whom) plus 3-5 key insights, each cited. Label a load-bearing fact. Do not label every sentence.
+- State a disclosed or reported financial figure with its period and source. Use a range only for a genuine estimate, and say how you made it. Do not widen a sourced figure into a band. If nothing credible exists, say it is not publicly disclosed.
 - The Tech Stack section triangulates Phase 1 (DNS) + Phase 3 (postings) + site claims; distinguish observed infrastructure from marketed capability.
 - SWOT entries must each carry a citation or a label; an unsourced SWOT bullet is filler.
 - Hypotheses Worth Testing: 2-4 non-obvious, falsifiable readings of the evidence, each with the validation question that would confirm or kill it.

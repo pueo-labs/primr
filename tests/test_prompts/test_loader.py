@@ -608,6 +608,9 @@ class TestYAMLLoadingRoundTrip:
         assert "Frame explicitly as a hypothesis" not in prompt
         assert "Frame all executive perspectives as hypotheses" not in prompt
         assert "Hypothesis-driven approach" not in prompt
+        assert "Do not replace that figure with a wide band." in prompt
+        assert '"$800M-$1.2B" not "$1B"' not in prompt
+        assert "Soften phrasing" not in prompt
 
     def test_all_formatting_rules_appear_in_output(self):
         """

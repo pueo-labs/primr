@@ -129,7 +129,10 @@ standard writer, the fast-mode system prompt, and the deep-research overview
 prompts (higher section floors, build-don't-restate, disclosed financial
 anchors, load-bearing labels, no stray scaffolding, and one analytical voice).
 The composed overview selects its own persona, and the section briefs use that
-same voice. Strategy prompts are unchanged. These steps are unreleased until
+same voice. Strategy prompts are unchanged. A follow-through on 2026-11-03
+stops the composed overview, the fast trust polish, and the company-brief
+example from replacing a disclosed or reported figure with a wide band.
+These steps are unreleased until
 step 5 compares outputs side by side. That comparison needs an approved,
 capped paid run because the Standard writer is provider-backed. Frozen
 evidence can avoid a new collection, and it does not make the rewrite free.

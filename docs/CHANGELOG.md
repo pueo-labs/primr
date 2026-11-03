@@ -35,6 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Disclosed and reported figures stay as stated. The composed overview, the
+  fast-mode system prompt, the fast trust polish, and the contradiction edit
+  use a range only for a genuine estimate and say how it was made. The
+  company-brief skill, which agents copy when they cannot run the pipeline,
+  follows the same rule and the same analytical voice.
 - Living roadmap text that still called the current hybrid default Grok 4.3
   now names Grok 4.7 with Gemini 3.5 Flash-Lite writing. The continuous-reasoning
   pilot numbers stay attributed to the Grok 4.3 run that produced them. The

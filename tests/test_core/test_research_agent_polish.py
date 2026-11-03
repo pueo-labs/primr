@@ -113,3 +113,7 @@ class TestPolishFastReportForTrust:
         set_breaker_for_test(None)
         kwargs = mock.call_args.kwargs
         assert kwargs["model"] == "grok-4.3"
+        prompt = mock.call_args.args[0]
+        assert "Keep a disclosed or reported figure." in prompt
+        assert "Do not put a confidence label on every sentence" in prompt
+        assert "low-confidence qualitative ranges" not in prompt

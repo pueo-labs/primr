@@ -271,6 +271,8 @@ class TestContradictions:
         result = _call(seams)
         assert result.unresolved_contradictions == 0
         assert result.report_content.endswith("resolved")
+        prompt = seams["resolver"].call_args.args[1]
+        assert "Do not replace a filing figure with a band." in prompt
 
     def test_structure_guard_keeps_original(self, seams, monkeypatch):
         self._contradict(seams)

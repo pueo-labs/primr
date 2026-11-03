@@ -1129,7 +1129,7 @@ def _polish_fast_report_for_trust(
 
     Goals:
     - keep prose readable and concise
-    - ensure confidence labels are present on non-obvious claims
+    - label load-bearing facts, not every interpretive sentence
     - improve citation discipline while keeping citations compact
     - preserve section structure and core meaning
     """
@@ -1156,13 +1156,13 @@ Rules:
 1. Preserve the report structure and section headings.
 2. Keep prose readable for executives; do not overstuff citations inline.
 3. Use compact inline citations only as [cite: N].
-4. Ensure non-obvious claims include confidence labels:
+4. Label a load-bearing fact. Do not put a confidence label on every sentence:
    (Confirmed), (Reported), (Estimated), or (Hypothesis).
 5. Add/retain a single "## Sources" section at the end only.
 6. Do NOT invent sources. Only use these source URLs:
 {source_block}
-7. Replace any unsupported numeric precision with cautious language:
-   "Not publicly disclosed" or low-confidence qualitative ranges.
+7. Keep a disclosed or reported figure. Replace only an unsourced precise number
+   with "Not publicly disclosed" or a labeled estimate that states its method.
 8. Remove repeated or contradictory claims; prefer one clear statement with
    the best available evidence and confidence tag.
 9. Ensure each section ends with "What to validate:" and one concrete check.
