@@ -21,7 +21,7 @@ only the separately absent batch slugs retain their previously published dates.
 
 from collections.abc import Callable
 from datetime import date
-from typing import Any, TypeVar, cast
+from typing import Any, TypeVar
 
 _ModelConfig = TypeVar("_ModelConfig")
 OPENROUTER_EXPIRATIONS = dict.fromkeys(
@@ -644,7 +644,7 @@ def build_openrouter_models(
         "anthropic/claude-fable-5.1": "anthropic/claude-fable-5.2",
     }
     for model in models:
-        row = cast("Any", model)
+        row: Any = model
         replacement = superseded.get(row.name)
         if replacement is not None and row.available:
             row.available = False
