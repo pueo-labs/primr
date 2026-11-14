@@ -3,7 +3,30 @@
 Decision record for which models Primr uses by default, why each tier stays
 version-pinned, and how the defaults move when providers ship new models.
 
-## Decision update (2026-10-28, supersedes the binding decision below)
+## Decision update (2026-11-14)
+
+The project owner directed that no superseded model is selectable. Every
+xAI tier uses `grok-4.7`, including writing and the xAI-only utility path.
+Gemini Pro uses `gemini-4-carbon`, Google's strongest Gemini 4 model
+(checked 2026-11-14), not Gemini 4 Argon and not the cheaper
+`gemini-2.5-pro` auto-route target `gemini-3.8-flash`. Flash stays
+`gemini-3.8-flash`. Lite stays `gemini-3.5-flash-lite`. OpenAI selections
+use `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6.1-terra`, or `gpt-6-luna`.
+Anthropic selections use `claude-fable-5-2`, `claude-opus-5-5`,
+`claude-sonnet-5-5`, or `claude-haiku-5-5`. Opt-in OpenAI images use
+`gpt-image-2.6-flare`.
+
+Superseded registry rows stay so historical quotes still resolve. New
+requests for those ids are rejected. Embeddings were not swapped.
+`deep-research-preview-04-2026` has no named current replacement in the
+catalogs checked on this date, so that row is unchanged.
+
+xAI rates checked at https://docs.x.ai/developers/pricing on 2026-11-14:
+`grok-4.7` is $2 input, $0.50 cached input, and $6 output per 1M tokens
+below 200k prompt tokens, and $4, $1, and $12 at or above 200k. The
+analysis fallback chain no longer inserts `grok-4.3` after `grok-4.7`.
+
+## Decision update (2026-10-28, previous flagship table)
 
 The project owner directed that defaults track each provider's current
 flagship instead of waiting for a paid quality comparison per release. This is

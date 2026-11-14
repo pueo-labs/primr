@@ -554,7 +554,7 @@ class TestAPIConnectivity:
         # Simple test call
         try:
             response = client.models.generate_content(
-                model="gemini-3-flash-preview",
+                model="gemini-3.8-flash",
                 contents="Say 'API test successful' and nothing else.",
             )
         except Exception as e:

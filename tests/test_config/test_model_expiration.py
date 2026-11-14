@@ -43,7 +43,7 @@ def test_expired_gateway_model_fails_before_transport(monkeypatch, day):
     monkeypatch.setenv("PRIMR_OPENROUTER_ENABLED", "1")
     provider = OpenRouterProvider()
     provider._client = MagicMock()
-    with pytest.raises(ValueError, match=r"expired on 2026-10-20.*3\.1-flash-lite"):
+    with pytest.raises(ValueError, match=r"unavailable.*gemini-3\.5-flash-lite"):
         provider.chat([], model="google/gemini-2.5-flash-lite")
     provider._client.chat.completions.create.assert_not_called()
 
@@ -51,7 +51,8 @@ def test_expired_gateway_model_fails_before_transport(monkeypatch, day):
 def test_retirement_boundary_keeps_old_costs_and_direct_api_available():
     historical = ModelRegistry.OPENROUTER_MODELS[0]
     assert historical is ModelRegistry.OPENROUTER_GEMINI_2_5_FLASH_LITE
-    historical.require_available(date(2026, 10, 19))
+    with pytest.raises(ValueError, match="unavailable"):
+        historical.require_available(date(2026, 10, 19))
     with pytest.raises(ValueError, match="Re-estimate"):
         historical.require_available(date(2026, 10, 20))
     assert PrimrModels.calculate_cost(historical.name, 1_000_000, 1_000_000) == 0.5
@@ -59,7 +60,9 @@ def test_retirement_boundary_keeps_old_costs_and_direct_api_available():
         config = PrimrModels.get_model_config(name)
         assert config is not None
         assert not config.deprecated
-        config.require_available(date(2026, 10, 21))
+        assert config.available is False
+        with pytest.raises(ValueError, match="unavailable"):
+            config.require_available(date(2026, 10, 21))
 
 
 @pytest.mark.parametrize(
@@ -71,10 +74,10 @@ def test_role_overrides_reject_retirement_without_silent_replacement(monkeypatch
     monkeypatch.setenv("OPENROUTER_API_KEY", "fake-test-key")
     monkeypatch.setenv("PRIMR_PROVIDER", "openrouter")
     monkeypatch.setenv(f"PRIMR_OPENROUTER_{variable}_MODEL", "google/gemini-2.5-flash-lite")
-    with pytest.raises(ValueError, match="expired on"):
+    with pytest.raises(ValueError, match=r"unavailable|expired on"):
         pick_model_for_role(role)
-    monkeypatch.setenv(f"PRIMR_OPENROUTER_{variable}_MODEL", "google/gemini-3.1-flash-lite")
-    assert pick_model_for_role(role) == "google/gemini-3.1-flash-lite"
+    monkeypatch.setenv(f"PRIMR_OPENROUTER_{variable}_MODEL", "google/gemini-3.5-flash-lite")
+    assert pick_model_for_role(role) == "google/gemini-3.5-flash-lite"
 
 
 @pytest.mark.parametrize(
@@ -94,11 +97,11 @@ def test_global_override_cannot_bypass_expiration_with_custom_prices(monkeypatch
     monkeypatch.setenv("PRIMR_OPENROUTER_MODEL", name)
     monkeypatch.setenv("PRIMR_OPENROUTER_INPUT_PRICE", "1")
     monkeypatch.setenv("PRIMR_OPENROUTER_OUTPUT_PRICE", "1")
-    with pytest.raises(ValueError, match="expired on"):
+    with pytest.raises(ValueError, match=r"unavailable|expired on"):
         pick_model_for_role(Role.UTILITY)
     provider = OpenRouterProvider()
     provider._client = MagicMock()
-    with pytest.raises(ValueError, match="expired on"):
+    with pytest.raises(ValueError, match=r"unavailable|expired on"):
         provider.chat([], model=name)
     provider._client.chat.completions.create.assert_not_called()
 
@@ -153,8 +156,8 @@ def test_direct_runtime_routes_honor_generic_and_role_specific_overrides(monkeyp
         (Role.REASONING, "REASONING"),
         (Role.PRO, "REASONING"),
     ):
-        monkeypatch.setenv(f"PRIMR_GEMINI_{variable}_MODEL", "gemini-3.7-flash")
-        assert pick_model_for_role(role) == "gemini-3.7-flash"
+        monkeypatch.setenv(f"PRIMR_GEMINI_{variable}_MODEL", "gemini-4-carbon")
+        assert pick_model_for_role(role) == "gemini-4-carbon"
 
 
 def test_sdk_wire_model_cannot_bypass_retirement_checks(monkeypatch):
@@ -194,14 +197,14 @@ def test_sdk_wire_model_cannot_bypass_retirement_checks(monkeypatch):
             {"models": ["google/gemini-2.5-flash-lite"]},
         ):
             with pytest.raises(ValueError, match="cannot override model or models"):
-                provider.chat([], model="google/gemini-3.1-flash-lite", extra_body=extra)
+                provider.chat([], model="google/gemini-3.5-flash-lite", extra_body=extra)
         assert not requests
         provider.chat(
             [{"role": "user", "content": "test"}],
-            model="google/gemini-3.1-flash-lite",
+            model="google/gemini-3.5-flash-lite",
             extra_body={"user": "fixture"},
         )
     assert len(requests) == 1
-    assert requests[0]["model"] == "google/gemini-3.1-flash-lite"
+    assert requests[0]["model"] == "google/gemini-3.5-flash-lite"
     assert requests[0]["user"] == "fixture"
-    assert requests[0]["provider"]["max_price"] == {"prompt": 0.25, "completion": 1.5}
+    assert requests[0]["provider"]["max_price"] == {"prompt": 0.3, "completion": 2.5}

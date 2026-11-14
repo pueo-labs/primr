@@ -84,7 +84,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   keep the $0.20/$0.50 list price. Opt-in OpenAI icon generation requests
   `gpt-image-2.6-flare`. From 2026-12-01, quotes for `gemini-2.5-pro` and
   `gemini-2.5-flash` follow `gemini-3.8-flash` and `gemini-3.5-flash-lite`.
-  Those Gemini ids stay selectable.
+  Live defaults now use only current model ids: every xAI tier uses
+  `grok-4.7`, Gemini Pro uses `gemini-4-carbon`, Flash uses
+  `gemini-3.8-flash`, Flash-Lite uses `gemini-3.5-flash-lite`, OpenAI uses
+  `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-luna`, or `gpt-6-astra`, and
+  Anthropic uses `claude-fable-5-2`, `claude-opus-5-5`, `claude-sonnet-5-5`,
+  or `claude-haiku-5-5`. Superseded ids stay registered for historical
+  quotes and are not selectable.
 - The Strategic Overview voice now covers the fast-mode system prompt, the
   composed overview persona, and the section briefs. Those paths no longer
   tell the writer to treat every claim as a hypothesis or to hedge wins,

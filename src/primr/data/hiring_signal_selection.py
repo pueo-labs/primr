@@ -128,7 +128,7 @@ Postings:
     try:
         raw = grok_llm(
             prompt,
-            model=model or "grok-4.20-non-reasoning",
+            model=model or "grok-4.7",
             temperature=0.2,
             max_tokens=1_500,
             retries=1,

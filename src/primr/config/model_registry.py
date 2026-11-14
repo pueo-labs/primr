@@ -15,7 +15,7 @@ from primr.config.openrouter_models import build_openrouter_models
 class GrokTier(str, Enum):
     """Grok model tier — controls quality/cost tradeoff in fast mode."""
 
-    FAST = "fast"  # 4.3 (reasoning_effort=low) + 4.20-nr (~$5.09 xAI-only base)
+    FAST = "fast"  # grok-4.7 (reasoning_effort=low) + grok-4.7
     HYBRID = "hybrid"  # 4.3 + 4.20-nr (~$5.09 xAI-only base) - DEFAULT
     MAX = "max"  # 4.5 evaluated pin; 4.6 is registered but promotion is eval-gated
 
@@ -43,6 +43,7 @@ _OPENROUTER_MODELS = build_openrouter_models(ModelConfig)
 class ModelRegistry:
     """Registry of available and historical model configurations."""
 
+    GEMINI_4_CARBON = _GEMINI_MODELS["GEMINI_4_CARBON"]
     GEMINI_4_ARGON = _GEMINI_MODELS["GEMINI_4_ARGON"]
     GEMINI_NANO_BANANA_2_1 = _GEMINI_MODELS["GEMINI_NANO_BANANA_2_1"]
     GEMINI_3_PRO_IMAGE_STABLE = _GEMINI_MODELS["GEMINI_3_PRO_IMAGE_STABLE"]
@@ -126,9 +127,11 @@ class ModelRegistry:
         cost_per_1m_input_tokens_cached=0.20,
         cost_per_1m_input_tokens_cached_high=0.40,
         tier_threshold_inclusive=True,
+        available=False,
+        replacement_model="grok-4.7",
     )
 
-    # GROK 4.5 - xAI previous flagship (released 2026-07; coding/agentic focus)
+    # GROK 4.5 - previous xAI flagship. Kept for historical quotes.
     # USE FOR: Opt-in MAX tier (`--grok-tier max`). Not the hybrid default —
     # ~2x input / ~2.4x output vs 4.3 and 500k context (vs 1M on 4.3).
     # Pricing (docs.x.ai, Aug 2026): $2.00/$6.00 below 200k; $4.00/$12.00 at
@@ -152,6 +155,8 @@ class ModelRegistry:
         cost_per_1m_input_tokens_cached=0.30,
         cost_per_1m_input_tokens_cached_high=0.60,
         tier_threshold_inclusive=True,
+        available=False,
+        replacement_model="grok-4.7",
     )
 
     # GROK 4.6 - previous xAI flagship (released 2026-08-12)
@@ -178,13 +183,21 @@ class ModelRegistry:
         cost_per_1m_input_tokens_cached=0.50,
         cost_per_1m_input_tokens_cached_high=1.00,
         tier_threshold_inclusive=True,
+        available=False,
+        replacement_model="grok-4.7",
     )
 
     # GROK 4.7 - xAI current flagship (docs.x.ai/developers/pricing, 2026-11-14)
     # USE FOR: Default reasoning in every tier. $2.00 / $0.50 cached / $6.00
     # below 200k prompt tokens; $4.00 / $1.00 cached / $12.00 at or above 200k.
     # Context: 500k. reasoning_effort low/medium/high/xhigh (default high).
-    GROK_4_7 = replace(GROK_4_6, name="grok-4.7", display_name="Grok 4.7")
+    GROK_4_7 = replace(
+        GROK_4_6,
+        name="grok-4.7",
+        display_name="Grok 4.7",
+        available=True,
+        replacement_model=None,
+    )
 
     # GROK 4.20 REASONING - dated canonical ID retained for compatibility
     # Pricing: $1.25/$0.20 cached/$2.50 below 200k prompt tokens;
@@ -206,6 +219,8 @@ class ModelRegistry:
         cost_per_1m_input_tokens_cached=0.20,
         cost_per_1m_input_tokens_cached_high=0.40,
         tier_threshold_inclusive=True,
+        available=False,
+        replacement_model="grok-4.7",
     )
 
     GROK_4_20 = replace(
@@ -216,7 +231,7 @@ class ModelRegistry:
 
     # GROK 4.20 NON-REASONING - dated canonical ID retained for compatibility
     # ⚠️  LEGACY — kept only for resume of in-flight runs started before v1.23.
-    # DO NOT USE in new code. Use GROK_4_20_NR_NEW ("grok-4.20-non-reasoning").
+    # Historical id. New requests use grok-4.7.
     GROK_4_20_NR = replace(
         GROK_4_20_REASONING,
         name="grok-4.20-0309-non-reasoning",
@@ -277,6 +292,7 @@ class ModelRegistry:
     )
 
     # Direct Anthropic records preserve the evaluated routing constants.
+    ANTHROPIC_FABLE_5_2 = _ANTHROPIC_MODELS["ANTHROPIC_FABLE_5_2"]
     ANTHROPIC_FABLE_5_1 = _ANTHROPIC_MODELS["ANTHROPIC_FABLE_5_1"]
     ANTHROPIC_OPUS_5_5 = _ANTHROPIC_MODELS["ANTHROPIC_OPUS_5_5"]
     ANTHROPIC_SONNET_5_5 = _ANTHROPIC_MODELS["ANTHROPIC_SONNET_5_5"]
@@ -524,7 +540,7 @@ class ModelRegistry:
 # Runtime defaults live with the registry data so settings and pricing can
 # depend on one leaf module without depending on each other.
 DEFAULT_FLASH_MODEL = ModelRegistry.GEMINI_3_8_FLASH.name
-DEFAULT_PRO_MODEL = ModelRegistry.GEMINI_4_ARGON.name
+DEFAULT_PRO_MODEL = ModelRegistry.GEMINI_4_CARBON.name
 
 # Retired Grok 4.1 Fast ids. The stored rows keep the historical list price.
 # Pricing on or after retirement follows grok-4.7 so a current quote does not

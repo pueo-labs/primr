@@ -327,9 +327,9 @@ flip as confirmed. If the eval shows regression, revert the
 
 - The published inclusive >=200k tier is represented in the registry and cost
   tests.
-- Hybrid writing uses the current `grok-4.20-non-reasoning` alias when Gemini
-  is unavailable. With Gemini configured, routed Flash-Lite writing remains
-  the measured lower-cost path.
+- Every xAI tier, including writing when Gemini is unavailable, uses
+  `grok-4.7`. With Gemini configured, routed Flash-Lite writing remains
+  `gemini-3.5-flash-lite`. Gemini Pro uses `gemini-4-carbon`.
 - The Responses adapters normalize cached-input usage. xAI's
   `cost_in_usd_ticks` is the exact-cost authority when present; registry token
   pricing remains the conservative fallback.

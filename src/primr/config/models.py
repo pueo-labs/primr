@@ -183,7 +183,7 @@ class PrimrModels:
     # PRIMARY MODELS - UPDATE THESE TO CHANGE MODELS GLOBALLY
     # =========================================================================
     FLASH_MODEL = DEFAULT_FLASH_MODEL  # Gemini 3.8 Flash - $0.75/$3.75 per 1M
-    PRO_MODEL = DEFAULT_PRO_MODEL  # Gemini 4 Argon - $2/$10 per 1M
+    PRO_MODEL = DEFAULT_PRO_MODEL  # Gemini 4 Carbon - $2/$10 per 1M through 2026-11-30
     DEEP_RESEARCH_AGENT = ModelRegistry.DEEP_RESEARCH_AGENT  # Autonomous 12+ page reports
 
     # =========================================================================
@@ -233,9 +233,7 @@ class PrimrModels:
 
     # --- GROK MODELS (xAI - for fast mode) ---
     GROK_MODEL = ModelRegistry.GROK_4_7.name  # 4.7 flagship, reasoning in every tier
-    GROK_MODEL_WRITING = (
-        ModelRegistry.GROK_4_20_NR_NEW.name
-    )  # 4.20 non-reasoning, the current xAI non-reasoning model
+    GROK_MODEL_WRITING = ModelRegistry.GROK_4_7.name  # grok-4.7 for every xAI tier
     GROK_MODEL_43 = ModelRegistry.GROK_4_3.name  # 4.3, previous value default
     GROK_MODEL_45 = ModelRegistry.GROK_4_5.name  # 4.5, previous MAX-tier pin
     GROK_MODEL_46 = ModelRegistry.GROK_4_6.name  # 4.6, previous flagship
@@ -248,6 +246,7 @@ class PrimrModels:
     # Model registry for lookups
     ALL_MODELS = {
         # Google / Gemini
+        ModelRegistry.GEMINI_4_CARBON.name: ModelRegistry.GEMINI_4_CARBON,
         ModelRegistry.GEMINI_4_ARGON.name: ModelRegistry.GEMINI_4_ARGON,
         ModelRegistry.GEMINI_NANO_BANANA_2_1.name: ModelRegistry.GEMINI_NANO_BANANA_2_1,
         ModelRegistry.GEMINI_3_PRO_IMAGE_STABLE.name: ModelRegistry.GEMINI_3_PRO_IMAGE_STABLE,
@@ -322,9 +321,9 @@ class PrimrModels:
         """Return (reasoning_model, writing_model) for the given Grok tier.
 
         Tier mapping (October 2026):
-        FAST: grok-4.7 (reasoning_effort=low) + grok-4.20-non-reasoning
-        HYBRID: grok-4.7 + grok-4.20-non-reasoning  (default)
-        MAX: grok-4.7 + grok-4.7  (flagship writing too; higher cost, re-estimate)
+        FAST: grok-4.7 (reasoning_effort=low) + grok-4.7
+        HYBRID: grok-4.7 + grok-4.7  (default)
+        MAX: grok-4.7 + grok-4.7
 
         FAST and HYBRID use the same models; the difference is in
         reasoning_effort (low for FAST, default/high for HYBRID), handled by
@@ -394,11 +393,12 @@ class PrimrModels:
             ModelRegistry.OPENAI_GPT_6_1_SOL.name,
             ModelRegistry.OPENAI_GPT_6_1_TERRA.name,
             ModelRegistry.OPENAI_GPT_6_LUNA.name,
-            ModelRegistry.ANTHROPIC_FABLE_5_1.name,
+            ModelRegistry.ANTHROPIC_FABLE_5_2.name,
             ModelRegistry.ANTHROPIC_OPUS_5_5.name,
             ModelRegistry.ANTHROPIC_SONNET_5_5.name,
             ModelRegistry.ANTHROPIC_HAIKU_5_5.name,
             ModelRegistry.GROK_4_7.name,
+            ModelRegistry.GEMINI_4_CARBON.name,
             ModelRegistry.GEMINI_4_ARGON.name,
             ModelRegistry.GEMINI_3_8_FLASH.name,
             ModelRegistry.GEMINI_3_5_FLASH_LITE.name,

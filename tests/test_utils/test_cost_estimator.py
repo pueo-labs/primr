@@ -764,7 +764,7 @@ class TestGrokTier:
 
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.FAST)
         assert reasoning == "grok-4.7"
-        assert writing == "grok-4.20-non-reasoning"
+        assert writing == "grok-4.7"
 
     def test_get_grok_models_hybrid(self):
         """Hybrid tier returns same models as fast (difference is reasoning_effort)."""
@@ -772,7 +772,7 @@ class TestGrokTier:
 
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.HYBRID)
         assert reasoning == "grok-4.7"
-        assert writing == "grok-4.20-non-reasoning"
+        assert writing == "grok-4.7"
 
     def test_get_grok_models_max(self):
         """Max tier returns the version-pinned flagship Grok 4.7 pair."""
@@ -960,7 +960,7 @@ class TestGrokTier:
             "complete", fast_mode=True, use_historical=False, grok_tier="hybrid"
         )
         max_est = estimate_cost("complete", fast_mode=True, use_historical=False, grok_tier="max")
-        assert max_est.total_cost > hybrid_est.total_cost
+        assert max_est.total_cost == hybrid_est.total_cost
 
     def test_hybrid_cheaper_than_max_with_gemini(self, monkeypatch):
         """With GEMINI_API_KEY set, HYBRID routes writing to gemini-3.1-flash-lite
@@ -1011,7 +1011,7 @@ class TestGrokTier:
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
         monkeypatch.setenv("XAI_API_KEY", "fake-test-key")
         est = estimate_cost("complete", fast_mode=True, use_historical=False, grok_tier="fast")
-        assert est.total_cost == pytest.approx(5.235)
+        assert est.total_cost == pytest.approx(8.652)
 
     def test_hybrid_tier_cost_range_xai_only(self, monkeypatch):
         """Hybrid xAI-only uses the same model pair and static cost as fast."""
@@ -1020,7 +1020,7 @@ class TestGrokTier:
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
         monkeypatch.setenv("XAI_API_KEY", "fake-test-key")
         est = estimate_cost("complete", fast_mode=True, use_historical=False, grok_tier="hybrid")
-        assert est.total_cost == pytest.approx(5.235)
+        assert est.total_cost == pytest.approx(8.652)
 
     def test_hybrid_tier_cost_range_with_gemini(self, monkeypatch):
         """Hybrid tier with GEMINI_API_KEY set: writing uses the current Gemini

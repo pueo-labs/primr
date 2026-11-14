@@ -66,7 +66,7 @@ def build_gemini_models() -> dict[str, ModelConfig]:
         supports_multimodal=True,
         deprecated=True,
         expiration_date=date(2026, 3, 9),
-        replacement_model="gemini-3.1-pro-preview",
+        replacement_model="gemini-4-carbon",
     )
 
     # GEMINI 3.1 FLASH-LITE - GA May 7, 2026; shutdown May 7, 2027.
@@ -311,9 +311,25 @@ def build_gemini_models() -> dict[str, ModelConfig]:
         supports_multimodal=True,
         deprecated=True,
         expiration_date=date(2026, 6, 25),
-        replacement_model="gemini-3-pro-image",
+        replacement_model="gemini-nano-banana-2.1",
     )
 
+    # Strongest Gemini 4 model. Same introductory rates as Argon through
+    # 2026-11-30, then $4/$20 (Google model card, checked 2026-11-14).
+    models["GEMINI_4_CARBON"] = ModelConfig(
+        name="gemini-4-carbon",
+        display_name="Gemini 4 Carbon",
+        provider="google",
+        cost_per_1m_input_tokens=2.00,
+        cost_per_1m_output_tokens=10.00,
+        max_input_tokens=1_048_576,
+        max_output_tokens=65_536,
+        cost_per_1m_input_tokens_cached=0.10,
+        price_change_date=date(2026, 12, 1),
+        cost_per_1m_input_tokens_after=4.00,
+        cost_per_1m_output_tokens_after=20.00,
+        cost_per_1m_input_tokens_cached_after=0.20,
+    )
     models["GEMINI_4_ARGON"] = ModelConfig(
         name="gemini-4-argon",
         display_name="Gemini 4 Argon",
@@ -349,5 +365,25 @@ def build_gemini_models() -> dict[str, ModelConfig]:
         max_output_tokens=32_768,
         supports_tools=False,
     )
+
+    # Historical rows stay priced. New selections use the current id.
+    superseded = {
+        "gemini-3-flash-preview": "gemini-3.8-flash",
+        "gemini-3.1-flash-lite": "gemini-3.5-flash-lite",
+        "gemini-3.1-pro-preview": "gemini-4-carbon",
+        "gemini-3.1-pro-preview-customtools": "gemini-4-carbon",
+        "gemini-3.5-flash": "gemini-3.8-flash",
+        "gemini-3.6-flash": "gemini-3.8-flash",
+        "gemini-3.7-flash": "gemini-3.8-flash",
+        "gemini-2.5-pro": "gemini-4-carbon",
+        "gemini-2.5-flash": "gemini-3.5-flash-lite",
+        "gemini-2.5-flash-lite": "gemini-3.5-flash-lite",
+        "gemini-3-pro-image": "gemini-nano-banana-2.1",
+    }
+    for model in models.values():
+        replacement = superseded.get(model.name)
+        if replacement is not None and model.available:
+            model.available = False
+            model.replacement_model = replacement
 
     return models

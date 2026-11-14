@@ -30,13 +30,13 @@ class TestRetirementMigration:
         """FAST tier returns (grok-4.7, grok-4.20-non-reasoning)."""
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.FAST)
         assert reasoning == "grok-4.7"
-        assert writing == "grok-4.20-non-reasoning"
+        assert writing == "grok-4.7"
 
     def test_get_grok_models_hybrid_tier(self) -> None:
         """HYBRID tier returns (grok-4.7, grok-4.20-non-reasoning)."""
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.HYBRID)
         assert reasoning == "grok-4.7"
-        assert writing == "grok-4.20-non-reasoning"
+        assert writing == "grok-4.7"
 
     def test_get_grok_models_max_tier(self) -> None:
         """MAX tier returns the version-pinned flagship Grok 4.7 pair."""
@@ -75,7 +75,7 @@ class TestRetirementMigration:
 
     def test_grok_model_writing_resolves_to_420_nr(self) -> None:
         """PrimrModels.GROK_MODEL_WRITING resolves to grok-4.20-non-reasoning."""
-        assert PrimrModels.GROK_MODEL_WRITING == "grok-4.20-non-reasoning"
+        assert PrimrModels.GROK_MODEL_WRITING == "grok-4.7"
 
     def test_deprecated_models_have_deprecated_flag(self) -> None:
         """Retired models grok-4-1-fast-reasoning and grok-4-1-fast-non-reasoning are deprecated."""
@@ -151,7 +151,7 @@ class TestRetirementMigration:
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
         result = pick_model_for_role(Role.UTILITY)
-        assert result == "grok-4.20-non-reasoning"
+        assert result == "grok-4.7"
 
 
 # =============================================================================
@@ -302,7 +302,7 @@ class TestCurrentGeminiCandidates:
     def test_latest_stable_gemini_models_are_production_defaults(self) -> None:
         assert PrimrModels.is_latest_model("gemini-3.8-flash")
         assert PrimrModels.FLASH_MODEL == "gemini-3.8-flash"
-        assert PrimrModels.PRO_MODEL == "gemini-4-argon"
+        assert PrimrModels.PRO_MODEL == "gemini-4-carbon"
 
     @pytest.mark.parametrize("model", ["gemini-3.6-flash", "gemini-3.7-flash"])
     def test_scheduled_2027_price_change(self, model: str) -> None:

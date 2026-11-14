@@ -267,14 +267,14 @@ class TestChatSuccess:
         ]
         provider._client = fake_client
 
-        provider.chat([{"role": "user", "content": "x"}], model="grok-4.3")
-        provider.chat([{"role": "user", "content": "y"}], model="grok-4.20-non-reasoning")
+        provider.chat([{"role": "user", "content": "x"}], model="grok-4.7")
+        provider.chat([{"role": "user", "content": "y"}], model="grok-imagine-image-2.0")
 
         usage = provider.get_usage_by_model()
-        assert usage["grok-4.3"]["input_tokens"] == 10
-        assert usage["grok-4.3"]["output_tokens"] == 5
-        assert usage["grok-4.20-non-reasoning"]["input_tokens"] == 20
-        assert usage["grok-4.20-non-reasoning"]["output_tokens"] == 8
+        assert usage["grok-4.7"]["input_tokens"] == 10
+        assert usage["grok-4.7"]["output_tokens"] == 5
+        assert usage["grok-imagine-image-2.0"]["input_tokens"] == 20
+        assert usage["grok-imagine-image-2.0"]["output_tokens"] == 8
 
         total = provider.get_usage()
         assert total["input_tokens"] == 30
@@ -502,7 +502,7 @@ class TestGeminiProviderChat:
 
         result = provider.chat(
             [{"role": "user", "content": "hi"}],
-            model="gemini-3-flash-preview",
+            model="gemini-3.8-flash",
         )
 
         assert result.text == "reply"
@@ -524,7 +524,7 @@ class TestGeminiProviderChat:
         with pytest.raises(QuotaExhaustedError):
             provider.chat(
                 [{"role": "user", "content": "x"}],
-                model="gemini-3-flash-preview",
+                model="gemini-3.8-flash",
                 retries=0,
             )
 
@@ -542,7 +542,7 @@ class TestGeminiProviderChat:
 
         provider.chat(
             [{"role": "user", "content": "x"}],
-            model="gemini-3.1-pro-preview",
+            model="gemini-4-carbon",
             thinking_level="low",
         )
 
@@ -555,7 +555,7 @@ class TestGeminiProviderChat:
 
     @pytest.mark.parametrize(
         "model",
-        ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.7-flash"],
+        ["gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-4-carbon"],
     )
     def test_chat_omits_sampling_for_current_models(self, model: str) -> None:
         from primr.ai.providers.gemini import GeminiProvider
@@ -583,27 +583,22 @@ class TestGeminiProviderChat:
         with pytest.raises(ValueError, match="low, medium, high"):
             provider.chat(
                 [{"role": "user", "content": "x"}],
-                model="gemini-3.7-flash",
+                model="gemini-4-carbon",
                 thinking_level="minimal",
             )
         fake_client.models.generate_content.assert_not_called()
 
-    def test_chat_keeps_sampling_for_legacy_production_model(self) -> None:
+    def test_chat_rejects_superseded_pro_preview_before_provider_call(self) -> None:
         from primr.ai.providers.gemini import GeminiProvider
 
         provider = GeminiProvider()
         fake_client = MagicMock()
-        fake_client.models.generate_content.return_value = SimpleNamespace(
-            text="ok",
-            usage_metadata=SimpleNamespace(prompt_token_count=1, candidates_token_count=1),
-        )
         provider._client = fake_client
 
-        provider.chat(
-            [{"role": "user", "content": "x"}],
-            model="gemini-3.1-pro-preview",
-            temperature=0.2,
-        )
-
-        config = fake_client.models.generate_content.call_args.kwargs["config"]
-        assert config.temperature == pytest.approx(0.2)
+        with pytest.raises(ValueError, match="gemini-4-carbon"):
+            provider.chat(
+                [{"role": "user", "content": "x"}],
+                model="gemini-3.1-pro-preview",
+                temperature=0.2,
+            )
+        fake_client.models.generate_content.assert_not_called()

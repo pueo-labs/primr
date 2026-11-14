@@ -273,9 +273,7 @@ def test_search_and_summarize_returns_grounded_result_with_evidence():
     fake = MagicMock()
     fake.models.generate_content.return_value = _grounded_resp()
     p._client = fake
-    result = p.search_and_summarize(
-        "latest AWS AI", model="gemini-3.1-pro-preview", max_tokens=8_000
-    )
+    result = p.search_and_summarize("latest AWS AI", model="gemini-4-carbon", max_tokens=8_000)
     assert result is not None
     assert result.text == "brief"
     assert result.search_queries == ("q1",)
@@ -293,7 +291,7 @@ def test_search_and_summarize_empty_body_returns_none():
     fake = MagicMock()
     fake.models.generate_content.return_value = _grounded_resp(text="   ")
     p._client = fake
-    assert p.search_and_summarize("q", model="gemini-3.1-pro-preview") is None
+    assert p.search_and_summarize("q", model="gemini-4-carbon") is None
 
 
 def test_search_and_summarize_tolerates_missing_grounding_metadata():
@@ -305,7 +303,7 @@ def test_search_and_summarize_tolerates_missing_grounding_metadata():
         usage_metadata=SimpleNamespace(prompt_token_count=1, candidates_token_count=2),
     )
     p._client = fake
-    result = p.search_and_summarize("q", model="gemini-3.1-pro-preview")
+    result = p.search_and_summarize("q", model="gemini-4-carbon")
     assert result is not None
     assert result.text == "body"
     assert result.citations == ()
@@ -318,7 +316,7 @@ def test_search_and_summarize_omits_sampling_for_gemini_37():
     fake.models.generate_content.return_value = _grounded_resp()
     p._client = fake
 
-    result = p.search_and_summarize("q", model="gemini-3.7-flash", temperature=0.2)
+    result = p.search_and_summarize("q", model="gemini-3.8-flash", temperature=0.2)
 
     assert result is not None
     config = fake.models.generate_content.call_args.kwargs["config"]

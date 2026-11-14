@@ -21,7 +21,7 @@ only the separately absent batch slugs retain their previously published dates.
 
 from collections.abc import Callable
 from datetime import date
-from typing import TypeVar
+from typing import Any, TypeVar, cast
 
 _ModelConfig = TypeVar("_ModelConfig")
 OPENROUTER_EXPIRATIONS = dict.fromkeys(
@@ -36,10 +36,10 @@ def build_openrouter_models(
     model_config_type: Callable[..., _ModelConfig],
 ) -> tuple[_ModelConfig, ...]:
     """Build gateway-qualified rows without importing the registry module."""
-    return (
+    models = (
         model_config_type(
             name="google/gemini-2.5-flash-lite",
-            replacement_model="google/gemini-3.1-flash-lite",
+            replacement_model="google/gemini-3.5-flash-lite",
             display_name="OpenRouter: Gemini 2.5 Flash Lite",
             provider="openrouter",
             supports_thinking=True,
@@ -613,4 +613,40 @@ def build_openrouter_models(
             supports_tools=True,
             supports_multimodal=True,
         ),
+        model_config_type(
+            name="anthropic/claude-fable-5.2",
+            display_name="Anthropic: Claude Fable 5.2",
+            provider="openrouter",
+            cost_per_1m_input_tokens=8.0,
+            cost_per_1m_output_tokens=40.0,
+            cost_per_1m_input_tokens_cached=0.2,
+            max_input_tokens=1000000,
+            max_output_tokens=128000,
+            supports_thinking=True,
+            supports_tools=True,
+            supports_multimodal=True,
+            cost_per_1m_input_tokens_write_ceiling=16.0,
+        ),
     )
+    # Gateway rows for superseded families stay for quotes. New selections use
+    # the current id. DeepSeek, Qwen, Muse, and Mistral are not in the
+    # OpenAI, Anthropic, Google, or xAI catalogs and stay selectable.
+    superseded = {
+        "google/gemini-2.5-flash-lite": "google/gemini-3.5-flash-lite",
+        "google/gemini-3.7-flash": "google/gemini-3.8-flash",
+        "google/gemini-3.1-flash-lite": "google/gemini-3.5-flash-lite",
+        "openai/gpt-5.4-mini": "openai/gpt-6.1-terra",
+        "openai/gpt-5.4-nano": "openai/gpt-6-luna",
+        "openai/gpt-5.6-luna": "openai/gpt-6-luna",
+        "openai/gpt-6-sol": "openai/gpt-6.1-sol",
+        "anthropic/claude-sonnet-4.6": "anthropic/claude-sonnet-5.5",
+        "anthropic/claude-haiku-4.5": "anthropic/claude-haiku-5.5",
+        "anthropic/claude-fable-5.1": "anthropic/claude-fable-5.2",
+    }
+    for model in models:
+        row = cast("Any", model)
+        replacement = superseded.get(row.name)
+        if replacement is not None and row.available:
+            row.available = False
+            row.replacement_model = replacement
+    return models

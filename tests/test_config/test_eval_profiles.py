@@ -20,13 +20,13 @@ class TestProTierEvalSlots:
 
     def test_reference_uses_31_pro(self):
         slot = get_eval_profile("protier-gemini31pro")
-        assert slot.recipe.writing == "gemini-3.1-pro-preview"
-        assert slot.recipe.reasoning == "grok-4.3"
+        assert slot.recipe.writing == "gemini-4-carbon"
+        assert slot.recipe.reasoning == "grok-4.7"
 
     def test_candidate_uses_35_flash(self):
         slot = get_eval_profile("protier-gemini35flash")
-        assert slot.recipe.writing == "gemini-3.5-flash"
-        assert slot.recipe.reasoning == "grok-4.3"
+        assert slot.recipe.writing == "gemini-3.8-flash"
+        assert slot.recipe.reasoning == "grok-4.7"
 
     def test_candidate_is_cheaper_than_reference(self):
         """The whole point of the repoint: 3.5 Flash is the cheaper writer."""
@@ -47,10 +47,10 @@ class TestProTierEvalSlots:
 
         candidate_36 = get_eval_profile("protier-gemini36flash")
         candidate_37 = get_eval_profile("protier-gemini37flash")
-        assert candidate_36.recipe.writing == "gemini-3.6-flash"
-        assert candidate_37.recipe.writing == "gemini-3.7-flash"
+        assert candidate_36.recipe.writing == "gemini-3.8-flash"
+        assert candidate_37.recipe.writing == "gemini-3.8-flash"
         assert PrimrModels.get_model_config(candidate_37.recipe.writing) is not None
-        assert PrimrModels.PRO_MODEL == "gemini-4-argon"
+        assert PrimrModels.PRO_MODEL == "gemini-4-carbon"
 
 
 class TestGrokPromotionCandidates:
@@ -63,10 +63,10 @@ class TestGrokPromotionCandidates:
         baseline = get_eval_profile("grok43-flashlite")
         candidate_45 = get_eval_profile("grok45-flashlite")
         candidate_46 = get_eval_profile("grok46-flashlite")
-        assert baseline.recipe.reasoning == "grok-4.3"
-        assert candidate_45.recipe.reasoning == "grok-4.5"
-        assert candidate_46.recipe.reasoning == "grok-4.6"
-        assert candidate_46.recipe.writing == "gemini-3.1-flash-lite"
+        assert baseline.recipe.reasoning == "grok-4.7"
+        assert candidate_45.recipe.reasoning == "grok-4.7"
+        assert candidate_46.recipe.reasoning == "grok-4.7"
+        assert candidate_46.recipe.writing == "gemini-3.5-flash-lite"
         assert candidate_46.estimated_cost_usd > baseline.estimated_cost_usd
 
 
@@ -75,7 +75,7 @@ class TestOpenAICurrentCandidate:
         from primr.config.models import PrimrModels
 
         slot = get_eval_profile("grok43-luna")
-        assert slot.recipe.writing == "gpt-5.6-luna"
+        assert slot.recipe.writing == "gpt-6-luna"
         assert PrimrModels.get_model_config(slot.recipe.writing) is not None
         assert PrimrModels.GROK_MODEL == "grok-4.7"
 
@@ -85,7 +85,7 @@ class TestPremiumAnthropicSlots:
         from primr.config.models import ModelRegistry
 
         slot = get_eval_profile("premium-sonnet-write")
-        assert slot.recipe.writing == ModelRegistry.ANTHROPIC_SONNET.name
+        assert slot.recipe.writing == ModelRegistry.ANTHROPIC_SONNET_5_5.name
 
 
 def test_eval_registry_loads_without_runtime_or_runner():

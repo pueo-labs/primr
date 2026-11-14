@@ -31,10 +31,9 @@ class TestFallbackChainOrder:
     """Test that fallback chains are defined in the correct order."""
 
     def test_analysis_fallback_chain_order(self) -> None:
-        """Analysis: Grok 4.7 -> Grok 4.3 -> Sonnet 5.5 -> GPT-6.1 Terra -> Flash."""
+        """Analysis: Grok 4.7 -> Sonnet 5.5 -> GPT-6.1 Terra -> Flash."""
         assert ANALYSIS_FALLBACK_CHAIN.models == (
             "grok-4.7",
-            "grok-4.3",
             "claude-sonnet-5-5",
             "gpt-6.1-terra",
             PrimrModels.FLASH_MODEL,
@@ -45,9 +44,9 @@ class TestFallbackChainOrder:
         assert ANALYSIS_FALLBACK_CHAIN.name == "analysis"
 
     def test_premium_fallback_chain_order(self) -> None:
-        """Premium: Gemini 4 Argon -> Opus 5.5 -> GPT-6.1 Sol -> Grok 4.7."""
+        """Premium: Gemini 4 Carbon -> Opus 5.5 -> GPT-6.1 Sol -> Grok 4.7."""
         assert PREMIUM_FALLBACK_CHAIN.models == (
-            "gemini-4-argon",
+            "gemini-4-carbon",
             "claude-opus-5-5",
             "gpt-6.1-sol",
             "grok-4.7",
@@ -58,9 +57,9 @@ class TestFallbackChainOrder:
         assert PREMIUM_FALLBACK_CHAIN.name == "premium"
 
     def test_utility_fallback_chain_order(self) -> None:
-        """Utility chain: grok-4.20-non-reasoning -> GPT-6 Luna -> Gemini Flash."""
+        """Utility chain: grok-4.7 -> GPT-6 Luna -> Gemini Flash."""
         assert UTILITY_FALLBACK_CHAIN.models == (
-            "grok-4.20-non-reasoning",
+            "grok-4.7",
             "gpt-6-luna",
             PrimrModels.FLASH_MODEL,
         )

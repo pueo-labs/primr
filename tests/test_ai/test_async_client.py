@@ -26,8 +26,8 @@ def mock_settings():
     """Mock settings for testing."""
     settings = Mock()
     settings.api.gemini_key = "test-api-key"
-    settings.ai.flash_model = "gemini-3-flash-preview"
-    settings.ai.pro_model = "gemini-3.1-pro-preview"
+    settings.ai.flash_model = "gemini-3.8-flash"
+    settings.ai.pro_model = "gemini-4-carbon"
     settings.ai.max_retries = 3
     return settings
 
@@ -39,7 +39,7 @@ async def test_retired_report_model_stops_before_async_initialization(mock_setti
     client = AsyncAIClient(api_key="fake-key-for-ci-tests")
     initialize = Mock()
     monkeypatch.setattr(client, "_ensure_initialized", initialize)
-    with pytest.raises(ValueError, match=r"gemini-3\.1-pro-preview"):
+    with pytest.raises(ValueError, match="gemini-4-carbon"):
         await client.generate("control", model_type="report")
     initialize.assert_not_called()
 
@@ -206,7 +206,7 @@ class TestAsyncAIClient:
         mock_get_settings.return_value = mock_settings
 
         client = AsyncAIClient()
-        assert client._get_model("research") == "gemini-3-flash-preview"
+        assert client._get_model("research") == "gemini-3.8-flash"
 
     @patch("primr.ai.async_client.get_settings")
     def test_get_model_report(self, mock_get_settings, mock_settings):
@@ -214,7 +214,7 @@ class TestAsyncAIClient:
         mock_get_settings.return_value = mock_settings
 
         client = AsyncAIClient()
-        assert client._get_model("report") == "gemini-3.1-pro-preview"
+        assert client._get_model("report") == "gemini-4-carbon"
 
     @patch("primr.ai.async_client.get_settings")
     def test_get_model_unknown_defaults_to_research(self, mock_get_settings, mock_settings):
@@ -222,7 +222,7 @@ class TestAsyncAIClient:
         mock_get_settings.return_value = mock_settings
 
         client = AsyncAIClient()
-        assert client._get_model("unknown") == "gemini-3-flash-preview"
+        assert client._get_model("unknown") == "gemini-3.8-flash"
 
 
 # =============================================================================
@@ -307,7 +307,7 @@ class TestGenerate:
         self, mock_client_class, mock_get_settings, mock_settings, mock_genai_client
     ):
         mock_get_settings.return_value = mock_settings
-        mock_settings.ai.flash_model = "gemini-3.7-flash"
+        mock_settings.ai.flash_model = "gemini-3.8-flash"
         mock_client_class.return_value = mock_genai_client
 
         async with AsyncAIClient() as client:
@@ -338,7 +338,7 @@ class TestGenerate:
         self, mock_client_class, mock_get_settings, mock_settings, mock_genai_client
     ):
         mock_get_settings.return_value = mock_settings
-        mock_settings.ai.flash_model = "gemini-3.7-flash"
+        mock_settings.ai.flash_model = "gemini-4-carbon"
         mock_client_class.return_value = mock_genai_client
 
         async with AsyncAIClient() as client:

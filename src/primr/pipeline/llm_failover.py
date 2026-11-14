@@ -122,7 +122,7 @@ def call_with_failover(
             role's chain following as fallback order. The model is honored
             even when it is not a standing member of the chain — used by
             stages that have a strong opinion about which model they want
-            (e.g. fast-mode writing routed to gemini-3.1-flash-lite). The
+            (e.g. fast-mode writing routed to gemini-3.5-flash-lite). The
             estimator prices the run against this routed model, so dispatching
             the chain's default instead would diverge from the approved cost
             cap (see ``perform_fast_research``).
@@ -146,7 +146,7 @@ def call_with_failover(
     if preferred_model:
         # Put the preferred model first, preserving the rest as fallback order.
         # This honors the preference even when the model is NOT a standing
-        # member of the chain (e.g. gemini-3.1-flash-lite, the routed fast-mode
+        # member of the chain (e.g. gemini-3.5-flash-lite, the routed fast-mode
         # writer, is absent from UTILITY_FALLBACK_CHAIN). Before this, an absent
         # preferred model was silently ignored and the chain's default (the
         # pricier Grok writer) ran instead — diverging from the cost estimate

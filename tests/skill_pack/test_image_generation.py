@@ -16,7 +16,7 @@ from primr.skill_pack.image_generation import (
 )
 
 
-@pytest.mark.parametrize("override", [None, "gemini-3-pro-image"])
+@pytest.mark.parametrize("override", [None, "gemini-nano-banana-2.1"])
 def test_gemini_image_uses_supported_default_or_explicit_model(monkeypatch, override):
     from PIL import Image
 
@@ -42,7 +42,12 @@ def test_gemini_image_uses_supported_default_or_explicit_model(monkeypatch, over
 
 @pytest.mark.parametrize(
     "override",
-    ["gemini-3-pro-image-preview", "gemini-3.1-flash-image-preview", "gemini-3-flash-preview"],
+    [
+        "gemini-3-pro-image",
+        "gemini-3-pro-image-preview",
+        "gemini-3.1-flash-image-preview",
+        "gemini-3-flash-preview",
+    ],
 )
 def test_gemini_image_rejects_retired_unknown_or_nonimage_route_before_sdk(monkeypatch, override):
     monkeypatch.setenv("AI_IMAGE_MODEL", override)

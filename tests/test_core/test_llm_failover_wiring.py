@@ -77,7 +77,7 @@ class TestWritingHelperFailover:
 
         report = "## Overview\nA claim that needs a citation.\n"
         fake, calls = _quota_on_first(
-            "grok-4.20-non-reasoning",
+            "grok-4.7",
             response="## Overview\nA claim that needs a citation. [cite: 1]\n\n## Sources\n1. https://example.com\n",
         )
         with patch("primr.ai.grok_client.grok_llm", side_effect=fake):
@@ -86,11 +86,11 @@ class TestWritingHelperFailover:
                 "https://acme.example",
                 report,
                 ["https://example.com"],
-                model="grok-4.20-non-reasoning",
+                model="grok-4.7",
             )
 
         assert "[cite: 1]" in repaired
-        assert calls[0] == "grok-4.20-non-reasoning"
+        assert calls[0] == "grok-4.7"
         assert len(calls) >= 2
 
     def test_non_quota_error_still_degrades_gracefully(self):
@@ -114,20 +114,20 @@ class TestLLMUtilityDispatchFailover:
     def test_xai_utility_dispatch_falls_over_on_quota(self, monkeypatch):
         from primr.ai import llm as llm_module
 
-        monkeypatch.setattr(llm_module, "_get_model_for_type", lambda t: "grok-4.20-non-reasoning")
+        monkeypatch.setattr(llm_module, "_get_model_for_type", lambda t: "grok-4.7")
 
-        fake, calls = _quota_on_first("grok-4.20-non-reasoning", response="utility ok")
+        fake, calls = _quota_on_first("grok-4.7", response="utility ok")
         with patch("primr.ai.grok_client.grok_llm", side_effect=fake):
             result = llm_module.llm("summarize this", model_type="fast")
 
         assert result == "utility ok"
-        assert calls[0] == "grok-4.20-non-reasoning"
+        assert calls[0] == "grok-4.7"
         assert len(calls) >= 2
 
     def test_xai_utility_dispatch_happy_path_single_call(self, monkeypatch):
         from primr.ai import llm as llm_module
 
-        monkeypatch.setattr(llm_module, "_get_model_for_type", lambda t: "grok-4.20-non-reasoning")
+        monkeypatch.setattr(llm_module, "_get_model_for_type", lambda t: "grok-4.7")
 
         calls: list[str] = []
 
@@ -139,4 +139,4 @@ class TestLLMUtilityDispatchFailover:
             result = llm_module.llm("summarize this", model_type="fast")
 
         assert result == "ok"
-        assert calls == ["grok-4.20-non-reasoning"]
+        assert calls == ["grok-4.7"]
