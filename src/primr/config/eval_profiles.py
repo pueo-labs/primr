@@ -179,7 +179,7 @@ _V1_24_0_CEILING_CANDIDATE = EvalProfileSlot(
     name="grok43max-flashlite",
     recipe=ProfileRecipe(
         reasoning="grok-4.7",  # max reasoning effort
-        writing="gemini-3.8-flash",  # 3 Flash, not Flash-Lite — slightly stronger
+        writing="gemini-3.8-flash",  # 3.8 Flash, not Flash-Lite, slightly stronger
         utility="gemini-3.8-flash",
     ),
     estimated_cost_usd=1.50,
