@@ -78,6 +78,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Retired Grok 4.1 Fast quotes on or after 2026-05-15 use grok-4.7 rates
+  from the xAI pricing page checked 2026-11-14 ($2/$0.50 cached/$6 below
+  200k prompt tokens, $4/$1 cached/$12 at or above 200k). Earlier dates
+  keep the $0.20/$0.50 list price. Opt-in OpenAI icon generation requests
+  `gpt-image-2.6-flare`. From 2026-12-01, quotes for `gemini-2.5-pro` and
+  `gemini-2.5-flash` follow `gemini-3.8-flash` and `gemini-3.5-flash-lite`.
+  Those Gemini ids stay selectable.
 - The Strategic Overview voice now covers the fast-mode system prompt, the
   composed overview persona, and the section briefs. Those paths no longer
   tell the writer to treat every claim as a hypothesis or to hedge wins,

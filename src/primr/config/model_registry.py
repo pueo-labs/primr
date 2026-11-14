@@ -61,11 +61,10 @@ class ModelRegistry:
     GEMINI_2_5_FLASH_LITE = _GEMINI_MODELS["GEMINI_2_5_FLASH_LITE"]
     GEMINI_3_PRO_IMAGE = _GEMINI_MODELS["GEMINI_3_PRO_IMAGE"]
 
-    # GROK 4.1 FAST REASONING - xAI fast reasoning model
-    # USE FOR: Analytical tasks (gap analysis, workbook, cross-validation)
-    # $0.20 input / $0.50 output per 1M tokens (+ reasoning tokens at output rate)
-    # Context: 2M tokens, Output: 128k tokens
-    # OpenAI-compatible API at https://api.x.ai/v1
+    # GROK 4.1 FAST REASONING - retired 2026-05-15.
+    # Historical list price: $0.20 input / $0.50 output per 1M tokens.
+    # Quotes on or after that date use grok-4.7 (see GROK_41_FAST_CURRENT_PRICE).
+    # Context on this record: 2M tokens, Output: 128k tokens.
     GROK_4_1_FAST = ModelConfig(
         name="grok-4-1-fast-reasoning",
         display_name="Grok 4.1 Fast Reasoning",
@@ -82,11 +81,8 @@ class ModelRegistry:
         replacement_model="grok-4.7",
     )
 
-    # GROK 4.1 FAST NON-REASONING - xAI fast model without reasoning overhead
-    # USE FOR: Writing tasks (report batches, section regen, trust polish, AI strategy)
-    # Same per-token pricing as reasoning variant, but no reasoning token overhead
-    # → strictly faster and cheaper for prose generation
-    # Context: 2M tokens, Output: 128k tokens
+    # GROK 4.1 FAST NON-REASONING - retired 2026-05-15 with the reasoning twin.
+    # Historical list price matches that row. Current quotes use grok-4.7.
     GROK_4_1_FAST_NR = ModelConfig(
         name="grok-4-1-fast-non-reasoning",
         display_name="Grok 4.1 Fast",
@@ -100,7 +96,7 @@ class ModelRegistry:
         supports_multimodal=False,
         deprecated=True,
         expiration_date=date(2026, 5, 15),
-        replacement_model="grok-4.20-non-reasoning",
+        replacement_model="grok-4.7",
     )
 
     # GROK 4.3 - xAI value reasoning model (released 2026-04-30)
@@ -184,9 +180,10 @@ class ModelRegistry:
         tier_threshold_inclusive=True,
     )
 
-    # GROK 4.7 - xAI current flagship (docs.x.ai, rechecked 2026-11-02)
-    # USE FOR: Default reasoning in every tier. Same rates, 500k context, and
-    # cached input as 4.6; reasoning_effort low/medium/high/xhigh (default high).
+    # GROK 4.7 - xAI current flagship (docs.x.ai/developers/pricing, 2026-11-14)
+    # USE FOR: Default reasoning in every tier. $2.00 / $0.50 cached / $6.00
+    # below 200k prompt tokens; $4.00 / $1.00 cached / $12.00 at or above 200k.
+    # Context: 500k. reasoning_effort low/medium/high/xhigh (default high).
     GROK_4_7 = replace(GROK_4_6, name="grok-4.7", display_name="Grok 4.7")
 
     # GROK 4.20 REASONING - dated canonical ID retained for compatibility
@@ -528,3 +525,12 @@ class ModelRegistry:
 # depend on one leaf module without depending on each other.
 DEFAULT_FLASH_MODEL = ModelRegistry.GEMINI_3_8_FLASH.name
 DEFAULT_PRO_MODEL = ModelRegistry.GEMINI_4_ARGON.name
+
+# Retired Grok 4.1 Fast ids. The stored rows keep the historical list price.
+# Pricing on or after retirement follows grok-4.7 so a current quote does not
+# use the old $0.20/$0.50 rates.
+GROK_41_FAST_RETIRED_ON = date(2026, 5, 15)
+GROK_41_FAST_CURRENT_PRICE = {
+    "grok-4-1-fast-reasoning": "grok-4.7",
+    "grok-4-1-fast-non-reasoning": "grok-4.7",
+}

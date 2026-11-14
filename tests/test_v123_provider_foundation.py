@@ -83,6 +83,38 @@ class TestRetirementMigration:
         fast_nr = ModelRegistry.GROK_4_1_FAST_NR
         assert fast.deprecated is True
         assert fast_nr.deprecated is True
+        assert fast.replacement_model == "grok-4.7"
+        assert fast_nr.replacement_model == "grok-4.7"
+
+    def test_retired_grok_41_fast_current_quote_uses_grok_47_rates(self) -> None:
+        """Historical list price stays; quotes from the retirement date match grok-4.7.
+
+        docs.x.ai/developers/pricing on 2026-11-14: $2/$0.50 cached/$6 below
+        200k prompt tokens, and $4/$1 cached/$12 at or above 200k.
+        """
+        for name in ("grok-4-1-fast-reasoning", "grok-4-1-fast-non-reasoning"):
+            assert PrimrModels.get_price(name, date(2026, 5, 14)) == (0.20, 0.50)
+            assert PrimrModels.get_price(name, date(2026, 5, 15)) == (2.00, 6.00)
+            historical = PrimrModels.calculate_cost_breakdown(
+                name, 1_000_000, 1_000, prompt_tokens=200_000, pricing_date=date(2026, 5, 14)
+            )
+            current = PrimrModels.calculate_cost_breakdown(
+                name, 1_000_000, 1_000, prompt_tokens=200_000, pricing_date=date(2026, 11, 14)
+            )
+            flagship = PrimrModels.calculate_cost_breakdown(
+                "grok-4.7",
+                1_000_000,
+                1_000,
+                prompt_tokens=200_000,
+                pricing_date=date(2026, 11, 14),
+            )
+            assert historical.input_rate_per_million == 0.20
+            assert historical.output_rate_per_million == 0.50
+            assert current.model_name == name
+            assert current.total_cost == flagship.total_cost
+            assert current.input_rate_per_million == 4.00
+            assert current.cached_input_rate_per_million == 1.00
+            assert current.output_rate_per_million == 12.00
 
     def test_deprecated_models_not_in_active_fallback_chains(self) -> None:
         """Deprecated models are NOT in any active fallback chain's routing path."""

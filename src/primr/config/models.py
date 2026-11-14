@@ -15,10 +15,17 @@ from dataclasses import dataclass, replace
 from datetime import date
 from math import isfinite
 
-from primr.config.gemini_models import GEMINI_ALIASES_VERIFIED_ON, GEMINI_MODEL_ALIASES
+from primr.config.gemini_models import (
+    GEMINI_25_BILLING_REDIRECT,
+    GEMINI_25_BILLING_REDIRECT_ON,
+    GEMINI_ALIASES_VERIFIED_ON,
+    GEMINI_MODEL_ALIASES,
+)
 from primr.config.model_registry import (
     DEFAULT_FLASH_MODEL,
     DEFAULT_PRO_MODEL,
+    GROK_41_FAST_CURRENT_PRICE,
+    GROK_41_FAST_RETIRED_ON,
     GrokTier,
     ModelConfig,
     ModelRegistry,
@@ -200,12 +207,11 @@ class PrimrModels:
     IMAGE_MODEL = ModelRegistry.GEMINI_NANO_BANANA_2_1.name
     # Opt-in remote icon providers. These are image endpoints priced per image
     # or per image token, so they stay out of the text-token pricing registry.
-    # Verified 2026-10-27: gpt-image-1 shut down 2026-10-23 and OpenAI names
-    # gpt-image-2.5-flare as a substitute; xAI retires grok-imagine-image-quality
-    # on 2026-11-02 and serves grok-imagine-image-2.0 at low quality instead.
-    # Medium is the highest documented quality, chosen to keep the retired
-    # slug's intent rather than inherit the auto default (low for generation).
-    OPENAI_IMAGE_MODEL = "gpt-image-2.5-flare"
+    # Checked 2026-11-14: gpt-image-2.6-flare accepts the same
+    # images.generations arguments this client sends (model, prompt, n, size)
+    # and still returns data[0].b64_json. xAI image generation uses
+    # grok-imagine-image-2.0 at explicit medium quality.
+    OPENAI_IMAGE_MODEL = "gpt-image-2.6-flare"
     XAI_IMAGE_MODEL = "grok-imagine-image-2.0"
     XAI_IMAGE_QUALITY = "medium"
 
@@ -351,12 +357,20 @@ class PrimrModels:
     ) -> ModelConfig | None:
         """Use verified current alias prices without rewriting older records.
 
-        Google does not publish an alias cutover date. Earlier dated accounting
-        retains its historical catalog rates; do not invent a backdated change.
-        The requested route identity remains unchanged.
+        Google does not publish an alias cutover date for the 3.5 and 3.7
+        Flash aliases. Earlier dated accounting retains its historical catalog
+        rates. From 2026-12-01, gemini-2.5-pro and gemini-2.5-flash quotes
+        follow the successor Google bills for the automatic route. From
+        2026-05-15, retired Grok 4.1 Fast ids quote as grok-4.7. The requested
+        route identity remains unchanged.
         """
-        if (pricing_date or date.today()) >= GEMINI_ALIASES_VERIFIED_ON:
+        effective = pricing_date or date.today()
+        if effective >= GEMINI_ALIASES_VERIFIED_ON:
             model_name = GEMINI_MODEL_ALIASES.get(model_name, model_name)
+        if effective >= GEMINI_25_BILLING_REDIRECT_ON:
+            model_name = GEMINI_25_BILLING_REDIRECT.get(model_name, model_name)
+        if effective >= GROK_41_FAST_RETIRED_ON:
+            model_name = GROK_41_FAST_CURRENT_PRICE.get(model_name, model_name)
         return cls._resolve_config(model_name)
 
     @classmethod

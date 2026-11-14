@@ -237,4 +237,4 @@ def test_openai_image_requests_current_model(monkeypatch) -> None:
         rendered = OpenAIImageProvider().generate(ImageRequest("ExampleCo", "Simple icon", 32, 32))
 
     assert rendered.startswith(b"\x89PNG")
-    assert client.images.generate.call_args.kwargs["model"] == "gpt-image-2.5-flare"
+    assert client.images.generate.call_args.kwargs["model"] == "gpt-image-2.6-flare"

@@ -126,6 +126,32 @@ def test_aliases_and_restricted_legacy_models_do_not_advertise_as_flagships():
         assert not PrimrModels.is_latest_model(name)
 
 
+def test_gemini_25_quotes_follow_announced_successor_without_rewriting_history():
+    """Dec 1, 2026 quotes use the successor record. The stored id stays selectable."""
+    pro = PrimrModels.get_model_config("gemini-2.5-pro")
+    flash = PrimrModels.get_model_config("gemini-2.5-flash")
+    assert pro is not None
+    assert flash is not None
+    assert pro.name == "gemini-2.5-pro"
+    assert flash.name == "gemini-2.5-flash"
+    assert pro.cost_per_1m_input_tokens == 1.25
+    assert pro.expiration_date is None
+    assert flash.expiration_date is None
+    before = PrimrModels._resolve_pricing_config("gemini-2.5-pro", date(2026, 11, 30))
+    after = PrimrModels._resolve_pricing_config("gemini-2.5-pro", date(2026, 12, 1))
+    assert before is not None
+    assert before.name == "gemini-2.5-pro"
+    assert after is not None
+    assert after.name == "gemini-3.8-flash"
+    flash_after = PrimrModels._resolve_pricing_config("gemini-2.5-flash", date(2026, 12, 1))
+    assert flash_after is not None
+    assert flash_after.name == "gemini-3.5-flash-lite"
+    assert PrimrModels.get_price("gemini-2.5-pro", date(2026, 11, 30)) == (1.25, 10.0)
+    assert PrimrModels.get_price("gemini-2.5-pro", date(2026, 12, 1)) == (0.75, 3.75)
+    assert PrimrModels.get_price("gemini-2.5-pro", date(2027, 1, 1)) == (1.50, 7.50)
+    pro.require_available(date(2026, 12, 1))
+
+
 def test_verified_alias_prices_are_current_without_rewriting_historical_identity():
     legacy = PrimrModels.get_model_config("gemini-3.5-flash")
     assert legacy is not None
