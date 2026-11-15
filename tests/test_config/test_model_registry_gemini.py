@@ -85,10 +85,10 @@ def test_retired_routes_reject_new_work_but_keep_historical_costs(
 
 @pytest.mark.parametrize(
     "model",
-    ["gemini-3-flash-preview", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite"],
+    ["gemini-3-flash-preview"],
 )
 def test_direct_google_routes_without_announced_shutdown_are_not_selectable(model):
-    """Google lists no shutdown date. New requests still use the current id."""
+    """Rows without a shutdown date can still be kept off the automatic route."""
     config = PrimrModels.get_model_config(model)
     assert config is not None
     assert config.expiration_date is None
@@ -138,16 +138,26 @@ def test_aliases_and_restricted_legacy_models_do_not_advertise_as_flagships():
 
 
 def test_gemini_25_quotes_follow_announced_successor_without_rewriting_history():
-    """Dec 1, 2026 quotes use the successor record. The stored id is not selectable."""
+    """Dec 1, 2026 quotes use the successor record. The id stays selectable until then."""
     pro = PrimrModels.get_model_config("gemini-2.5-pro")
     flash = PrimrModels.get_model_config("gemini-2.5-flash")
+    lite = PrimrModels.get_model_config("gemini-2.5-flash-lite")
     assert pro is not None
     assert flash is not None
+    assert lite is not None
     assert pro.name == "gemini-2.5-pro"
     assert flash.name == "gemini-2.5-flash"
     assert pro.cost_per_1m_input_tokens == 1.25
-    assert pro.expiration_date is None
-    assert flash.expiration_date is None
+    assert flash.cost_per_1m_input_tokens == 0.30
+    assert pro.expiration_date == date(2026, 12, 1)
+    assert flash.expiration_date == date(2026, 12, 1)
+    assert pro.available is True
+    assert flash.available is True
+    assert pro.replacement_model == "gemini-3.8-flash"
+    assert flash.replacement_model == "gemini-3.5-flash-lite"
+    assert not lite.deprecated
+    assert lite.available is True
+    assert lite.expiration_date is None
     before = PrimrModels._resolve_pricing_config("gemini-2.5-pro", date(2026, 11, 30))
     after = PrimrModels._resolve_pricing_config("gemini-2.5-pro", date(2026, 12, 1))
     assert before is not None
@@ -158,12 +168,14 @@ def test_gemini_25_quotes_follow_announced_successor_without_rewriting_history()
     assert flash_after is not None
     assert flash_after.name == "gemini-3.5-flash-lite"
     assert PrimrModels.get_price("gemini-2.5-pro", date(2026, 11, 30)) == (1.25, 10.0)
+    assert PrimrModels.get_price("gemini-2.5-flash", date(2026, 11, 30)) == (0.30, 2.50)
     assert PrimrModels.get_price("gemini-2.5-pro", date(2026, 12, 1)) == (0.75, 3.75)
     assert PrimrModels.get_price("gemini-2.5-pro", date(2027, 1, 1)) == (1.50, 7.50)
-    assert pro.available is False
-    assert pro.replacement_model == "gemini-4-carbon"
-    with pytest.raises(ValueError, match="unavailable"):
+    assert PrimrModels.get_price("gemini-2.5-flash", date(2026, 12, 1)) == (0.30, 2.50)
+    pro.require_available(date(2026, 11, 30))
+    with pytest.raises(ValueError, match=r"expired on 2026-12-01.*gemini-3.8-flash"):
         pro.require_available(date(2026, 12, 1))
+    lite.require_available(date(2026, 12, 1))
 
 
 def test_verified_alias_prices_are_current_without_rewriting_historical_identity():

@@ -18,11 +18,13 @@ GEMINI_MODEL_ALIASES = {
     "gemini-3.5-flash": "gemini-3.6-flash",
     "gemini-3.7-flash": "gemini-3.8-flash",
 }
-# Google's deprecations table still lists no shutdown for these ids
-# (checked 2026-11-14). A 2026-11-02 AI Studio note says that on this date
-# gemini-2.5-pro requests route to gemini-3.8-flash and gemini-2.5-flash
-# requests route to gemini-3.5-flash-lite, billed at the successor rates.
-# The ids stay selectable. Quotes from this date use the successor record.
+# Google shuts down gemini-2.5-pro and gemini-2.5-flash on 2026-12-01
+# (deprecations table). On that date the provider routes gemini-2.5-pro to
+# gemini-3.8-flash and gemini-2.5-flash to gemini-3.5-flash-lite, billed at
+# the successor rates. The ids stay selectable until the shutdown date.
+# gemini-2.5-flash-lite is not deprecated. Quotes from the shutdown date use
+# the successor record. These ids are not in GEMINI_MODEL_ALIASES, so usage
+# before 2026-12-01 keeps the stored 2.5 rates.
 GEMINI_25_BILLING_REDIRECT_ON = date(2026, 12, 1)
 GEMINI_25_BILLING_REDIRECT = {
     "gemini-2.5-pro": "gemini-3.8-flash",
@@ -235,9 +237,10 @@ def build_gemini_models() -> dict[str, ModelConfig]:
     # $1.25 input / $10.00 output per 1M tokens
     # Context: 1M tokens, Output: 8k tokens
     # June 2026 audit: context is 1M (1,048,576), NOT 2M - the 2M figure belongs
-    # to the unreleased Gemini 3.5 Pro. Developer API access is limited to
-    # prior users. The deprecations table still lists no shutdown date
-    # (checked 2026-11-14). From 2026-12-01, quotes use gemini-3.8-flash.
+    # to the unreleased Gemini 3.5 Pro. Deprecated, with shutdown 2026-12-01.
+    # The provider then routes requests to gemini-3.8-flash and bills that
+    # model's rates. The stored row keeps the 2.5 list price. This replacement
+    # is the routing target, not the current default gemini-4-carbon.
     # Vertex/OpenRouter retirement dates do not apply to this direct API row.
     models["GEMINI_2_5_PRO"] = ModelConfig(
         name="gemini-2.5-pro",
@@ -251,6 +254,9 @@ def build_gemini_models() -> dict[str, ModelConfig]:
         supports_tools=True,
         supports_multimodal=True,
         cost_per_1m_input_tokens_cached=0.125,  # Confirmed June 2026 (docs)
+        deprecated=True,
+        expiration_date=date(2026, 12, 1),
+        replacement_model="gemini-3.8-flash",
     )
 
     # GEMINI 2.5 FLASH - High-volume workhorse
@@ -270,9 +276,11 @@ def build_gemini_models() -> dict[str, ModelConfig]:
         supports_tools=True,
         supports_multimodal=True,
         cost_per_1m_input_tokens_cached=0.03,  # Confirmed June 2026 (docs)
-        # Developer API: prior users only. Deprecations table lists no
-        # shutdown (checked 2026-11-14). From 2026-12-01, quotes use
-        # gemini-3.5-flash-lite.
+        # Deprecated, with shutdown 2026-12-01. The provider then routes
+        # requests to gemini-3.5-flash-lite and bills that model's rates.
+        deprecated=True,
+        expiration_date=date(2026, 12, 1),
+        replacement_model="gemini-3.5-flash-lite",
     )
 
     # GEMINI 2.5 FLASH-LITE - Ultra-cheap utility tier
@@ -375,9 +383,6 @@ def build_gemini_models() -> dict[str, ModelConfig]:
         "gemini-3.5-flash": "gemini-3.8-flash",
         "gemini-3.6-flash": "gemini-3.8-flash",
         "gemini-3.7-flash": "gemini-3.8-flash",
-        "gemini-2.5-pro": "gemini-4-carbon",
-        "gemini-2.5-flash": "gemini-3.5-flash-lite",
-        "gemini-2.5-flash-lite": "gemini-3.5-flash-lite",
         "gemini-3-pro-image": "gemini-nano-banana-2.1",
     }
     for model in models.values():

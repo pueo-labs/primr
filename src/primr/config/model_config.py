@@ -3,6 +3,10 @@
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 
+from primr.utils.logging_config import get_logger
+
+logger = get_logger("config.model_config")
+
 
 @dataclass
 class ModelConfig:
@@ -47,6 +51,18 @@ class ModelConfig:
                 f"Model {self.name} is unavailable.{replacement} Re-estimate before running."
             )
         effective_date = on_date if on_date is not None else datetime.now(UTC).date()
+        if self.deprecated and (
+            self.expiration_date is None or effective_date < self.expiration_date
+        ):
+            shutdown = (
+                f" and shuts down on {self.expiration_date}"
+                if self.expiration_date is not None
+                else ""
+            )
+            replacement = (
+                f" Select {self.replacement_model} explicitly." if self.replacement_model else ""
+            )
+            logger.warning("Model %s is deprecated%s.%s", self.name, shutdown, replacement)
         if self.expiration_date is not None and effective_date >= self.expiration_date:
             replacement = (
                 f" Select {self.replacement_model} explicitly." if self.replacement_model else ""

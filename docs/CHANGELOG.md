@@ -90,7 +90,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-luna`, or `gpt-6-astra`, and
   Anthropic uses `claude-fable-5-2`, `claude-opus-5-5`, `claude-sonnet-5-5`,
   or `claude-haiku-5-5`. Superseded ids stay registered for historical
-  quotes and are not selectable.
+  quotes. `gemini-2.5-pro` and `gemini-2.5-flash` are deprecated and shut
+  down on 2026-12-01. Until that date an explicit selection still works and
+  warns. On that date it is refused in favor of `gemini-3.8-flash` and
+  `gemini-3.5-flash-lite`. Quotes before the shutdown keep the stored 2.5
+  rates, and quotes on or after it use the successor rates.
+  `gemini-2.5-flash-lite` is not deprecated. Other superseded ids are not
+  selectable.
 - The Strategic Overview voice now covers the fast-mode system prompt, the
   composed overview persona, and the section briefs. Those paths no longer
   tell the writer to treat every claim as a hypothesis or to hedge wins,
