@@ -9,7 +9,7 @@ description = "Turn a company name and website into researched, long-form strate
 readme = "README.md"
 license = "Apache-2.0"
 # Support maintained CPython releases; use the newest stable in development.
-requires-python = ">=3.11"
+requires-python = ">=3.11.5"
 authors = [
     {name = "Nick Seal", email = "nick@pueo.io"}
 ]
@@ -251,15 +251,20 @@ primr = [
 constraint-dependencies = [
     "anyio>=4.14.2",
     "PyJWT>=2.15.1",
-    "soupsieve>=2.9.0",
+    # Reached through beautifulsoup4 CSS selectors on untrusted markup.
+    # CVE-2026-126192 is fixed in 2.10.0, CVE-2026-126191 and CVE-2026-126193
+    # in 3.0.2, and CVE-2026-126190 in 4.0.0.
+    "soupsieve>=4.0.0",
     # Environment-name activation, POSIX launcher quoting, and
     # CVE-2026-115586 fixes.
     "virtualenv>=21.14.13",
     # Reached through tldextract, virtualenv, and pip-audit caching.
     # CVE-2026-112907, CVE-2026-112913, and CVE-2026-112940 are fixed in 4.2.1.
     "filelock>=4.2.1",
-    # Reached through recon-tool DNS lookups; CVE-2026-114605 is fixed in 2.9.0.
-    "dnspython>=2.9.0",
+    # Reached through recon-tool DNS lookups. CVE-2026-114605 is fixed in
+    # 2.9.0. CVE-2026-128089, a WKS text-parser memory exhaustion, is fixed
+    # in 2.9.2.
+    "dnspython>=2.9.2",
     # Reached through pyasn1-modules (cryptography and cloud auth).
     # CVE-2026-119194, CVE-2026-119195, CVE-2026-119196, and CVE-2026-119197
     # are quadratic decoder DoS issues fixed in 0.6.5.
