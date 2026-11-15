@@ -50,7 +50,18 @@ jobs:
 
       - name: Set up Python ${{ matrix.python-version }}
         timeout-minutes: 10
-        run: uv python install ${{ matrix.python-version }}
+        shell: bash
+        run: |
+          # uv 0.13.5 can download only through CPython 3.15.1. Install the
+          # newest stable 3.15 patch from the checked-in manifest into this
+          # job's uv directory, then select that patch explicitly.
+          if [ "${{ matrix.python-version }}" = "3.15" ]; then
+            uv python install 3.15.2 \
+              --python-downloads-json-url "${GITHUB_WORKSPACE}/.github/python/cpython-3.15.2-downloads.json"
+            echo "UV_PYTHON=3.15.2" >> "$GITHUB_ENV"
+          else
+            uv python install ${{ matrix.python-version }}
+          fi
 
       - name: Install dependencies
         timeout-minutes: 10
@@ -299,9 +310,13 @@ jobs:
           cache-dependency-glob: "uv.lock"
           cache-suffix: emsign-fixed-${{ runner.os }}-py3.15-cross-platform
 
-      - name: Set up Python 3.15
+      - name: Set up Python 3.15.2
         timeout-minutes: 10
-        run: uv python install 3.15
+        shell: bash
+        run: |
+          uv python install 3.15.2 \
+            --python-downloads-json-url "${GITHUB_WORKSPACE}/.github/python/cpython-3.15.2-downloads.json"
+          echo "UV_PYTHON=3.15.2" >> "$GITHUB_ENV"
 
       - name: Install dependencies
         timeout-minutes: 10
@@ -346,9 +361,13 @@ jobs:
           cache-dependency-glob: "uv.lock"
           cache-suffix: emsign-fixed-${{ runner.os }}-py3.15-a2a
 
-      - name: Set up Python 3.15
+      - name: Set up Python 3.15.2
         timeout-minutes: 10
-        run: uv python install 3.15
+        shell: bash
+        run: |
+          uv python install 3.15.2 \
+            --python-downloads-json-url "${GITHUB_WORKSPACE}/.github/python/cpython-3.15.2-downloads.json"
+          echo "UV_PYTHON=3.15.2" >> "$GITHUB_ENV"
 
       - name: Install dependencies (with A2A SDK)
         timeout-minutes: 10

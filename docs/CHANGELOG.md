@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Raise the transitive `soupsieve` floor to 4.0.0 and the `dnspython` floor to
+  2.9.2. `soupsieve` before 4.0.0 can stall on crafted selectors
+  (CVE-2026-126190, CVE-2026-126191, CVE-2026-126192, CVE-2026-126193).
+  `dnspython` before 2.9.2 can exhaust memory while parsing a malicious WKS
+  record (CVE-2026-128089). Both are reached through existing dependencies.
+  The constraints cover locked source and container installs. `soupsieve`
+  4.0.0 requires Python >=3.11.5, so the published floor moves to that patch.
+  Python 3.11 through 3.15 stay supported; current 3.11 installers are past
+  3.11.4.
 - Raise the transitive `pyasn1` floor to 0.6.5. Versions before 0.6.5 spend
   quadratic CPU while decoding crafted ASN.1 (CVE-2026-119194,
   CVE-2026-119195, CVE-2026-119196, CVE-2026-119197). The package is reached
@@ -35,6 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- CI installs CPython 3.15.2 into the job workspace. The pinned uv 0.13.5
+  manifest stops at 3.15.1, so the 3.15 jobs pass a checked-in download
+  manifest to `uv python install`. The interpreter is not taken from the
+  runner image, and the uv pin stays 0.13.5.
 - Disclosed and reported figures stay as stated. The composed overview, the
   fast-mode system prompt, the fast trust polish, and the contradiction edit
   use a range only for a genuine estimate and say how it was made. The

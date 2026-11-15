@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
@@ -127,14 +128,19 @@ def test_dependency_security_floors_exclude_affected_versions(
     [
         ("anyio", "4.14.1", "4.14.2"),
         ("pyjwt", "2.14.0", "2.15.1"),
-        ("soupsieve", "2.8.4", "2.9.0"),
+        ("soupsieve", "2.8.4", "4.0.0"),
+        ("soupsieve", "2.9", "4.0.0"),
+        ("soupsieve", "2.10", "4.0.0"),
+        ("soupsieve", "3.0.2", "4.0.0"),
         ("virtualenv", "21.14.3", "21.14.13"),
         ("virtualenv", "21.14.6", "21.14.13"),
         ("virtualenv", "21.14.8", "21.14.13"),
         ("virtualenv", "21.14.11", "21.14.13"),
         ("virtualenv", "21.14.12", "21.14.13"),
         ("filelock", "3.29.0", "4.2.1"),
-        ("dnspython", "2.8.0", "2.9.0"),
+        ("dnspython", "2.8.0", "2.9.2"),
+        ("dnspython", "2.9.0", "2.9.2"),
+        ("dnspython", "2.9.1", "2.9.2"),
         ("pyasn1", "0.6.4", "0.6.5"),
         ("pip", "26.2.1", "26.2.2"),
     ],
@@ -215,6 +221,23 @@ def test_setup_uv_actions_pin_the_export_tool_version() -> None:
         assert text.count('version: "0.13.5"') == setup_count, (
             f"{workflow.name} must pin uv 0.13.5 at every setup-uv step"
         )
+
+
+def test_ci_installs_newest_stable_cpython_from_the_job_manifest() -> None:
+    """uv 0.13.5 stops at 3.15.1, so CI must request 3.15.2 from a local manifest."""
+    manifest_path = ROOT / ".github" / "python" / "cpython-3.15.2-downloads.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    linux = manifest["cpython-3.15.2-linux-x86_64-gnu"]
+    assert linux["major"] == 3
+    assert linux["minor"] == 15
+    assert linux["patch"] == 2
+    assert linux["sha256"]
+    assert "python-build-standalone/releases/download/" in linux["url"]
+    for workflow in (WORKFLOW_DIR / "ci.yml", WORKFLOW_DIR / "dependency-audit.yml"):
+        text = workflow.read_text(encoding="utf-8")
+        assert "uv python install 3.15.2" in text
+        assert ".github/python/cpython-3.15.2-downloads.json" in text
+        assert 'echo "UV_PYTHON=3.15.2"' in text
 
 
 def test_container_requirement_exports_match_uv_lock() -> None:
