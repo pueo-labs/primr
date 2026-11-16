@@ -140,17 +140,17 @@ Primr supports an expanded set of pre-priced, verified models through OpenRouter
 | Provider / Family | Model identifier | Input / output per 1M tokens | Role suitability |
 |---|---|---|---|
 | Google | `google/gemini-3.8-flash` | `$0.75 / $3.75` | Writing, Reasoning |
-| Google | `google/gemini-3.7-flash` | `$0.75 / $3.75` | Writing, Reasoning |
+| Google | `google/gemini-3.7-flash` | `$0.75 / $3.75` | Unavailable for new selections; use `google/gemini-3.8-flash` |
 | Google | `google/gemini-3.5-flash-lite` | `$0.30 / $2.50` | Default utility |
-| Google | `google/gemini-3.1-flash-lite` | `$0.25 / $1.50` | Previous utility default |
-| Google | `google/gemini-2.5-flash-lite` | `$0.10 / $0.40` | Explicit override; current catalog lists no retirement date; not the default |
-| OpenAI | `openai/gpt-5.4-mini` | `$0.75 / $4.50` | Writing, Utility |
-| OpenAI | `openai/gpt-5.4-nano` | `$0.20 / $1.25` | Utility |
+| Google | `google/gemini-3.1-flash-lite` | `$0.25 / $1.50` | Unavailable for new selections; use `google/gemini-3.5-flash-lite` |
+| Google | `google/gemini-2.5-flash-lite` | `$0.10 / $0.40` | Unavailable for new selections; use `google/gemini-3.5-flash-lite`. The row stays for historical quotes. |
+| OpenAI | `openai/gpt-5.4-mini` | `$0.75 / $4.50` | Unavailable for new selections; use `openai/gpt-6.1-terra` |
+| OpenAI | `openai/gpt-5.4-nano` | `$0.20 / $1.25` | Unavailable for new selections; use `openai/gpt-6-luna` |
 | OpenAI | `openai/gpt-6.1-terra` | `$1.00 / $5.00` | Reasoning |
 | OpenAI | `openai/gpt-6-luna` | `$0.10 / $0.50` | Default writing |
 | OpenAI | `openai/gpt-4.1-mini` | `$0.40 / $1.60` | Unavailable; OpenAI shuts it down 2027-01-14 (use `openai/gpt-6-luna`) |
-| Anthropic | `anthropic/claude-sonnet-4.6` | `$3.00 / $15.00` | Reasoning |
-| Anthropic | `anthropic/claude-haiku-4.5` | `$1.00 / $5.00` | Writing, Utility |
+| Anthropic | `anthropic/claude-sonnet-4.6` | `$3.00 / $15.00` | Unavailable for new selections; use `anthropic/claude-sonnet-5.5` |
+| Anthropic | `anthropic/claude-haiku-4.5` | `$1.00 / $5.00` | Unavailable for new selections; use `anthropic/claude-haiku-5.5` |
 | DeepSeek | `deepseek/deepseek-v3.2` | `$0.269 / $0.40` | Reasoning |
 | DeepSeek | `deepseek/deepseek-chat` | `$0.27 / $0.40` | Reasoning, Writing |
 | DeepSeek | `deepseek/deepseek-r1` | `$0.55 / $2.19` | Reasoning |
@@ -159,17 +159,24 @@ Primr supports an expanded set of pre-priced, verified models through OpenRouter
 ### Granular role overrides
 
 The October 13, 2026 [OpenRouter catalog](https://openrouter.ai/api/v1/models)
-lists October 20 expiration for Gemini 2.5 Flash-Lite, Flash, Pro, and the
-Flash/Pro batch slugs. Primr rejects those selections on or after that UTC
-date, including explicitly priced custom overrides, before model transport.
-It retains their historical pricing and catalog indices. Select a replacement
-explicitly and obtain a new estimate; Primr does not silently substitute one.
-For utility work, `google/gemini-3.1-flash-lite` is already the default at
-`$0.25 / $1.50` per million input/output tokens, compared with `$0.10 / $0.40`
-for 2.5 Flash-Lite.
+listed an October 20 expiration for Gemini 2.5 Flash-Lite, Flash, Pro, and
+the Flash/Pro batch slugs. The live base slugs no longer advertise that
+date. Primr still expires `google/gemini-2.5-flash:batch` and
+`google/gemini-2.5-pro:batch` on 2026-10-20. The registered
+`google/gemini-2.5-flash-lite` row is unavailable for new selections and
+names `google/gemini-3.5-flash-lite`. Historical pricing and catalog indices
+stay. Select a replacement explicitly and obtain a new estimate; Primr does
+not silently substitute one. The current utility default is
+`google/gemini-3.5-flash-lite` at `$0.30 / $2.50` per million input/output
+tokens.
 
-This deadline is provider-specific. The direct [Gemini Developer API](https://ai.google.dev/gemini-api/docs/deprecations)
-announces no 2.5 shutdown date and limits access to prior users. Primr's
+That gateway date is separate from the direct Gemini Developer API. The
+[deprecations page](https://ai.google.dev/gemini-api/docs/deprecations),
+checked on 2026-11-16, shuts `gemini-2.5-pro` and `gemini-2.5-flash` down on
+2026-12-01 and limits those two ids to users who have already used them. On
+that date the provider routes Pro to `gemini-3.8-flash` and Flash to
+`gemini-3.5-flash-lite`. Direct `gemini-2.5-flash-lite` is not deprecated
+and remains available. Primr's
 direct Gemini overrides use `AI_FAST_MODEL`, `AI_REASONING_MODEL`, and the
 role-specific `PRIMR_GEMINI_UTILITY_MODEL`, `PRIMR_GEMINI_WRITING_MODEL`, and
 `PRIMR_GEMINI_REASONING_MODEL`. When the selected provider is Gemini, its

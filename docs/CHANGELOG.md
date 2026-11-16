@@ -108,8 +108,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   warns. On that date it is refused in favor of `gemini-3.8-flash` and
   `gemini-3.5-flash-lite`. Quotes before the shutdown keep the stored 2.5
   rates, and quotes on or after it use the successor rates.
-  `gemini-2.5-flash-lite` is not deprecated. Other superseded ids are not
-  selectable.
+  Direct `gemini-2.5-flash-lite` is not deprecated and remains available.
+  The OpenRouter row for that id is not selectable. Deprecation notes were
+  rechecked against the Gemini deprecations page on 2026-11-16. Other
+  superseded ids are not selectable.
 - The Strategic Overview voice now covers the fast-mode system prompt, the
   composed overview persona, and the section briefs. Those paths no longer
   tell the writer to treat every claim as a hypothesis or to hedge wins,

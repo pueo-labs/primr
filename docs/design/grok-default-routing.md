@@ -20,13 +20,14 @@ Superseded registry rows stay so historical quotes still resolve. New
 requests for those ids are rejected, except the direct Gemini 2.5 rows
 below. Embeddings were not swapped.
 `gemini-2.5-pro` and `gemini-2.5-flash` are deprecated and shut down on
-2026-12-01. Until that date an explicit selection still runs and reports
-the deprecation. On that date the selection is refused. The refusal names
-`gemini-3.8-flash` for Pro and `gemini-3.5-flash-lite` for Flash, the
-provider routing targets, distinct from the `gemini-4-carbon` default.
-Quotes before the shutdown keep the stored 2.5 rates. Quotes on or after
-it use the successor rates. `gemini-2.5-flash-lite` is not deprecated and
-stays selectable.
+2026-12-01 (deprecations page checked 2026-11-16). Until that date an
+explicit selection still runs and reports the deprecation. On that date
+the selection is refused. The refusal names `gemini-3.8-flash` for Pro and
+`gemini-3.5-flash-lite` for Flash, the provider routing targets, distinct
+from the `gemini-4-carbon` default. Quotes before the shutdown keep the
+stored 2.5 rates. Quotes on or after it use the successor rates. Direct
+`gemini-2.5-flash-lite` is not deprecated and stays selectable. The
+OpenRouter row for that id is not.
 `deep-research-preview-04-2026` has no named current replacement in the
 catalogs checked on this date, so that row is unchanged.
 
