@@ -26,6 +26,7 @@ from primr.core.cli_doctor import (
     _check_filesystem,
     _check_gemini_resources,
     _check_provider_availability,
+    _check_search_connectivity,
     _show_file_locations,
     run_doctor,
 )
@@ -114,7 +115,7 @@ class TestCheckApiKeys:
 
         with patch("requests.get") as get_mock:
             get_mock.return_value = MagicMock(status_code=200)
-            all_passed, _ = _check_api_keys(True, 0)
+            all_passed, _ = _check_search_connectivity(True, 0)
         assert all_passed is True
 
     def test_google_search_api_403_fails(self, monkeypatch):
@@ -125,18 +126,37 @@ class TestCheckApiKeys:
 
         with patch("requests.get") as get_mock:
             get_mock.return_value = MagicMock(status_code=403)
-            all_passed, _ = _check_api_keys(True, 0)
+            all_passed, _ = _check_search_connectivity(True, 0)
         assert all_passed is False
 
-    def test_ddg_failure_marks_failed(self, monkeypatch):
+    def test_web_search_failure_marks_failed(self, monkeypatch):
         monkeypatch.setenv("GEMINI_API_KEY", "AI" + "x" * 30)
         monkeypatch.setenv("SEARCH_PROVIDER", "duckduckgo")
         monkeypatch.delenv("XAI_API_KEY", raising=False)
 
         with patch("ddgs.DDGS") as ddgs_mock:
             ddgs_mock.return_value.text.side_effect = RuntimeError("net down")
-            all_passed, _ = _check_api_keys(True, 0)
+            all_passed, _ = _check_search_connectivity(True, 0)
         assert all_passed is False
+
+    def test_dns_failure_skips_search_without_failing_configuration(self, monkeypatch, capsys):
+        monkeypatch.setenv("SEARCH_PROVIDER", "auto")
+
+        class DNSError(Exception):
+            pass
+
+        with patch("ddgs.DDGS") as ddgs_mock:
+            ddgs_mock.return_value.text.side_effect = DNSError(
+                "error resolving DNS for https://search.brave.com/search no connections available"
+            )
+            all_passed, warnings = _check_search_connectivity(True, 0)
+        assert all_passed is True
+        assert warnings == 1
+        captured = capsys.readouterr()
+        text = captured.out + captured.err
+        assert "no network or dns; search checks skipped" in text.lower()
+        assert "DuckDuckGo" not in text
+        assert "doctor --fix" not in text
 
 
 # ---------------------------------------------------------------------------
@@ -199,6 +219,7 @@ class TestCheckProviderAvailability:
         assert "ready" in output
         assert "Anthropic Claude" in output
         assert "not configured" in output
+        assert output.count("estimate/eval only") == 2
         assert "Ollama/local" in output
         assert "ready" in output
         assert "custom-model-name" not in output
@@ -565,6 +586,11 @@ class TestRunDoctor:
         )
         monkeypatch.setattr(cli_doctor, "_check_openai_shutdowns", lambda wc: wc + warnings)
         monkeypatch.setattr(cli_doctor, "_check_key_shadowing", lambda wc: wc + warnings)
+        monkeypatch.setattr(
+            cli_doctor,
+            "_check_search_connectivity",
+            lambda ap, wc: (ap and all_passed, wc + warnings),
+        )
 
     def test_all_pass_returns_zero(self, monkeypatch):
         self._stub_all_checks(monkeypatch, all_passed=True, warnings=0)
@@ -622,7 +648,7 @@ class TestCheckApiKeysEdgeCases:
             response = MagicMock(status_code=400)
             response.json.return_value = {"error": {"message": "bad request"}}
             get_mock.return_value = response
-            all_passed, _ = _check_api_keys(True, 0)
+            all_passed, _ = _check_search_connectivity(True, 0)
         assert all_passed is False
 
     def test_google_search_api_500_fails(self, monkeypatch):
@@ -632,7 +658,7 @@ class TestCheckApiKeysEdgeCases:
         monkeypatch.setenv("SEARCH_ENGINE_ID", "y" * 30)
         with patch("requests.get") as get_mock:
             get_mock.return_value = MagicMock(status_code=500)
-            all_passed, _ = _check_api_keys(True, 0)
+            all_passed, _ = _check_search_connectivity(True, 0)
         assert all_passed is False
 
     def test_google_search_api_timeout(self, monkeypatch):
@@ -646,8 +672,9 @@ class TestCheckApiKeysEdgeCases:
             "requests.get",
             side_effect=real_requests.exceptions.Timeout("timed out"),
         ):
-            all_passed, _ = _check_api_keys(True, 0)
-        assert all_passed is False
+            all_passed, warnings = _check_search_connectivity(True, 0)
+        assert all_passed is True
+        assert warnings == 1
 
     def test_google_search_missing_engine_id_fails(self, monkeypatch):
         monkeypatch.setenv("GEMINI_API_KEY", "AI" + "x" * 30)
@@ -662,7 +689,7 @@ class TestCheckApiKeysEdgeCases:
         monkeypatch.setenv("SEARCH_PROVIDER", "duckduckgo")
         with patch("ddgs.DDGS") as ddgs_mock:
             ddgs_mock.return_value.text.return_value = []
-            all_passed, warnings = _check_api_keys(True, 0)
+            all_passed, warnings = _check_search_connectivity(True, 0)
         assert all_passed is True
         assert warnings >= 1
 

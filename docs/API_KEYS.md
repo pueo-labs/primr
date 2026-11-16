@@ -290,7 +290,7 @@ primr doctor --fix
 | Error | Cause | Fix |
 |-------|-------|-----|
 | "API key expired" | Key revoked or project deleted | Create new key in Cloud Console |
-| "No cloud LLM provider key configured" | No Gemini, xAI, OpenAI, or Anthropic key is configured | Run one of `primr keys set gemini`, `primr keys set xai`, `primr keys set openai`, or `primr keys set anthropic` |
+| "No model provider key set" | No Gemini, xAI, or enabled OpenRouter key is configured | Run one of `primr keys set gemini`, `primr keys set xai`, or `primr keys set openrouter`. OpenAI and Anthropic keys are estimate and eval only until full execution lands |
 | "XAI_API_KEY not set" | Grok standard mode is disabled | Run `primr keys set xai` if you want the measured default reasoner |
 | "GEMINI_API_KEY not set" | Gemini writing/premium stages are disabled | Run `primr keys set gemini` if you want the cheapest measured writer or premium mode |
 | "Quota exceeded" | Provider RPM, token, daily, or spend-rate limit | Check the provider's current project limits, honor retry guidance for transient 429s, and wait for reset when the quota is exhausted. Choose another configured route only after a fresh dry-run and approval. |
