@@ -199,6 +199,7 @@ class TestCheckProviderAvailability:
         assert "ready" in output
         assert "Anthropic Claude" in output
         assert "not configured" in output
+        assert output.count("estimate/eval only") == 2
         assert "Ollama/local" in output
         assert "ready" in output
         assert "custom-model-name" not in output

@@ -129,8 +129,9 @@ class APIKeysConfig:
                     suggestion=(
                         "Run 'primr init' for guided setup (paste keys, no .env editing), "
                         "or 'primr keys set gemini', 'primr keys set xai', "
-                        "'primr keys set openai', 'primr keys set openrouter', "
-                        "or 'primr keys set anthropic'.\n  Without a key: "
+                        "or 'primr keys set openrouter'. "
+                        "OpenAI and Anthropic keys are estimate and eval only until full "
+                        "execution lands.\n  Without a key: "
                         'primr prep "ExampleCo" https://example.co collects an evidence bundle at $0. '
                         "Then primr draft --local BUNDLE --dry-run checks installed model capacity; "
                         "remove --dry-run to create an unvalidated local draft."
