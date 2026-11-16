@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `no network or DNS; search checks skipped` and does not send the user to
   `primr doctor --fix`.
 
+### Changed
+
+- GitHub Actions runs finish even when a newer commit is pushed on the same
+  pull request. Release publishing and the docs site still run one at a time,
+  and a waiting run stays queued instead of being replaced.
+
 ## [1.39.35] - 2026-11-16
 
 ### Security

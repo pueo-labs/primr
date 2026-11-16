@@ -292,6 +292,12 @@ version label; include `tests/test_docs_index.py` and
 deleted on merge (the repo auto-deletes merged PR branches); don't leave stale
 branches behind. Merge via PR, not direct pushes to `main`.
 
+Workflow runs are never cancelled, including a pull request run superseded
+by a later push. Do not add a concurrency group to drop those runs. A group
+is only for a shared resource that must stay serialized, such as a release
+or a Pages publish. That group sets `cancel-in-progress: false` and
+`queue: max`. `tests/test_supply_chain_pins.py` rejects any other setting.
+
 ### Start tidy, stop tidy
 
 Several agent tools may work here, and sessions can end partway through a task.
