@@ -10,6 +10,7 @@ import pytest
 
 from primr.ai.genai_factory import (
     DEFAULT_GENAI_HTTP_TIMEOUT_MS,
+    GENAI_API_VERSION,
     accepts_sampling_parameters,
     default_genai_http_options,
     get_genai_http_timeout_ms,
@@ -45,6 +46,12 @@ class TestHttpOptions:
     def test_env_override_applies(self, monkeypatch):
         monkeypatch.setenv("PRIMR_GEMINI_HTTP_TIMEOUT_MS", "120000")
         assert default_genai_http_options().timeout == 120_000
+
+    def test_options_stay_on_the_agents_api(self, monkeypatch):
+        monkeypatch.setenv("GOOGLE_GENAI_API_VERSION", "v1")
+        options = default_genai_http_options()
+        assert GENAI_API_VERSION == "v1beta"
+        assert options.api_version == "v1beta"
 
 
 class TestModelCapabilities:

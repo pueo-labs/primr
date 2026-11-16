@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The Google GenAI SDK floor is now 3.3.0. Clients keep API version
+  `v1beta` because deep research uses the Agents API, which is not in
+  `v1`. The request timeout stays finite.
 - The optional A2A extra now installs SDK 1
   (`a2a-sdk[http-server]>=1.3,<2`). The server speaks protocol 1.0 and
   still accepts 0.3 JSON-RPC methods on the same endpoint. The agent card
