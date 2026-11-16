@@ -223,6 +223,35 @@ def test_setup_uv_actions_pin_the_export_tool_version() -> None:
         )
 
 
+def _concurrency_blocks(node: object) -> list[object]:
+    found: list[object] = []
+    if isinstance(node, dict):
+        if "concurrency" in node:
+            found.append(node["concurrency"])
+        for value in node.values():
+            found.extend(_concurrency_blocks(value))
+    elif isinstance(node, list):
+        for item in node:
+            found.extend(_concurrency_blocks(item))
+    return found
+
+
+def test_workflow_runs_are_never_cancelled() -> None:
+    """Superseded runs stay. Only a real shared resource may queue."""
+    serialized = {"docs.yml", "release.yml"}
+    for workflow in sorted(WORKFLOW_DIR.glob("*.yml")):
+        document = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+        blocks = _concurrency_blocks(document)
+        if workflow.name not in serialized:
+            assert blocks == [], f"{workflow.name} must not cancel or queue runs"
+            continue
+        assert len(blocks) == 1, workflow.name
+        block = blocks[0]
+        assert isinstance(block, dict), workflow.name
+        assert block.get("cancel-in-progress") is False, workflow.name
+        assert block.get("queue") == "max", workflow.name
+
+
 def test_ci_installs_newest_stable_cpython_from_the_job_manifest() -> None:
     """uv 0.13.5 stops at 3.15.1, so CI must request 3.15.2 from a local manifest."""
     manifest_path = ROOT / ".github" / "python" / "cpython-3.15.2-downloads.json"

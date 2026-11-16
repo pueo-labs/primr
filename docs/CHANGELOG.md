@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The same idempotency key retries the accept once. A request that already
   reached the queue is not submitted again, and a new key still is.
 
+### Changed
+
+- GitHub Actions runs finish even when a newer commit is pushed on the same
+  pull request. Release publishing and the docs site still run one at a time,
+  and a waiting run stays queued instead of being replaced.
+
 ## [1.39.35] - 2026-11-16
 
 ### Security
