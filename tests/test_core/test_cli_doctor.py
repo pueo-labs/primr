@@ -360,22 +360,38 @@ class TestCheckDependencies:
         )
 
     def test_playwright_available(self):
-        completed = MagicMock(returncode=0)
+        completed = MagicMock(returncode=0, stdout="")
         with patch("primr.core.cli_doctor.subprocess.run", return_value=completed) as run_mock:
-            assert _check_dependencies(0) == 0
+            assert _check_dependencies(True, 0) == (True, 0)
         run_mock.assert_called_once()
+        probe = run_mock.call_args.args[0][2]
+        assert "chromium_launch_status" in probe
+
+    def test_missing_browsers_fail_with_the_preflight_sentence(self):
+        completed = MagicMock(
+            returncode=2,
+            stdout="Playwright browsers not installed. Run: playwright install chromium\n",
+        )
+        with (
+            patch("primr.core.cli_doctor.subprocess.run", return_value=completed),
+            patch("primr.core.cli_doctor.console.error") as error,
+        ):
+            assert _check_dependencies(True, 0) == (False, 0)
+        error.assert_called_once_with(
+            "Playwright browsers not installed. Run: playwright install chromium"
+        )
 
     def test_playwright_failure_increments_warning(self):
-        completed = MagicMock(returncode=-11)
+        completed = MagicMock(returncode=-11, stdout="")
         with patch("primr.core.cli_doctor.subprocess.run", return_value=completed):
-            assert _check_dependencies(0) == 1
+            assert _check_dependencies(True, 0) == (True, 1)
 
     def test_playwright_timeout_increments_warning(self):
         with patch(
             "primr.core.cli_doctor.subprocess.run",
             side_effect=cli_doctor.subprocess.TimeoutExpired("python", 30),
         ):
-            assert _check_dependencies(2) == 3
+            assert _check_dependencies(True, 2) == (True, 3)
 
     def test_unsupported_runtime_skips_native_probe(self, monkeypatch):
         monkeypatch.setattr(
@@ -383,7 +399,7 @@ class TestCheckDependencies:
             lambda: False,
         )
         with patch("primr.core.cli_doctor.subprocess.run") as run_mock:
-            assert _check_dependencies(0) == 1
+            assert _check_dependencies(True, 0) == (True, 1)
 
         run_mock.assert_not_called()
 
@@ -562,7 +578,11 @@ class TestRunDoctor:
             "_check_provider_availability",
             lambda wc: wc + warnings,
         )
-        monkeypatch.setattr(cli_doctor, "_check_dependencies", lambda wc: wc + warnings)
+        monkeypatch.setattr(
+            cli_doctor,
+            "_check_dependencies",
+            lambda ap, wc: (ap and all_passed, wc + warnings),
+        )
         monkeypatch.setattr(cli_doctor, "_check_openai_shutdowns", lambda wc: wc + warnings)
         monkeypatch.setattr(cli_doctor, "_check_key_shadowing", lambda wc: wc + warnings)
         monkeypatch.setattr(

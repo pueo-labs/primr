@@ -287,45 +287,53 @@ def _provider_availability_status(snapshot: ProviderQuotaSnapshot) -> tuple[str,
     return "ready", "key and SDK present; live model probe skipped"
 
 
-def _check_dependencies(warnings_count: int) -> int:
+def _check_dependencies(all_passed: bool, warnings_count: int) -> tuple[bool, int]:
     """Check required dependencies without risking the doctor process.
 
-    Playwright starts a native driver while entering its context manager. A
-    preview Python or newly released platform wheel can terminate the process
-    before Python has an opportunity to raise an exception. Keep that probe in
-    a short-lived child so doctor can report the failure instead of crashing.
+    Playwright starts a native driver while launching Chromium. A preview
+    Python or newly released platform wheel can terminate the process before
+    Python has an opportunity to raise an exception. Keep that probe in a
+    short-lived child so doctor can report the failure instead of crashing.
+    The child runs the same launch preflight uses.
     """
     from primr.data.scraping.playwright_compat import (
         SYNC_BROWSER_UNAVAILABLE_REASON,
+        chromium_readiness_probe,
         sync_browser_runtime_supported,
     )
 
     if not sync_browser_runtime_supported():
         console.warn(SYNC_BROWSER_UNAVAILABLE_REASON)
         console.info("Safe non-Playwright collection tiers remain available")
-        return warnings_count + 1
+        return all_passed, warnings_count + 1
 
-    probe = "from playwright.sync_api import sync_playwright\nwith sync_playwright():\n    pass\n"
     try:
         result = subprocess.run(
-            [sys.executable, "-c", probe],
+            [sys.executable, "-c", chromium_readiness_probe()],
             capture_output=True,
             check=False,
             timeout=30,
+            text=True,
         )
     except (OSError, subprocess.TimeoutExpired) as e:
         console.warn(f"Playwright not ready: isolated probe failed ({type(e).__name__})")
         console.info("  Run: playwright install chromium")
-        return warnings_count + 1
+        return all_passed, warnings_count + 1
 
     if result.returncode == 0:
-        console.ok("Playwright runtime available")
-        return warnings_count
+        console.ok("Playwright Chromium available")
+        return all_passed, warnings_count
 
-    console.warn(f"Playwright not ready: isolated probe exited with status {result.returncode}")
+    message = (result.stdout or "").strip()
+    if result.returncode == 2 and message:
+        console.error(message)
+        return False, warnings_count
+
+    if not message:
+        message = f"Playwright not ready: isolated probe exited with status {result.returncode}"
+    console.warn(message)
     console.info("  Run: playwright install chromium")
-    warnings_count += 1
-    return warnings_count
+    return all_passed, warnings_count + 1
 
 
 def _check_filesystem(all_passed: bool, warnings_count: int) -> tuple[bool, int]:
@@ -554,7 +562,7 @@ def run_doctor(*, fix: bool = False) -> int:
         warnings_count = _check_openai_shutdowns(warnings_count)
 
     console.step("Dependencies")
-    warnings_count = _check_dependencies(warnings_count)
+    all_passed, warnings_count = _check_dependencies(all_passed, warnings_count)
 
     console.step("File System")
     all_passed, warnings_count = _check_filesystem(all_passed, warnings_count)
