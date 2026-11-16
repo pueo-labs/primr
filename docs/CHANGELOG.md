@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   providers that can run a full report. OpenAI and Anthropic stay available
   for estimates and evals. `primr doctor` marks those two rows
   `estimate/eval only`.
+- `primr doctor` probes web search under Connectivity. The default engine is
+  no longer labeled DuckDuckGo. A DNS failure says
+  `no network or DNS; search checks skipped` and does not send the user to
+  `primr doctor --fix`.
 - Cloud cancellation grace is measured from the cancel request. A repeated
   cancel does not restart that clock. A stored job with no cancel-request
   time gets one grace period from the first reconciliation that sees it.

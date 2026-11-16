@@ -56,7 +56,7 @@ def test_keyless_doctor_is_compact_truthful_and_zero_token(tmp_path, monkeypatch
     captured = capsys.readouterr()
     text = captured.out + captured.err
     lines = _plain(text).splitlines()
-    assert len(lines) <= 40
+    assert len(lines) <= 42
     assert max(map(len, lines)) <= 60
     assert text.count("Ollama/local") == 1
     assert text.count("Next:") == 1
