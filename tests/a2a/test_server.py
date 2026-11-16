@@ -118,14 +118,21 @@ class TestPrimrA2AServer:
             ).json()
 
         assert owned["result"]["id"] == "task-local"
-        assert (
-            denied["error"]
-            == missing["error"]
-            == {
-                "code": -32001,
-                "message": "Task not found",
-            }
-        )
+        assert denied["error"] == missing["error"]
+        assert denied["error"]["code"] == -32001
+        assert denied["error"]["message"] == "Task not found"
+
+    @pytest.mark.asyncio
+    async def test_agent_card_is_served_at_both_well_known_paths(self, a2a_server):
+        transport = ASGITransport(app=a2a_server.build_app())
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            current = await client.get("/.well-known/agent-card.json")
+            legacy = await client.get("/.well-known/agent.json")
+
+        assert current.status_code == 200
+        assert legacy.status_code == 200
+        assert current.json()["name"] == "Primr Research Agent"
+        assert legacy.json()["name"] == current.json()["name"]
 
     @pytest.mark.asyncio
     async def test_with_auth_context_bridges_scope_user(self, a2a_server, mcp_server):

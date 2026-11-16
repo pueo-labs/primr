@@ -69,6 +69,27 @@ async def test_inflight_progress_is_ordered_before_terminal() -> None:
 
 
 @pytest.mark.asyncio
+async def test_opening_task_is_sent_only_with_the_terminal_event() -> None:
+    lifecycle = A2ALifecycleEvents()
+    queue = _Queue()
+
+    assert await lifecycle.enqueue_terminal_once(
+        job_id="job-1",
+        event_queue=queue,
+        event="terminal",
+        opening_task="task",
+    )
+    assert not await lifecycle.enqueue_terminal_once(
+        job_id="job-1",
+        event_queue=queue,
+        event="again",
+        opening_task="second-task",
+    )
+
+    assert queue.events == ["task", "terminal"]
+
+
+@pytest.mark.asyncio
 async def test_pending_cancel_suppresses_progress_until_released() -> None:
     lifecycle = A2ALifecycleEvents()
     queue = _Queue()

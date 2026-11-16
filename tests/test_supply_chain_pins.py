@@ -179,6 +179,23 @@ def test_anthropic_extra_uses_sdk_2() -> None:
     assert all(version.split(".", 1)[0] == "2" for version in versions)
 
 
+def test_a2a_extra_uses_sdk_1() -> None:
+    """SDK 1 follows protocol 1.0. The next major stays out until retested."""
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    requirement = next(
+        Requirement(value)
+        for value in project["optional-dependencies"]["a2a"]
+        if Requirement(value).name == "a2a-sdk"
+    )
+    lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
+    versions = [entry["version"] for entry in lock["package"] if entry["name"] == "a2a-sdk"]
+
+    assert requirement.specifier == SpecifierSet(">=1.3,<2")
+    assert versions, "a2a-sdk must remain available as the optional A2A extra"
+    assert all(version in requirement.specifier for version in versions)
+    assert all(version.split(".", 1)[0] == "1" for version in versions)
+
+
 def test_scheduled_audits_and_grouped_dependency_proposals() -> None:
     workflow = WORKFLOW_DIR / "dependency-audit.yml"
 

@@ -1049,7 +1049,9 @@ class TestPrimrAgentExecutor:
             ],
             "metadata": {"skillId": "research_company"},
         }
-        event_queue.enqueue_event = AsyncMock(side_effect=[RuntimeError("queue unavailable"), None])
+        event_queue.enqueue_event = AsyncMock(
+            side_effect=[None, RuntimeError("queue unavailable"), None]
+        )
 
         await executor.execute(context, event_queue)
 
@@ -1080,8 +1082,12 @@ class TestPrimrAgentExecutor:
         never_complete = asyncio.Event()
 
         async def block_working_event(_event):
-            enqueue_started.set()
-            await never_complete.wait()
+            if not enqueue_started.is_set() and block_working_event.seen:
+                enqueue_started.set()
+                await never_complete.wait()
+            block_working_event.seen = True
+
+        block_working_event.seen = False
 
         event_queue.enqueue_event = block_working_event
         request_task = asyncio.create_task(executor.execute(context, event_queue))
@@ -2639,7 +2645,7 @@ def _get_event_text(event) -> str:
     # Direct Message with parts
     if hasattr(event, "parts") and event.parts:
         for part in event.parts:
-            # Part(root=TextPart(...)) wrapper
+            # Protobuf Part.text, or a legacy Part(root=TextPart) wrapper.
             root = getattr(part, "root", part)
             if hasattr(root, "text"):
                 return root.text

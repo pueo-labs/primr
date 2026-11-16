@@ -5,9 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from a2a.auth.user import User
-from a2a.server.apps.jsonrpc.jsonrpc_app import (
-    DefaultCallContextBuilder,
-)
+from a2a.server.routes import DefaultServerCallContextBuilder
 
 from primr.mcp_server.auth import RESERVED_CLIENT_IDS
 from primr.mcp_server.resource_auth import is_trusted_local_a2a_context
@@ -30,10 +28,11 @@ class _TrustedLocalA2AUser(User):
 TRUSTED_LOCAL_A2A_USER = _TrustedLocalA2AUser()
 
 
-class PrimrA2ACallContextBuilder(DefaultCallContextBuilder):
+class PrimrA2ACallContextBuilder(DefaultServerCallContextBuilder):
     """Build SDK contexts while preserving trusted loopback identity."""
 
     def __init__(self, *, trusted_local_unauthenticated: bool) -> None:
+        super().__init__()
         self._trusted_local_unauthenticated = trusted_local_unauthenticated
 
     def build(self, request: Any):

@@ -68,11 +68,19 @@ class A2ALifecycleEvents:
         job_id: str,
         event_queue: Any,
         event: Any,
+        opening_task: Any | None = None,
     ) -> bool:
-        """Enqueue at most one terminal event across research and cancel calls."""
+        """Enqueue at most one terminal event across research and cancel calls.
+
+        ``opening_task`` is sent on this stream only when the terminal event
+        is sent. Cancel passes a Task because that request is a new stream.
+        Research omits it because the stream already opened with a Task.
+        """
         async with self._lock(job_id):
             if job_id in self._terminal_emitted:
                 return False
+            if opening_task is not None:
+                await event_queue.enqueue_event(opening_task)
             await event_queue.enqueue_event(event)
             self._terminal_emitted.add(job_id)
             return True

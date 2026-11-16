@@ -17,7 +17,9 @@ class TestBuildAgentCard:
 
     def test_url_format(self):
         card = build_agent_card(host="example.com", port=8080, version="1.0.0")
-        assert card.url == "http://example.com:8080/"
+        assert card.supported_interfaces[0].url == "http://example.com:8080/"
+        assert card.supported_interfaces[0].protocol_binding == "JSONRPC"
+        assert card.supported_interfaces[0].protocol_version == "1.0"
 
     def test_skills_count(self):
         card = build_agent_card(version="1.0.0")
@@ -63,8 +65,9 @@ class TestBuildAgentCard:
 
     def test_security_schemes(self):
         card = build_agent_card(version="1.0.0")
-        assert "bearer" in card.security_schemes
-        assert card.security == [{"bearer": []}]
+        scheme = card.security_schemes["bearer"].http_auth_security_scheme
+        assert scheme.scheme == "bearer"
+        assert list(card.security_requirements[0].schemes.keys()) == ["bearer"]
 
     def test_version_fallback(self):
         """When version is None, falls back to package version or 0.0.0."""
@@ -100,8 +103,12 @@ class TestBuildAgentCard:
 
     def test_card_serializes_to_json(self):
         """AgentCard serializes correctly with camelCase keys."""
+        from google.protobuf.json_format import MessageToDict
+
         card = build_agent_card(version="1.0.0")
-        data = card.model_dump(by_alias=True, exclude_none=True)
+        data = MessageToDict(card)
         assert "defaultInputModes" in data
         assert "securitySchemes" in data
-        assert data["securitySchemes"]["bearer"]["scheme"] == "bearer"
+        bearer = data["securitySchemes"]["bearer"]["httpAuthSecurityScheme"]
+        assert bearer["scheme"] == "bearer"
+        assert data["supportedInterfaces"][0]["url"].endswith("/")

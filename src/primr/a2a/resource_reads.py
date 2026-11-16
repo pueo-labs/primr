@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
-from a2a.utils import new_agent_text_message
+from a2a.helpers import new_text_message as new_agent_text_message
 
 from primr.a2a.input_parsing import (
     parse_eval_id,

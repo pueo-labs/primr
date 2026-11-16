@@ -9,10 +9,12 @@ Requires: pip install primr[a2a]
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.routes import create_agent_card_routes, create_jsonrpc_routes
+from a2a.utils.constants import AGENT_CARD_WELL_KNOWN_PATH
+from starlette.applications import Starlette
 
 from primr.a2a.agent_card import build_agent_card
 from primr.a2a.call_context import PrimrA2ACallContextBuilder
@@ -20,9 +22,6 @@ from primr.a2a.executor import PrimrAgentExecutor
 from primr.a2a.task_store import PrimrTaskStore
 from primr.mcp_server.resource_auth import TRUSTED_LOCAL_A2A_AUTH_CONTEXT
 from primr.mcp_server.server_context import MCPServerContext
-
-if TYPE_CHECKING:
-    from starlette.applications import Starlette
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +45,9 @@ class PrimrA2AServer:
             public_path: The URL path the A2A app is reachable at. Must
                 match the actual mount: "/" when running standalone (the
                 A2A app owns the uvicorn server), "/a2a/" when co-hosted
-                under the MCP Starlette app. The AgentCard URL is built
-                from (host, port, public_path) so clients that follow
-                AgentCard.url land on a real listener instead of an
-                unused port.
+                under the MCP Starlette app. The advertised interface URL
+                is built from (host, port, public_path) so clients that
+                follow the agent card land on a real listener.
         """
         self._mcp = mcp_server
         self.host = host
@@ -82,17 +80,33 @@ class PrimrA2AServer:
         request_handler = DefaultRequestHandler(
             agent_executor=self._executor,
             task_store=self._task_store,
-        )
-
-        a2a_app_builder = A2AStarletteApplication(
             agent_card=self._agent_card,
-            http_handler=request_handler,
-            context_builder=PrimrA2ACallContextBuilder(
-                trusted_local_unauthenticated=self._trusted_local_unauthenticated,
-            ),
         )
-
-        app = a2a_app_builder.build()
+        context_builder = PrimrA2ACallContextBuilder(
+            trusted_local_unauthenticated=self._trusted_local_unauthenticated,
+        )
+        # Protocol 1.0 serves the card at agent-card.json. The 0.3 path stays
+        # as an alias. JSON-RPC keeps tasks/get and the other 0.3 methods on
+        # the same endpoint so existing clients keep working.
+        legacy_card_path = "/.well-known/agent.json"
+        app = Starlette(
+            routes=[
+                *create_agent_card_routes(
+                    self._agent_card,
+                    card_url=AGENT_CARD_WELL_KNOWN_PATH,
+                ),
+                *create_agent_card_routes(
+                    self._agent_card,
+                    card_url=legacy_card_path,
+                ),
+                *create_jsonrpc_routes(
+                    request_handler,
+                    "/",
+                    context_builder=context_builder,
+                    enable_v0_3_compat=True,
+                ),
+            ]
+        )
         app = self._with_auth_context(app)
 
         # Add auth middleware if required. Fail CLOSED: if auth setup raises
