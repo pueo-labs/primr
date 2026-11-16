@@ -12,9 +12,12 @@ on:
         description: 'Tag to publish (e.g. v1.34.48)'
         required: true
 
+# One release publishes at a time. A later tag waits; it does not cancel
+# the release already running.
 concurrency:
   group: primr-release
   cancel-in-progress: false
+  queue: max
 
 # Strict semver regex applied to every tag/ref consumed by a shell step.
 # Tag names can legally contain shell metacharacters (quotes, $, ;, #, braces)
