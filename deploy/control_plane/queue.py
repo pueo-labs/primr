@@ -130,14 +130,20 @@ class InMemoryQueue:
         self._in_flight: dict[
             str, tuple[QueueMessage, float]
         ] = {}  # receipt_handle -> (message, visible_at)
+        self._accepted: dict[tuple[str, int], str] = {}
         self._lock = threading.Lock()
 
     def enqueue(self, message: QueueMessage) -> str:
-        """Enqueue a message."""
+        """Enqueue a message once per job attempt."""
         with self._lock:
+            key = (message.job_id, message.attempt)
+            accepted = self._accepted.get(key)
+            if accepted:
+                return accepted
             if not message.message_id:
                 message.message_id = str(uuid.uuid4())
             self._messages.append(message)
+            self._accepted[key] = message.message_id
             return message.message_id
 
     def dequeue(self, max_messages: int = 1, visibility_timeout: int = 30) -> list[QueueMessage]:
@@ -178,6 +184,7 @@ class InMemoryQueue:
         with self._lock:
             self._messages.clear()
             self._in_flight.clear()
+            self._accepted.clear()
 
     def size(self) -> int:
         """Get queue size (for testing)."""

@@ -432,6 +432,42 @@ def _require_job_owner(job: JobRecord, api_key: str) -> None:
 # =============================================================================
 
 
+def _accept_queued_job(job: JobRecord, queue: Queue, job_store: JobStore) -> None:
+    """Ask the queue to accept a saved job. A repeat does not add a second copy."""
+    if job.status != JobStatus.QUEUED or not job.enqueue_pending:
+        return
+    message = QueueMessage(
+        job_id=job.job_id,
+        deployment=job.deployment,
+        api_key_hash=job.api_key_hash,
+        inputs=job.inputs.to_dict(),
+        enqueued_at=format_timestamp(utc_now()),
+        attempt=job.attempt,
+        message_id=f"{job.job_id}:{job.attempt}",
+    )
+    queue.enqueue(message)
+    job.enqueue_pending = False
+    job_store.update(job)
+
+
+def _require_queue_accept(job: JobRecord, queue: Queue, job_store: JobStore) -> None:
+    """Persist the job first, then surface a retryable error if the queue refuses it."""
+    try:
+        _accept_queued_job(job, queue, job_store)
+    except Exception as exc:
+        logger.warning("Queue did not accept job %s: %s", job.job_id, type(exc).__name__)
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": "enqueue_failed",
+                "message": (
+                    "Job was saved but the queue did not accept it. Retry the same request."
+                ),
+                "job_id": job.job_id,
+            },
+        ) from exc
+
+
 @app.post("/submit", response_model=SubmitResponse)
 async def submit_job(
     request: SubmitRequest,
@@ -496,6 +532,7 @@ async def submit_job(
                 detail=f"Idempotency key '{request.idempotency_key}' already used with different inputs. "
                 "Use a new idempotency_key for different requests.",
             )
+        _require_queue_accept(existing, queue, job_store)
         return SubmitResponse(
             job_id=existing.job_id,
             status=existing.status.value,
@@ -543,6 +580,7 @@ async def submit_job(
         estimate=estimate,
         timing=JobTiming(submitted_at=format_timestamp(now)),
         ttl=int(time.time()) + 30 * 24 * 3600,  # 30 day retention
+        enqueue_pending=request.approve,
     )
 
     # Conditional write (prevents race conditions)
@@ -557,6 +595,7 @@ async def submit_job(
                     status_code=409,
                     detail="Idempotency key collision with different inputs",
                 ) from e
+            _require_queue_accept(existing, queue, job_store)
             return SubmitResponse(
                 job_id=existing.job_id,
                 status=existing.status.value,
@@ -568,17 +607,9 @@ async def submit_job(
             )
         raise HTTPException(status_code=500, detail="Failed to create job") from e
 
-    # Enqueue if approved
+    # Enqueue if approved. The saved record stays pending until the queue accepts it.
     if request.approve:
-        message = QueueMessage(
-            job_id=job_id,
-            deployment=deployment,
-            api_key_hash=api_key_hash,
-            inputs=canonical.to_dict(),
-            enqueued_at=format_timestamp(now),
-            attempt=1,
-        )
-        queue.enqueue(message)
+        _require_queue_accept(job, queue, job_store)
 
     # Record metrics
     metrics = get_metrics()
@@ -672,26 +703,17 @@ async def approve_job(
         raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
     _require_job_owner(job, api_key)
 
-    if job.status != JobStatus.PENDING_APPROVAL:
+    if job.status == JobStatus.PENDING_APPROVAL:
+        job.status = JobStatus.QUEUED
+        job.enqueue_pending = True
+        job_store.update(job)
+    elif not (job.status == JobStatus.QUEUED and job.enqueue_pending):
         raise HTTPException(
             status_code=409,
             detail=f"Job is not pending approval (current status: {job.status.value})",
         )
 
-    # Update status to QUEUED
-    job.status = JobStatus.QUEUED
-    job_store.update(job)
-
-    # Enqueue the job
-    message = QueueMessage(
-        job_id=job_id,
-        deployment=job.deployment,
-        api_key_hash=job.api_key_hash,
-        inputs=job.inputs.to_dict(),
-        enqueued_at=format_timestamp(utc_now()),
-        attempt=job.attempt,
-    )
-    queue.enqueue(message)
+    _require_queue_accept(job, queue, job_store)
 
     return ApproveResponse(
         job_id=job_id,

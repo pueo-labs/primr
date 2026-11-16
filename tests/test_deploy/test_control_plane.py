@@ -151,6 +151,10 @@ class TestJobStore:
         assert retrieved is not None
         assert retrieved.job_id == "test-123"
         assert retrieved.status == JobStatus.QUEUED
+        restored = JobRecord.from_dict(
+            {key: value for key, value in retrieved.to_dict().items() if key != "enqueue_pending"}
+        )
+        assert restored.enqueue_pending is False
 
     def test_put_if_not_exists_fails_on_duplicate(self, job_store: InMemoryJobStore) -> None:
         """Test that put_if_not_exists fails if job exists."""
@@ -315,7 +319,9 @@ class TestJobStore:
 class TestIdempotency:
     """Tests for idempotency logic."""
 
-    def test_same_inputs_returns_same_job_id(self, client: TestClient) -> None:
+    def test_same_inputs_returns_same_job_id(
+        self, client: TestClient, queue: InMemoryQueue
+    ) -> None:
         """Same (deployment, idempotency_key, api_key) + same inputs returns same job_id."""
         # Validates: Requirements 3.5
         request = {
@@ -347,6 +353,80 @@ class TestIdempotency:
         # Should return same job_id
         assert data1["job_id"] == data2["job_id"]
         assert data2["is_existing"] is True
+        assert queue.size() == 1
+
+    def test_failed_enqueue_is_retried_by_the_same_key(
+        self,
+        client: TestClient,
+        job_store: InMemoryJobStore,
+        queue: InMemoryQueue,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """A refused queue accept stays pending and the same key delivers it once."""
+        from deploy.control_plane import api as api_module
+
+        class FailOnceQueue:
+            def __init__(self, inner: InMemoryQueue) -> None:
+                self.inner = inner
+                self.failed = False
+
+            def enqueue(self, message: QueueMessage) -> str:
+                if not self.failed:
+                    self.failed = True
+                    raise RuntimeError("queue unavailable")
+                return self.inner.enqueue(message)
+
+            def dequeue(
+                self, max_messages: int = 1, visibility_timeout: int = 30
+            ) -> list[QueueMessage]:
+                return self.inner.dequeue(max_messages, visibility_timeout)
+
+            def delete(self, receipt_handle: str) -> None:
+                self.inner.delete(receipt_handle)
+
+        failing = FailOnceQueue(queue)
+        monkeypatch.setattr(api_module, "_queue", failing)
+        request = {
+            "company_name": "Acme Corp",
+            "company_url": "https://acme.example",
+            "mode": "full",
+            "idempotency_key": "enqueue-retry",
+            "approve": True,
+        }
+        headers = {"Authorization": f"Bearer {CONTROL_PLANE_TEST_TOKEN}"}
+
+        failed = client.post("/submit", json=request, headers=headers)
+        assert failed.status_code == 503
+        saved = job_store.get(failed.json()["detail"]["job_id"])
+        assert saved is not None
+        assert saved.status == JobStatus.QUEUED
+        assert saved.enqueue_pending is True
+        assert queue.size() == 0
+
+        retried = client.post("/submit", json=request, headers=headers)
+        assert retried.status_code == 200
+        body = retried.json()
+        assert body["is_existing"] is True
+        assert body["job_id"] == saved.job_id
+        assert queue.size() == 1
+        delivered = job_store.get(saved.job_id)
+        assert delivered is not None
+        assert delivered.enqueue_pending is False
+
+        again = client.post("/submit", json=request, headers=headers)
+        assert again.status_code == 200
+        assert again.json()["is_existing"] is True
+        assert queue.size() == 1
+
+        other = {
+            **request,
+            "idempotency_key": "enqueue-new",
+        }
+        created = client.post("/submit", json=other, headers=headers)
+        assert created.status_code == 200
+        assert created.json()["is_existing"] is False
+        assert created.json()["job_id"] != saved.job_id
+        assert queue.size() == 2
 
     def test_different_inputs_returns_409(self, client: TestClient) -> None:
         """Same idempotency_key + different inputs returns 409."""
@@ -969,10 +1049,15 @@ class TestQueue:
         )
 
         queue.enqueue(message)
+        duplicate = queue.enqueue(message)
 
         messages = queue.dequeue(max_messages=1)
         assert len(messages) == 1
         assert messages[0].job_id == "test-job"
+        assert duplicate == messages[0].message_id
+        queue.delete(messages[0].receipt_handle)
+        queue.enqueue(message)
+        assert queue.dequeue(max_messages=1) == []
 
     def test_visibility_timeout(self, queue: InMemoryQueue) -> None:
         """Messages should become visible again after timeout."""

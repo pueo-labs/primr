@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   no longer labeled DuckDuckGo. A DNS failure says
   `no network or DNS; search checks skipped` and does not send the user to
   `primr doctor --fix`.
+- A failed queue accept no longer leaves an approved job stuck in `QUEUED`.
+  The same idempotency key retries the accept once. A request that already
+  reached the queue is not submitted again, and a new key still is.
 
 ## [1.39.35] - 2026-11-16
 
