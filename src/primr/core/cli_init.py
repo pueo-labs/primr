@@ -343,7 +343,10 @@ def _run_init_flow(
     if not any(_key_looks_configured(env_name) for env_name in MODEL_PROVIDER_ENV_NAMES):
         all_ready = False
         console.warn("No model provider key configured")
-        console.info("  Run one of: primr keys set xai | gemini | openai | openrouter | anthropic")
+        console.info("  Run one of: primr keys set xai | gemini | openrouter")
+        console.info(
+            "  OpenAI and Anthropic are estimate and eval only until full execution lands."
+        )
 
     console.step("Browser dependencies")
     if skip_browsers:

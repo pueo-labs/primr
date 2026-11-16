@@ -63,6 +63,12 @@ class TestAPIKeysConfig:
             assert 'primr prep "ExampleCo" https://example.co' in errors[0].suggestion
             assert "$0" in errors[0].suggestion
             assert "primr draft --local BUNDLE --dry-run" in errors[0].suggestion
+            assert "primr keys set gemini" in errors[0].suggestion
+            assert "primr keys set xai" in errors[0].suggestion
+            assert "primr keys set openrouter" in errors[0].suggestion
+            assert "primr keys set openai" not in errors[0].suggestion
+            assert "primr keys set anthropic" not in errors[0].suggestion
+            assert "estimate and eval only" in errors[0].suggestion
 
     def test_validates_short_api_key(self):
         """Should report error for suspiciously short API key."""
