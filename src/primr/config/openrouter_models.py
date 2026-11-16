@@ -21,9 +21,9 @@ only the separately absent batch slugs retain their previously published dates.
 
 from collections.abc import Callable
 from datetime import date
-from typing import Any, TypeVar
 
-_ModelConfig = TypeVar("_ModelConfig")
+from primr.config.model_config import ModelConfig
+
 OPENROUTER_EXPIRATIONS = dict.fromkeys(
     ("google/gemini-2.5-flash:batch", "google/gemini-2.5-pro:batch"), date(2026, 10, 20)
 )
@@ -33,8 +33,8 @@ OPENROUTER_EXPIRATIONS["openai/gpt-4.1-mini"] = date(2027, 1, 14)
 
 
 def build_openrouter_models(
-    model_config_type: Callable[..., _ModelConfig],
-) -> tuple[_ModelConfig, ...]:
+    model_config_type: Callable[..., ModelConfig],
+) -> tuple[ModelConfig, ...]:
     """Build gateway-qualified rows without importing the registry module."""
     models = (
         model_config_type(
@@ -644,9 +644,8 @@ def build_openrouter_models(
         "anthropic/claude-fable-5.1": "anthropic/claude-fable-5.2",
     }
     for model in models:
-        row: Any = model
-        replacement = superseded.get(row.name)
-        if replacement is not None and row.available:
-            row.available = False
-            row.replacement_model = replacement
+        replacement = superseded.get(model.name)
+        if replacement is not None and model.available:
+            model.available = False
+            model.replacement_model = replacement
     return models
