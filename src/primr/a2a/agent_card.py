@@ -1,6 +1,7 @@
 """Build an A2A AgentCard describing Primr's capabilities.
 
-The AgentCard is a JSON document served at /.well-known/agent.json that tells
+The AgentCard is a JSON document served at /.well-known/agent-card.json.
+The 0.3 path /.well-known/agent.json is also served, as an alias. It tells
 A2A clients what Primr can do and how to interact with it.
 
 Requires: pip install primr[a2a]
@@ -14,18 +15,20 @@ from importlib.metadata import version as pkg_version
 from a2a.types import (
     AgentCapabilities,
     AgentCard,
+    AgentInterface,
     AgentSkill,
     HTTPAuthSecurityScheme,
+    SecurityRequirement,
     SecurityScheme,
+    StringList,
 )
 
 logger = logging.getLogger(__name__)
 
 # Skill definitions mapping to existing MCP tools.
 #
-# Input/output format documented in description since a2a-sdk v0.3.x
-# AgentSkill does not have inputSchema/outputSchema fields.
-# When SDK adds schema support, migrate to structured schemas.
+# Input and output format stay in the description. AgentSkill has no
+# input or output schema fields.
 _SKILLS: list[dict] = [
     {
         "id": "estimate_research",
@@ -309,9 +312,9 @@ def build_agent_card(
 
     The previous signature accepted only host+port, which caused co-hosted
     deployments to advertise ``http://host:a2a_port/`` even though no
-    listener was bound on ``a2a_port``; clients following AgentCard.url
-    would talk to whatever service did happen to be listening there and
-    could leak bearer tokens to it.
+    listener was bound on ``a2a_port``. Clients following the advertised
+    interface URL would talk to whatever service did happen to be listening
+    there and could leak bearer tokens to it.
     """
     if version is None:
         try:
@@ -346,7 +349,13 @@ def build_agent_card(
             "Supports website scraping, deep external research, and premium "
             "Gemini-powered analysis."
         ),
-        url=url,
+        supported_interfaces=[
+            AgentInterface(
+                url=url,
+                protocol_binding="JSONRPC",
+                protocol_version="1.0",
+            )
+        ],
         version=version,
         default_input_modes=["text"],
         default_output_modes=["text"],
@@ -356,9 +365,13 @@ def build_agent_card(
         ),
         skills=skills,
         security_schemes={
-            "bearer": SecurityScheme(root=HTTPAuthSecurityScheme(scheme="bearer", type="http")),
+            "bearer": SecurityScheme(
+                http_auth_security_scheme=HTTPAuthSecurityScheme(scheme="bearer"),
+            ),
         },
-        security=[{"bearer": []}],
+        security_requirements=[
+            SecurityRequirement(schemes={"bearer": StringList()}),
+        ],
     )
 
     logger.info("Built AgentCard: %s v%s at %s (%d skills)", card.name, version, url, len(skills))

@@ -25,8 +25,9 @@ _METHOD_STREAM = "message/stream"
 _METHOD_GET_TASK = "tasks/get"
 _METHOD_CANCEL_TASK = "tasks/cancel"
 
-# Well-known agent card path
-_AGENT_CARD_PATH = "/.well-known/agent.json"
+# Protocol 1.0 card, then the 0.3 path used only after a 404.
+_AGENT_CARD_PATH = "/.well-known/agent-card.json"
+_LEGACY_AGENT_CARD_PATH = "/.well-known/agent.json"
 
 
 class A2AError(Exception):
@@ -188,17 +189,25 @@ class A2AClient:
         return data.get("result", {})
 
     async def discover(self) -> dict[str, Any]:
-        """Fetch the agent card from /.well-known/agent.json.
+        """Fetch the agent card.
+
+        Tries ``/.well-known/agent-card.json`` first. A 404 falls back to
+        ``/.well-known/agent.json``. Any other status is returned as-is.
 
         Returns:
             Agent card as a dictionary.
         """
-        url = f"{self.agent_url}{_AGENT_CARD_PATH}"
         from primr.utils.security import redact_url_for_log
 
+        url = f"{self.agent_url}{_AGENT_CARD_PATH}"
         logged_url = redact_url_for_log(url)
         logger.info("Discovering agent at %s", logged_url)
         response = await self._follow_redirects_safely("GET", url)
+        if response.status_code == 404:
+            url = f"{self.agent_url}{_LEGACY_AGENT_CARD_PATH}"
+            logged_url = redact_url_for_log(url)
+            logger.info("Discovering agent at legacy path %s", logged_url)
+            response = await self._follow_redirects_safely("GET", url)
         response.raise_for_status()
         try:
             card = response.json()

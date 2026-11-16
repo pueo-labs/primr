@@ -9,15 +9,16 @@ Requires: pip install primr[a2a]
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
 import logging
 import time
 import uuid
 from typing import TYPE_CHECKING, Any
 
+from a2a.helpers import new_text_message as new_agent_text_message
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.types import TaskState
-from a2a.utils import new_agent_text_message
 from typing_extensions import override
 
 from primr.a2a.authz import (
@@ -39,6 +40,7 @@ from primr.a2a.lifecycle_events import A2ALifecycleEvents
 from primr.a2a.prelaunch import publish_working_status, start_worker_or_terminalize
 from primr.a2a.resource_reads import handle_a2a_resource_read, resource_read_skill_list
 from primr.a2a.skill_ids import A2A_READ_SKILLS, A2A_RESEARCH_SKILLS, A2A_RESOURCE_READ_SKILLS
+from primr.a2a.status_events import new_opening_task
 from primr.a2a.status_events import status_update_event as _status_update_event
 from primr.a2a.types import A2ATaskMapping
 from primr.mcp_server import research_validation
@@ -70,6 +72,33 @@ logger = logging.getLogger(__name__)
 
 # Poll interval for long-running jobs (seconds)
 _JOB_POLL_INTERVAL = 5
+
+# Protocol 1.0 rejects a status event that arrives before a Task. The flag
+# is per request so a later error on the same stream does not open a second Task.
+_stream_has_task: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "primr_a2a_stream_has_task",
+    default=False,
+)
+
+
+async def _enqueue_opening_task(event_queue: EventQueue, task_id: str, context_id: str) -> None:
+    """Enqueue the stream's opening Task once."""
+    if _stream_has_task.get():
+        return
+    await event_queue.enqueue_event(new_opening_task(task_id, context_id))
+    _stream_has_task.set(True)
+
+
+async def _enqueue_status_on_open_stream(
+    event_queue: EventQueue,
+    *,
+    task_id: str,
+    context_id: str,
+    event: Any,
+) -> None:
+    """Send a status event, opening the stream with a Task when needed."""
+    await _enqueue_opening_task(event_queue, task_id, context_id)
+    await event_queue.enqueue_event(event)
 
 
 class PrimrAgentExecutor(AgentExecutor):
@@ -110,6 +139,7 @@ class PrimrAgentExecutor(AgentExecutor):
         started_at = time.perf_counter()
         audit_payload: dict[str, Any] | None = None
         caught_exception: BaseException | None = None
+        stream_token = _stream_has_task.set(False)
 
         known_skills = A2A_READ_SKILLS | A2A_RESEARCH_SKILLS | A2A_RESOURCE_READ_SKILLS
         logged_skill = skill_id if skill_id in known_skills else "unknown"
@@ -153,20 +183,24 @@ class PrimrAgentExecutor(AgentExecutor):
             task_id = context.task_id
             context_id = context.context_id or task_id
             if task_id and context_id:
-                await event_queue.enqueue_event(
-                    _status_update_event(
-                        state=TaskState.failed,
+                await _enqueue_status_on_open_stream(
+                    event_queue,
+                    task_id=task_id,
+                    context_id=context_id,
+                    event=_status_update_event(
+                        state=TaskState.TASK_STATE_FAILED,
                         text="Internal error processing request",
                         task_id=task_id,
                         context_id=context_id,
                         final=True,
-                    )
+                    ),
                 )
             else:
                 await event_queue.enqueue_event(
                     new_agent_text_message("Internal error processing request")
                 )
         finally:
+            _stream_has_task.reset(stream_token)
             self._record_a2a_skill_audit(
                 skill_id=skill_id,
                 arguments={"skill_id": skill_id, "text": text},
@@ -185,6 +219,7 @@ class PrimrAgentExecutor(AgentExecutor):
         started_at = time.perf_counter()
         audit_payload: dict[str, Any] | None = None
         caught_exception: BaseException | None = None
+        stream_token = _stream_has_task.set(False)
         task_id = context.task_id
         decision = authorize_a2a_skill("cancel_task", getattr(self._mcp, "_auth_context", None))
         try:
@@ -210,6 +245,7 @@ class PrimrAgentExecutor(AgentExecutor):
             audit_payload = {"error": True, "error_type": exc.__class__.__name__}
             raise
         finally:
+            _stream_has_task.reset(stream_token)
             self._record_a2a_skill_audit(
                 skill_id="cancel_task",
                 arguments={"skill_id": "cancel_task", "task_id": task_id},
@@ -250,14 +286,17 @@ class PrimrAgentExecutor(AgentExecutor):
         task_id = context.task_id
         context_id = context.context_id or task_id
         if task_id and context_id:
-            await event_queue.enqueue_event(
-                _status_update_event(
-                    state=TaskState.failed,
+            await _enqueue_status_on_open_stream(
+                event_queue,
+                task_id=task_id,
+                context_id=context_id,
+                event=_status_update_event(
+                    state=TaskState.TASK_STATE_FAILED,
                     text=text,
                     task_id=task_id,
                     context_id=context_id,
                     final=True,
-                )
+                ),
             )
             return
 
@@ -448,13 +487,14 @@ class PrimrAgentExecutor(AgentExecutor):
         )
         self._task_store.register_mapping(mapping)
 
-        # Signal task is working before transferring ownership to the worker.
+        # Protocol 1.0 requires a Task before the first status event.
+        await _enqueue_opening_task(event_queue, task_id, context_id)
         await publish_working_status(
             job_store=self._mcp.job_store,
             job=job,
             event_queue=event_queue,
             event=_status_update_event(
-                state=TaskState.working,
+                state=TaskState.TASK_STATE_WORKING,
                 text=f"Research started: job {job.job_id}",
                 task_id=task_id,
                 context_id=context_id,
@@ -496,7 +536,7 @@ class PrimrAgentExecutor(AgentExecutor):
                 job_id=job.job_id,
                 event_queue=event_queue,
                 event=_status_update_event(
-                    state=TaskState.failed,
+                    state=TaskState.TASK_STATE_FAILED,
                     text="Research worker failed to start",
                     task_id=task_id,
                     context_id=context_id,
@@ -528,7 +568,7 @@ class PrimrAgentExecutor(AgentExecutor):
                             research_task=research_task,
                             event_queue=event_queue,
                             event=_status_update_event(
-                                state=TaskState.working,
+                                state=TaskState.TASK_STATE_WORKING,
                                 text=progress,
                                 task_id=task_id,
                                 context_id=context_id,
@@ -550,7 +590,7 @@ class PrimrAgentExecutor(AgentExecutor):
                             job_id=job.job_id,
                             event_queue=event_queue,
                             event=_status_update_event(
-                                state=TaskState.completed,
+                                state=TaskState.TASK_STATE_COMPLETED,
                                 text=f"Research complete. Output: {paths}",
                                 task_id=task_id,
                                 context_id=context_id,
@@ -562,7 +602,7 @@ class PrimrAgentExecutor(AgentExecutor):
                             job_id=job.job_id,
                             event_queue=event_queue,
                             event=_status_update_event(
-                                state=TaskState.canceled,
+                                state=TaskState.TASK_STATE_CANCELED,
                                 text="Research cancelled",
                                 task_id=task_id,
                                 context_id=context_id,
@@ -575,7 +615,7 @@ class PrimrAgentExecutor(AgentExecutor):
                             job_id=job.job_id,
                             event_queue=event_queue,
                             event=_status_update_event(
-                                state=TaskState.failed,
+                                state=TaskState.TASK_STATE_FAILED,
                                 text=f"Research failed: {error_msg}",
                                 task_id=task_id,
                                 context_id=context_id,
@@ -588,7 +628,7 @@ class PrimrAgentExecutor(AgentExecutor):
                     job_id=job.job_id,
                     event_queue=event_queue,
                     event=_status_update_event(
-                        state=TaskState.failed,
+                        state=TaskState.TASK_STATE_FAILED,
                         text="Research pipeline error",
                         task_id=task_id,
                         context_id=context_id,

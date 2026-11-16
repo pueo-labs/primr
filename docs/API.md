@@ -1667,9 +1667,10 @@ primr-a2a --host 127.0.0.1 --no-auth
 primr-mcp --http --a2a --a2a-port 9000
 ```
 
-**Agent Card** (served at `/.well-known/agent.json`):
+**Agent Card** (served at `/.well-known/agent-card.json`, with
+`/.well-known/agent.json` kept as an alias):
 ```bash
-curl http://localhost:9000/.well-known/agent.json
+curl http://localhost:9000/.well-known/agent-card.json
 ```
 
 Authenticated A2A requests use the same bearer-token identity and legacy

@@ -9,9 +9,10 @@ a2a = pytest.importorskip("a2a")
 from a2a.auth.user import User
 from a2a.server.context import ServerCallContext
 from a2a.server.request_handlers import DefaultRequestHandler
-from a2a.types import TaskQueryParams, TaskState
-from a2a.utils.errors import ServerError
+from a2a.types import GetTaskRequest, ListTasksRequest, TaskState
+from a2a.utils.errors import TaskNotFoundError
 
+from primr.a2a.agent_card import build_agent_card
 from primr.a2a.call_context import TRUSTED_LOCAL_A2A_USER
 from primr.a2a.task_store import PrimrTaskStore, _job_to_task_state
 from primr.a2a.types import A2ATaskMapping
@@ -24,27 +25,27 @@ class TestStageToStateMapping:
 
     def test_idle_maps_to_submitted(self):
         job = _make_job(stage=ResearchStage.IDLE)
-        assert _job_to_task_state(job) == TaskState.submitted
+        assert _job_to_task_state(job) == TaskState.TASK_STATE_SUBMITTED
 
     def test_accepted_maps_to_submitted(self):
         job = _make_job(stage=ResearchStage.ACCEPTED)
-        assert _job_to_task_state(job) == TaskState.submitted
+        assert _job_to_task_state(job) == TaskState.TASK_STATE_SUBMITTED
 
     def test_scraping_maps_to_working(self):
         job = _make_job(stage=ResearchStage.SCRAPING)
-        assert _job_to_task_state(job) == TaskState.working
+        assert _job_to_task_state(job) == TaskState.TASK_STATE_WORKING
 
     def test_completed_maps_to_completed(self):
         job = _make_job(stage=ResearchStage.COMPLETED)
-        assert _job_to_task_state(job) == TaskState.completed
+        assert _job_to_task_state(job) == TaskState.TASK_STATE_COMPLETED
 
     def test_failed_maps_to_failed(self):
         job = _make_job(stage=ResearchStage.FAILED)
-        assert _job_to_task_state(job) == TaskState.failed
+        assert _job_to_task_state(job) == TaskState.TASK_STATE_FAILED
 
     def test_cancelled_maps_to_canceled(self):
         job = _make_job(stage=ResearchStage.CANCELLED)
-        assert _job_to_task_state(job) == TaskState.canceled
+        assert _job_to_task_state(job) == TaskState.TASK_STATE_CANCELED
 
 
 class TestPrimrTaskStore:
@@ -86,13 +87,13 @@ class TestPrimrTaskStore:
         task = await task_store.get("t-1", _remote_context("test"))
         assert task is not None
         assert task.id == "t-1"
-        assert task.status.state in (TaskState.submitted, TaskState.working)
+        assert task.status.state in (TaskState.TASK_STATE_SUBMITTED, TaskState.TASK_STATE_WORKING)
 
     @pytest.mark.asyncio
     async def test_get_task_missing_mapping(self, store):
         """Get task returns None for unknown task ID."""
         task_store, _ = store
-        assert await task_store.get("unknown") is None
+        assert await task_store.get("unknown", ServerCallContext()) is None
 
     @pytest.mark.asyncio
     async def test_save_is_noop(self, store):
@@ -104,14 +105,14 @@ class TestPrimrTaskStore:
 
         task = await task_store.get("t-1", _remote_context("test"))
         assert task is not None
-        await task_store.save(task)  # Should not raise
+        await task_store.save(task, ServerCallContext())  # Should not raise
 
     @pytest.mark.asyncio
     async def test_delete_removes_mapping(self, store):
         task_store, _ = store
         mapping = A2ATaskMapping(task_id="t-1", job_id="j-1", skill_id="check")
         task_store.register_mapping(mapping)
-        await task_store.delete("t-1")
+        await task_store.delete("t-1", ServerCallContext())
         assert task_store.get_mapping("t-1") is None
 
     @pytest.mark.asyncio
@@ -139,13 +140,17 @@ class TestPrimrTaskStore:
         assert await task_store.get("t-private", context) is None
         assert await task_store.get("t-unknown", context) is None
 
-        handler = DefaultRequestHandler(agent_executor=MagicMock(), task_store=task_store)
+        handler = DefaultRequestHandler(
+            agent_executor=MagicMock(),
+            task_store=task_store,
+            agent_card=build_agent_card(version="1.0.0"),
+        )
         errors = []
         for task_id in ("t-private", "t-unknown"):
-            with pytest.raises(ServerError) as caught:
-                await handler.on_get_task(TaskQueryParams(id=task_id), context)
-            errors.append(caught.value.error.model_dump())
-        assert errors[0] == errors[1]
+            with pytest.raises(TaskNotFoundError) as caught:
+                await handler.on_get_task(GetTaskRequest(id=task_id), context)
+            errors.append(caught.value.message)
+        assert errors[0] == errors[1] == "Task not found"
 
     @pytest.mark.asyncio
     async def test_get_fails_closed_without_authenticated_context(self, store):
@@ -155,7 +160,6 @@ class TestPrimrTaskStore:
             A2ATaskMapping(task_id="t-private", job_id=job.job_id, skill_id="research")
         )
 
-        assert await task_store.get("t-private") is None
         assert await task_store.get("t-private", ServerCallContext()) is None
 
     @pytest.mark.asyncio
@@ -179,6 +183,30 @@ class TestPrimrTaskStore:
         admin_context = _remote_context("admin-client", scopes=["admin"])
 
         assert await task_store.get("t-owned", admin_context) is None
+
+    @pytest.mark.asyncio
+    async def test_list_returns_only_the_callers_job(self, store):
+        task_store, job_store = store
+        job = job_store.create("Acme", "full", owner_client_id="client-1")
+        task_store.register_mapping(
+            A2ATaskMapping(task_id="t-owned", job_id=job.job_id, skill_id="research")
+        )
+        task_store.register_mapping(
+            A2ATaskMapping(task_id="t-missing", job_id="missing-job", skill_id="research")
+        )
+
+        owned = await task_store.list(ListTasksRequest(), _remote_context("client-1"))
+        hidden = await task_store.list(ListTasksRequest(), _remote_context("client-2"))
+
+        assert [task.id for task in owned.tasks] == ["t-owned"]
+        assert owned.total_size == 1
+        assert list(hidden.tasks) == []
+
+
+def test_unknown_stage_is_unspecified():
+    job = _make_job()
+    job.current_stage = type("Stage", (), {"value": "not-a-stage"})()
+    assert _job_to_task_state(job) == TaskState.TASK_STATE_UNSPECIFIED
 
 
 def _make_job(stage=ResearchStage.IDLE):

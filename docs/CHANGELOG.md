@@ -32,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The optional A2A extra now installs SDK 1
+  (`a2a-sdk[http-server]>=1.3,<2`). The server speaks protocol 1.0 and
+  still accepts 0.3 JSON-RPC methods on the same endpoint. The agent card
+  is served at `/.well-known/agent-card.json`, and
+  `/.well-known/agent.json` stays as an alias. A task stream opens with a
+  Task before its first status event.
 - The optional Anthropic extra now installs SDK 2 (`anthropic>=2,<3`).
   Messages requests omit `temperature`, `top_p`, and `top_k`. API version
   2026-10-21 rejects those parameters on every model, so the call samples

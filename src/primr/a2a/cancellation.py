@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from a2a.helpers import new_text_message as new_agent_text_message
 from a2a.types import TaskState
-from a2a.utils import new_agent_text_message
 
 from primr.a2a.lifecycle_events import A2ALifecycleEvents, cancel_race_response
-from primr.a2a.status_events import status_update_event
+from primr.a2a.status_events import new_opening_task, status_update_event
 from primr.mcp_server.types import ResearchStage
 from primr.utils.logging_config import get_logger
 
@@ -46,12 +46,13 @@ async def handle_cancel_request(
             job_id=job_id,
             event_queue=event_queue,
             event=status_update_event(
-                state=TaskState.canceled,
+                state=TaskState.TASK_STATE_CANCELED,
                 text=f"Research already cancelled: job {job_id}",
                 task_id=task_id,
                 context_id=context_id,
                 final=True,
             ),
+            opening_task=new_opening_task(task_id, context_id),
         )
         return {
             "status": "cancelled",
@@ -98,12 +99,13 @@ async def handle_cancel_request(
         job_id=job_id,
         event_queue=event_queue,
         event=status_update_event(
-            state=TaskState.canceled,
+            state=TaskState.TASK_STATE_CANCELED,
             text=f"Research cancelled: job {job_id}",
             task_id=task_id,
             context_id=context_id,
             final=True,
         ),
+        opening_task=new_opening_task(task_id, context_id),
     )
     return {
         "status": "cancelled",

@@ -49,7 +49,7 @@ class TestA2AClientDiscover:
             "skills": [],
         }
         httpx_mock.add_response(
-            url="http://example.com/.well-known/agent.json",
+            url="http://example.com/.well-known/agent-card.json",
             json=card,
         )
 
@@ -61,7 +61,11 @@ class TestA2AClientDiscover:
 
     @pytest.mark.asyncio
     async def test_discover_404(self, httpx_mock):
-        """Discovery raises on 404."""
+        """Discovery raises when both card paths are missing."""
+        httpx_mock.add_response(
+            url="http://example.com/.well-known/agent-card.json",
+            status_code=404,
+        )
         httpx_mock.add_response(
             url="http://example.com/.well-known/agent.json",
             status_code=404,
@@ -70,6 +74,24 @@ class TestA2AClientDiscover:
         async with A2AClient(agent_url="http://example.com") as client:
             with pytest.raises(httpx.HTTPStatusError):
                 await client.discover()
+
+    @pytest.mark.asyncio
+    async def test_discover_falls_back_to_legacy_path(self, httpx_mock):
+        """A 404 on the 1.0 path falls back to the 0.3 card."""
+        card = {"name": "LegacyAgent", "version": "0.3.0"}
+        httpx_mock.add_response(
+            url="http://example.com/.well-known/agent-card.json",
+            status_code=404,
+        )
+        httpx_mock.add_response(
+            url="http://example.com/.well-known/agent.json",
+            json=card,
+        )
+
+        async with A2AClient(agent_url="http://example.com") as client:
+            result = await client.discover()
+
+        assert result["name"] == "LegacyAgent"
 
 
 class TestA2AClientSendMessage:
@@ -186,7 +208,7 @@ class TestA2AClientJsonDecodeError:
     async def test_discover_invalid_json(self, httpx_mock):
         """Discovery raises A2AError on invalid JSON."""
         httpx_mock.add_response(
-            url="http://example.com/.well-known/agent.json",
+            url="http://example.com/.well-known/agent-card.json",
             raw_text="<html>Not JSON</html>",
         )
 

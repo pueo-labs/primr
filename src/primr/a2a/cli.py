@@ -22,7 +22,7 @@ Examples:
   primr-a2a --no-mcp                A2A only (no MCP co-hosting)
 
 Agent Card:
-  curl http://localhost:9000/.well-known/agent.json
+  curl http://localhost:9000/.well-known/agent-card.json
 
 Health Check:
   curl http://localhost:9000/ping
