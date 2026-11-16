@@ -23,7 +23,7 @@ def strategy_config():
 
 
 def test_contract_version_and_business_first_order(strategy_config):
-    assert strategy_config["meta"]["version"] == "2.2.0"
+    assert strategy_config["meta"]["version"] == "2.3.0"
     section_ids = [section["id"] for section in strategy_config["sections"]]
     assert section_ids.index("strategic_thesis") < section_ids.index("competitive_landscape")
     assert section_ids.index("competitive_landscape") < section_ids.index("current_state")
@@ -80,6 +80,17 @@ def test_contract_requires_complete_stack_economics_and_placement(strategy_confi
         "edge or disconnected deployment",
         "hybrid combinations",
         "credible alternative",
+        "required intervention distinction",
+        "reusable skill",
+        "deterministic workflow or ordinary software",
+        "bounded agent",
+        "human-led change, defer, or no ai",
+        "not yet selected",
+        "job advertisement does not prove",
+        "does not prove licensed capacity",
+        "not a validated internal root cause",
+        "allowed actions and stopping conditions, only for a bounded agent",
+        "labeled unknown",
         "technology-signal disposition ledger",
         "opportunity cost",
         "break-even",

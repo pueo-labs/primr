@@ -55,8 +55,11 @@ owner, evidence, baseline and target, stack fit, dependencies, architecture
 options, build or buy rationale, fully loaded economics, a 30-day action, a
 90-day test, success measures, risk controls, a kill criterion, and a revisit
 trigger. Each initiative must also name the non-AI alternative and opportunity
-cost. Missing internal inputs produce formulas and validation requests, not
-fabricated precision.
+cost. The card names the smallest useful intervention. Allowed actions and
+stopping conditions appear only for a bounded agent. A job advertisement, a DNS
+signal, or a public complaint is too weak to justify a skill or an agent, and
+an unknown permission stays unknown. Missing internal inputs produce formulas
+and validation requests, not fabricated precision.
 
 The technology section uses a disposition ledger. Every material observed
 ecosystem must be marked for use, integration, containment, replacement,

@@ -7,8 +7,8 @@
 
 meta:
   name: "Business-First AI Strategy"
-  version: "2.2.0"
-  description: "Evidence-grounded enterprise AI strategy that preserves a complete company-specific opportunity inventory, prioritizes transparently, and translates current AI developments into ideas without fabricating company facts"
+  version: "2.3.0"
+  description: "Evidence-grounded enterprise AI strategy that preserves a complete company-specific opportunity inventory, names the smallest useful intervention, prioritizes transparently, and translates current AI developments into ideas without fabricating company facts"
   output_format: "markdown"
   output_filename: "{company_name}_AI_Strategy"
   expected_pages: "18-30"
@@ -152,9 +152,43 @@ hard_requirements: |
     automation approach may be better
   - Supporting evidence and its strength
   - Dependencies, unknowns, and questions to validate
+  - The smallest useful intervention class, or "not yet selected" when the
+    evidence cannot choose one
   Provide compact summaries for inventory entries. Do not manufacture baselines,
   cost models, targets, owners, or implementation plans simply to fill an inventory
   field; reserve detailed decision cards for the prioritized portfolio.
+
+  REQUIRED INTERVENTION DISTINCTION
+  For each material operating problem or opportunity, keep this chain visible:
+  company signal, operating problem or opportunity, affected workflow, smallest
+  useful intervention, measurable outcome, and the validation that would confirm
+  or disconfirm it.
+  Choose exactly one intervention class:
+  - Reusable skill: bounded instructions, examples, and checks that improve a
+    recurring task in an existing assistant or tool. A skill is not permission
+    to access data or execute actions.
+  - Deterministic workflow or ordinary software: known steps or rules where
+    autonomy adds little.
+  - Bounded agent: use only when evidence-dependent planning, tool selection,
+    or iterative work is valuable. State the allowed actions and the stopping
+    conditions. Omit both for every other class.
+  - Human-led change, defer, or no AI: a credible alternative, including the
+    choice to keep a working process or to wait.
+  Do not force a skill or an agent into every opportunity. A larger number of
+  agents is not a better portfolio.
+  A job advertisement does not prove understaffing or process failure. DNS or
+  other recon does not prove licensed capacity, production use, or operational
+  maturity. Publicly reported friction is not a validated internal root cause.
+  When several causes fit the same symptom, state them as competing hypotheses
+  and name the measurement that would select among them before recommending a
+  skill or an agent.
+  Sparse, conflicting, or outdated-only evidence stays in the inventory as
+  defer pending evidence. Hiring-only evidence, recon-only evidence, and an
+  inferred role with no observed operating problem stay there too. Do not
+  design a skill or an agent from those signals, and do not invent savings,
+  baselines, owners, or permissions.
+  When an existing process already meets the stated outcome, keep that
+  solution and name the evidence that would justify revisiting it.
 
   REQUIRED PORTFOLIO HIERARCHY
   Classify every idea as exactly one of: foundational capability, near-term
@@ -194,6 +228,16 @@ hard_requirements: |
   - Fully loaded cost and business unit economics, not only model or token cost
   - 30-day discovery action, 90-day test, decision gate, and sequencing dependency
   - Success KPI, leading indicator, risk control, kill criterion, and revisit trigger
+  - Intervention class, using exactly one of the four classes above
+  - Trigger, required inputs, concrete steps, and output for a skill or a
+    bounded agent
+  - Allowed actions and stopping conditions, only for a bounded agent
+  - Required data, access, and permissions, each labeled unknown where the
+    evidence does not establish them
+  - Human review points, permitted autonomy, error consequences, fallback,
+    and escalation
+  - Baseline task and smallest pilot. An unknown baseline, owner, or
+    permission stays unknown
 
   REQUIRED WORKLOAD-PLACEMENT ANALYSIS
   Evaluate only material options, but consider the full decision space: embedded SaaS,
@@ -471,6 +515,8 @@ sections:
       customer/workforce, outcome, why AI, why a conventional approach may be better,
       evidence strength, dependencies, unknowns, validation questions). Tag each idea
       with its portfolio-hierarchy class and, when news-driven, its pattern maturity.
+      Name the smallest useful intervention class, or mark the class not yet
+      selected. Do not expand a weak signal into a skill or an agent design.
       Do not manufacture baselines or business cases to fill inventory fields.
 
   - id: prioritization_filters
@@ -516,7 +562,10 @@ sections:
         covers:
           - "Process, policy, analytics, integration, or conventional automation alternatives"
           - "Conditions that would justify revisiting AI"
-    depth: "Apply every field in the required initiative decision card. Do not invent baselines or returns."
+    depth: |
+      Apply every field in the required initiative decision card, including the
+      intervention class. Allowed actions and stopping conditions appear only
+      for a bounded agent. Do not invent baselines, owners, permissions, or returns.
 
   - id: roi_models
     name: "Business Case, Unit Economics, and ROI"
