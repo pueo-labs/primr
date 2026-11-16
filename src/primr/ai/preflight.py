@@ -326,28 +326,33 @@ class PreflightValidator:
         progress: Callable,
     ) -> None:
         """Check Playwright browsers are installed."""
-        try:
-            from playwright.async_api import async_playwright
+        from primr.data.scraping.playwright_compat import (
+            PLAYWRIGHT_BROWSERS_MISSING,
+            SYNC_BROWSER_UNAVAILABLE_REASON,
+            chromium_launch_status,
+            sync_browser_runtime_supported,
+        )
 
-            async with async_playwright() as p:
-                browser = await p.chromium.launch(headless=True)
-                await browser.close()
+        if not sync_browser_runtime_supported():
+            warnings.append(SYNC_BROWSER_UNAVAILABLE_REASON)
+            checks["playwright"] = {"passed": False, "status": "unsupported"}
+            return
 
+        status = chromium_launch_status()
+        if status is None:
             checks["playwright"] = {"passed": True, "status": "installed"}
             progress("  ✓ Playwright browsers")
-
-        except Exception as e:
-            error_str = str(e).lower()
-            if "executable doesn't exist" in error_str or "not found" in error_str:
-                errors.append("Playwright browsers not installed. Run: playwright install chromium")
-                checks["playwright"] = {
-                    "passed": False,
-                    "status": "not_installed",
-                    "detail": "Run: playwright install chromium",
-                }
-            else:
-                warnings.append(f"Playwright check failed: {e}")
-                checks["playwright"] = {"passed": False, "status": "unknown", "detail": str(e)}
+            return
+        if status == PLAYWRIGHT_BROWSERS_MISSING:
+            errors.append(status)
+            checks["playwright"] = {
+                "passed": False,
+                "status": "not_installed",
+                "detail": "Run: playwright install chromium",
+            }
+            return
+        warnings.append(status)
+        checks["playwright"] = {"passed": False, "status": "unknown", "detail": status}
 
     async def _check_website(
         self,

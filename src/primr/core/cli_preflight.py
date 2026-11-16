@@ -6,7 +6,10 @@ import os
 
 from primr.ai.genai_factory import default_genai_http_options
 from primr.config.models import PrimrModels
-from primr.data.scraping.playwright_compat import sync_browser_runtime_supported
+from primr.data.scraping.playwright_compat import (
+    chromium_launch_status,
+    sync_browser_runtime_supported,
+)
 
 FULL_EXECUTION_MODES = ("complete", "hybrid", "structured")
 
@@ -108,21 +111,9 @@ def _check_playwright(mode: str, errors: list[str]) -> None:
         # Python 3.15 can continue through the HTTP, curl, and DrissionPage
         # tiers. The unavailable sync tiers are filtered by the registry.
         return
-    try:
-        from playwright.sync_api import sync_playwright
-
-        pw = sync_playwright().start()
-        try:
-            browser = pw.chromium.launch(headless=True)
-            browser.close()
-        finally:
-            pw.stop()
-    except Exception as e:
-        error_msg = str(e)
-        if "Executable doesn't exist" in error_msg or "playwright install" in error_msg.lower():
-            errors.append("Playwright browsers not installed. Run: playwright install chromium")
-        else:
-            errors.append(f"Playwright check failed: {error_msg}")
+    status = chromium_launch_status()
+    if status is not None:
+        errors.append(status)
 
 
 def _check_fast_dependency(fast_mode: bool, errors: list[str]) -> None:
