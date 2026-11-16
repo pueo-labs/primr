@@ -715,6 +715,18 @@ class TestJobStateTransitions:
 
         assert result.result == CancellationResult.CANCEL_REQUESTED
         assert result.status == JobStatus.CANCEL_REQUESTED
+        updated = job_store.get("cancel-test-2")
+        assert updated is not None
+        assert updated.timing.cancel_requested_at
+
+        updated.timing.cancel_requested_at = "2020-01-01T00:00:00Z"
+        job_store.update(updated)
+        repeated = service.cancel_job("cancel-test-2")
+
+        assert repeated.result == CancellationResult.CANCEL_REQUESTED
+        again = job_store.get("cancel-test-2")
+        assert again is not None
+        assert again.timing.cancel_requested_at == "2020-01-01T00:00:00Z"
 
     def test_completed_job_cannot_be_cancelled(
         self,

@@ -39,6 +39,7 @@ def create_test_job(
     job_id: str,
     status: JobStatus,
     started_at: datetime | None = None,
+    cancel_requested_at: datetime | None = None,
 ) -> JobRecord:
     """Create a test job record."""
     now = utc_now()
@@ -57,6 +58,9 @@ def create_test_job(
             started_at=format_timestamp(started_at)
             if started_at
             else format_timestamp(now - timedelta(minutes=30)),
+            cancel_requested_at=format_timestamp(cancel_requested_at)
+            if cancel_requested_at
+            else None,
         ),
     )
 
@@ -188,10 +192,14 @@ class TestReconciler:
         reconciler: Reconciler,
         job_store: InMemoryJobStore,
     ) -> None:
-        """Jobs in CANCEL_REQUESTED beyond grace period are marked as timeout."""
-        # Create a job that was cancel-requested long ago
-        old_start = utc_now() - timedelta(hours=2)
-        job = create_test_job("cancel-job", JobStatus.CANCEL_REQUESTED, started_at=old_start)
+        """A cancel request older than the grace period stops the wait."""
+        old_request = utc_now() - timedelta(hours=2)
+        job = create_test_job(
+            "cancel-job",
+            JobStatus.CANCEL_REQUESTED,
+            started_at=utc_now() - timedelta(minutes=10),
+            cancel_requested_at=old_request,
+        )
         job_store.put_if_not_exists(job)
 
         result = reconciler.reconcile()
@@ -205,6 +213,175 @@ class TestReconciler:
         assert updated.status == JobStatus.FAILED
         assert updated.error_message == "cancellation_timeout"
         assert updated.no_runner_manifest is True
+        assert updated.status != JobStatus.CANCELLED
+
+    def test_early_cancel_keeps_its_own_grace_period(
+        self,
+        reconciler: Reconciler,
+        job_store: InMemoryJobStore,
+    ) -> None:
+        """A cancel ten minutes into a run waits out the grace period, not the job limit."""
+        now = utc_now()
+        job = create_test_job(
+            "early-cancel",
+            JobStatus.CANCEL_REQUESTED,
+            started_at=now - timedelta(minutes=10),
+            cancel_requested_at=now - timedelta(minutes=1),
+        )
+        job_store.put_if_not_exists(job)
+
+        result = reconciler.reconcile()
+
+        assert result.cancellation_timeout == 0
+        updated = job_store.get("early-cancel")
+        assert updated is not None
+        assert updated.status == JobStatus.CANCEL_REQUESTED
+
+    def test_late_cancel_still_receives_grace_period(
+        self,
+        reconciler: Reconciler,
+        job_store: InMemoryJobStore,
+    ) -> None:
+        """A job older than the run limit still gets the full grace period after cancel."""
+        now = utc_now()
+        job = create_test_job(
+            "late-cancel",
+            JobStatus.CANCEL_REQUESTED,
+            started_at=now - timedelta(hours=3),
+            cancel_requested_at=now - timedelta(seconds=30),
+        )
+        job_store.put_if_not_exists(job)
+
+        result = reconciler.reconcile()
+
+        assert result.cancellation_timeout == 0
+        updated = job_store.get("late-cancel")
+        assert updated is not None
+        assert updated.status == JobStatus.CANCEL_REQUESTED
+
+    def test_grace_deadline_is_exclusive(
+        self,
+        reconciler: Reconciler,
+        job_store: InMemoryJobStore,
+    ) -> None:
+        """The wait ends only after the grace period, not on the deadline itself."""
+        now = utc_now()
+        before = create_test_job(
+            "before-deadline",
+            JobStatus.CANCEL_REQUESTED,
+            cancel_requested_at=now - timedelta(seconds=290),
+        )
+        after = create_test_job(
+            "after-deadline",
+            JobStatus.CANCEL_REQUESTED,
+            cancel_requested_at=now - timedelta(seconds=310),
+        )
+        job_store.put_if_not_exists(before)
+        job_store.put_if_not_exists(after)
+
+        result = reconciler.reconcile()
+
+        assert result.cancellation_timeout == 1
+        still_waiting = job_store.get("before-deadline")
+        timed_out = job_store.get("after-deadline")
+        assert still_waiting is not None
+        assert timed_out is not None
+        assert still_waiting.status == JobStatus.CANCEL_REQUESTED
+        assert timed_out.status == JobStatus.FAILED
+
+    def test_missing_started_at_still_times_out_from_cancel_request(
+        self,
+        reconciler: Reconciler,
+        job_store: InMemoryJobStore,
+    ) -> None:
+        """A missing start time does not disable the cancel grace clock."""
+        job = create_test_job(
+            "no-start",
+            JobStatus.CANCEL_REQUESTED,
+            cancel_requested_at=utc_now() - timedelta(minutes=10),
+        )
+        job.timing.started_at = None
+        job_store.put_if_not_exists(job)
+
+        result = reconciler.reconcile()
+
+        assert result.cancellation_timeout == 1
+        updated = job_store.get("no-start")
+        assert updated is not None
+        assert updated.status == JobStatus.FAILED
+        assert updated.error_message == "cancellation_timeout"
+
+    def test_legacy_record_starts_grace_at_first_observation(
+        self,
+        reconciler: Reconciler,
+        job_store: InMemoryJobStore,
+    ) -> None:
+        """A stored cancel with no request time is not failed on the first look."""
+        job = create_test_job(
+            "legacy-cancel",
+            JobStatus.CANCEL_REQUESTED,
+            started_at=utc_now() - timedelta(hours=3),
+        )
+        assert job.timing.cancel_requested_at is None
+        job_store.put_if_not_exists(job)
+
+        first = reconciler.reconcile()
+
+        assert first.cancellation_timeout == 0
+        observed = job_store.get("legacy-cancel")
+        assert observed is not None
+        assert observed.status == JobStatus.CANCEL_REQUESTED
+        assert observed.timing.cancel_requested_at is not None
+
+        observed.timing.cancel_requested_at = format_timestamp(utc_now() - timedelta(minutes=10))
+        job_store.update(observed)
+        second = reconciler.reconcile()
+
+        assert second.cancellation_timeout == 1
+        finished = job_store.get("legacy-cancel")
+        assert finished is not None
+        assert finished.status == JobStatus.FAILED
+
+    def test_manifest_wins_over_an_expired_grace_period(
+        self,
+        reconciler: Reconciler,
+        job_store: InMemoryJobStore,
+        artifact_store: LocalStore,
+    ) -> None:
+        """A terminal manifest is applied even when the grace period has elapsed."""
+        job = create_test_job(
+            "manifest-wins",
+            JobStatus.CANCEL_REQUESTED,
+            cancel_requested_at=utc_now() - timedelta(minutes=10),
+        )
+        job_store.put_if_not_exists(job)
+        artifact_store.put_manifest(
+            "manifest-wins",
+            create_test_manifest("manifest-wins", "CANCELLED"),
+        )
+
+        result = reconciler.reconcile()
+
+        assert result.manifest_reconciled == 1
+        assert result.cancellation_timeout == 0
+        updated = job_store.get("manifest-wins")
+        assert updated is not None
+        assert updated.status == JobStatus.CANCELLED
+
+    def test_legacy_timing_round_trip_omits_unknown_cancel_time(self) -> None:
+        """Records written before the field existed still load."""
+        timing = JobTiming.from_dict(
+            {
+                "submitted_at": "2026-01-01T00:00:00Z",
+                "started_at": "2026-01-01T00:10:00Z",
+                "completed_at": None,
+            }
+        )
+        assert timing.cancel_requested_at is None
+        assert JobTiming.from_dict(timing.to_dict()).cancel_requested_at is None
+        timing.cancel_requested_at = "2026-01-01T00:15:00Z"
+        restored = JobTiming.from_dict(timing.to_dict())
+        assert restored.cancel_requested_at == "2026-01-01T00:15:00Z"
 
     def test_cancel_with_manifest(
         self,

@@ -122,12 +122,14 @@ class JobTiming:
     submitted_at: str
     started_at: str | None = None
     completed_at: str | None = None
+    cancel_requested_at: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "submitted_at": self.submitted_at,
             "started_at": self.started_at,
             "completed_at": self.completed_at,
+            "cancel_requested_at": self.cancel_requested_at,
         }
 
     @classmethod
@@ -136,6 +138,7 @@ class JobTiming:
             submitted_at=data.get("submitted_at", ""),
             started_at=data.get("started_at"),
             completed_at=data.get("completed_at"),
+            cancel_requested_at=data.get("cancel_requested_at"),
         )
 
 
