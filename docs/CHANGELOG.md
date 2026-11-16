@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Raise the transitive `soupsieve` floor to 4.0.0 and the `dnspython` floor to
+  2.9.2. `soupsieve` before 4.0.0 can stall on crafted selectors
+  (CVE-2026-126190, CVE-2026-126191, CVE-2026-126192, CVE-2026-126193).
+  `dnspython` before 2.9.2 can exhaust memory while parsing a malicious WKS
+  record (CVE-2026-128089). Both are reached through existing dependencies.
+  The constraints cover locked source and container installs. `soupsieve`
+  4.0.0 requires Python >=3.11.5, so the published floor moves to that patch.
+  Python 3.11 through 3.15 stay supported; current 3.11 installers are past
+  3.11.4.
 - Raise the transitive `pyasn1` floor to 0.6.5. Versions before 0.6.5 spend
   quadratic CPU while decoding crafted ASN.1 (CVE-2026-119194,
   CVE-2026-119195, CVE-2026-119196, CVE-2026-119197). The package is reached
@@ -35,6 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- CI installs CPython 3.15.2 into the job workspace. The pinned uv 0.13.5
+  manifest stops at 3.15.1, so the 3.15 jobs pass a checked-in download
+  manifest to `uv python install`. The interpreter is not taken from the
+  runner image, and the uv pin stays 0.13.5.
 - Disclosed and reported figures stay as stated. The composed overview, the
   fast-mode system prompt, the fast trust polish, and the contradiction edit
   use a range only for a genuine estimate and say how it was made. The
@@ -78,6 +91,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Retired Grok 4.1 Fast quotes on or after 2026-05-15 use grok-4.7 rates
+  from the xAI pricing page checked 2026-11-14 ($2/$0.50 cached/$6 below
+  200k prompt tokens, $4/$1 cached/$12 at or above 200k). Earlier dates
+  keep the $0.20/$0.50 list price. Opt-in OpenAI icon generation requests
+  `gpt-image-2.6-flare`. From 2026-12-01, quotes for `gemini-2.5-pro` and
+  `gemini-2.5-flash` follow `gemini-3.8-flash` and `gemini-3.5-flash-lite`.
+  Live defaults now use only current model ids: every xAI tier uses
+  `grok-4.7`, Gemini Pro uses `gemini-4-carbon`, Flash uses
+  `gemini-3.8-flash`, Flash-Lite uses `gemini-3.5-flash-lite`, OpenAI uses
+  `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-luna`, or `gpt-6-astra`, and
+  Anthropic uses `claude-fable-5-2`, `claude-opus-5-5`, `claude-sonnet-5-5`,
+  or `claude-haiku-5-5`. Superseded ids stay registered for historical
+  quotes. `gemini-2.5-pro` and `gemini-2.5-flash` are deprecated and shut
+  down on 2026-12-01. Until that date an explicit selection still works and
+  warns. On that date it is refused in favor of `gemini-3.8-flash` and
+  `gemini-3.5-flash-lite`. Quotes before the shutdown keep the stored 2.5
+  rates, and quotes on or after it use the successor rates.
+  Direct `gemini-2.5-flash-lite` is not deprecated and remains available.
+  The OpenRouter row for that id is not selectable. Deprecation notes were
+  rechecked against the Gemini deprecations page on 2026-11-16. Other
+  superseded ids are not selectable.
+- Current architecture, run-mode, onboarding, and queue notes name
+  `gemini-4-carbon` as the Pro default and `grok-4.7` for every xAI tier.
+  Gemini 4 Argon stays registered. The 2026-10-28 flagship table stays as
+  history.
 - The Strategic Overview voice now covers the fast-mode system prompt, the
   composed overview persona, and the section briefs. Those paths no longer
   tell the writer to treat every claim as a hypothesis or to hedge wins,

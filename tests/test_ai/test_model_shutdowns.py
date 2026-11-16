@@ -152,7 +152,7 @@ def test_registry_lifecycles_include_recorded_retirements_and_image_model():
     from primr.config.models import PrimrModels
 
     recorded = registered_openai_lifecycles()
-    assert recorded["o4-mini"] == RecordedLifecycle(date(2026, 10, 23), "gpt-5.6-terra")
+    assert recorded["o4-mini"] == RecordedLifecycle(date(2026, 10, 23), "gpt-6.1-terra")
     assert PrimrModels.OPENAI_IMAGE_MODEL in recorded
 
 

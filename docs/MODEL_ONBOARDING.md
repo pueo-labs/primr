@@ -304,13 +304,11 @@ output per million tokens. Added it to `ALL_MODELS` and introduced
 `GROK_MODEL_43`; `GROK_MODEL_420` remains a compatibility constant for the
 dated Grok 4.20 reasoning ID.
 
-**Step 3 - wire**: `get_grok_models()` now maps FAST and HYBRID to Grok 4.3
-reasoning plus `grok-4.20-non-reasoning` writing, while MAX maps to
-`(4.5, 4.5)` as a version-pinned opt-in. FAST uses lower reasoning effort. See
-`docs/design/grok-default-routing.md`. `ANALYSIS_FALLBACK_CHAIN` reordered
-to `(4.3 → 4.20 → 4.1 → Flash)` historically; current analysis fallback prefers
-`4.3 → 4.5 → 4.20` (see `docs/design/grok-default-routing.md`). Cost-estimator
-labels: hybrid stays **Grok 4.3 hybrid**; `--grok-tier max` is **Grok 4.5 max**.
+**Step 3 - wire**: at that point `get_grok_models()` mapped FAST and HYBRID to
+Grok 4.3 reasoning plus `grok-4.20-non-reasoning` writing, while MAX mapped to
+Grok 4.5 for both roles. FAST used lower reasoning effort. The estimator
+labels were **Grok 4.3 hybrid** and **Grok 4.5 max**. That wiring is the
+historical example. The live map is the current-routing note below.
 
 **Step 4 - tests**: `test_cost_estimator.py` got six new assertions
 (`test_grok_43_pricing`, `_tiered_pricing`, `_always_on_reasoning`,
@@ -318,18 +316,23 @@ labels: hybrid stays **Grok 4.3 hybrid**; `--grok-tier max` is **Grok 4.5 max**.
 cost-range tests). Existing 4.20 tests rewritten to assert legacy behavior
 (still registered, still works) rather than current default.
 
-**Step 5 - eval**: Pending. Default flipped to 4.3 on vendor recommendation +
-mechanical wiring; eval sweep is the next ROADMAP item before treating the
-flip as confirmed. If the eval shows regression, revert the
-`get_grok_models()` change and leave the registration in place.
+**Step 5 - eval**: at the time, the 4.3 default was a vendor recommendation
+plus mechanical wiring, and the eval sweep was still open. That sweep is
+closed history. Do not revert `get_grok_models()` to 4.3. The live defaults
+are the current-routing note below.
+
+**Current routing (2026-11-14):** every Grok tier uses `grok-4.7` for
+reasoning and writing. The analysis fallback chain is `grok-4.7`, Claude
+Sonnet 5.5, GPT-6.1 Terra, then Gemini 3.8 Flash. The Pro default is
+`gemini-4-carbon`. See `docs/design/grok-default-routing.md`.
 
 **Current follow-up**:
 
 - The published inclusive >=200k tier is represented in the registry and cost
   tests.
-- Hybrid writing uses the current `grok-4.20-non-reasoning` alias when Gemini
-  is unavailable. With Gemini configured, routed Flash-Lite writing remains
-  the measured lower-cost path.
+- Every xAI tier, including writing when Gemini is unavailable, uses
+  `grok-4.7`. With Gemini configured, routed Flash-Lite writing remains
+  `gemini-3.5-flash-lite`. Gemini Pro uses `gemini-4-carbon`.
 - The Responses adapters normalize cached-input usage. xAI's
   `cost_in_usd_ticks` is the exact-cost authority when present; registry token
   pricing remains the conservative fallback.

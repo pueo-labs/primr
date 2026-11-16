@@ -3,7 +3,40 @@
 Decision record for which models Primr uses by default, why each tier stays
 version-pinned, and how the defaults move when providers ship new models.
 
-## Decision update (2026-10-28, supersedes the binding decision below)
+## Decision update (2026-11-14)
+
+The project owner directed that no superseded model is selectable. Every
+xAI tier uses `grok-4.7`, including writing and the xAI-only utility path.
+Gemini Pro uses `gemini-4-carbon`, Google's strongest Gemini 4 model
+(checked 2026-11-14), not Gemini 4 Argon and not the cheaper
+`gemini-2.5-pro` auto-route target `gemini-3.8-flash`. Flash stays
+`gemini-3.8-flash`. Lite stays `gemini-3.5-flash-lite`. OpenAI selections
+use `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6.1-terra`, or `gpt-6-luna`.
+Anthropic selections use `claude-fable-5-2`, `claude-opus-5-5`,
+`claude-sonnet-5-5`, or `claude-haiku-5-5`. Opt-in OpenAI images use
+`gpt-image-2.6-flare`.
+
+Superseded registry rows stay so historical quotes still resolve. New
+requests for those ids are rejected, except the direct Gemini 2.5 rows
+below. Embeddings were not swapped.
+`gemini-2.5-pro` and `gemini-2.5-flash` are deprecated and shut down on
+2026-12-01 (deprecations page checked 2026-11-16). Until that date an
+explicit selection still runs and reports the deprecation. On that date
+the selection is refused. The refusal names `gemini-3.8-flash` for Pro and
+`gemini-3.5-flash-lite` for Flash, the provider routing targets, distinct
+from the `gemini-4-carbon` default. Quotes before the shutdown keep the
+stored 2.5 rates. Quotes on or after it use the successor rates. Direct
+`gemini-2.5-flash-lite` is not deprecated and stays selectable. The
+OpenRouter row for that id is not.
+`deep-research-preview-04-2026` has no named current replacement in the
+catalogs checked on this date, so that row is unchanged.
+
+xAI rates checked at https://docs.x.ai/developers/pricing on 2026-11-14:
+`grok-4.7` is $2 input, $0.50 cached input, and $6 output per 1M tokens
+below 200k prompt tokens, and $4, $1, and $12 at or above 200k. The
+analysis fallback chain no longer inserts `grok-4.3` after `grok-4.7`.
+
+## Decision update (2026-10-28, previous flagship table)
 
 The project owner directed that defaults track each provider's current
 flagship instead of waiting for a paid quality comparison per release. This is
@@ -45,8 +78,9 @@ from Gemini 3.5 Flash-Lite writing output ($2.50 versus $1.50 per 1M) and
 about $0.11 from Grok 4.7 reasoning. Gemini 4 Argon rates rise to $4/$20 on
 2026-12-01 and Gemini 3.8 Flash to $1.50/$7.50 on 2027-01-01; estimates now
 disclose such scheduled changes so an approval made before the date is not
-silently repriced. Grok 4.7 has a 500k context window, half of Grok 4.3's,
-so the analysis fallback chain keeps Grok 4.3 as its 1M-context second step.
+silently repriced. Grok 4.7 has a 500k context window, half of Grok 4.3's.
+This 2026-10-28 decision kept Grok 4.3 as the 1M-context analysis fallback.
+The 2026-11-14 decision removes that step.
 
 Longer Strategic Overview section floors move this static estimator again.
 xAI plus Gemini HYBRID is about $1.08 ($1.26 with the AI Strategy). xAI-only
@@ -56,7 +90,9 @@ above remains the 2026-10-28 flagship record.
 
 Catalog recheck (2026-11-02): the xAI models page, the Gemini pricing page,
 the OpenAI pricing page, and the Claude Sonnet 5.5 and Haiku 5.5 pages list
-the same default IDs and rates. No default moves.
+the same default IDs and rates. No default moves on that date.
+The 2026-11-14 decision above moves the Pro default to `gemini-4-carbon`
+and uses `grok-4.7` for xAI writing.
 `grok-4.20-non-reasoning` remains the documented alias of
 `grok-4.20-0309-non-reasoning`.
 

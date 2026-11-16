@@ -44,7 +44,7 @@ provider API keys listed above.
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `AI_RESEARCH_MODEL` | Legacy Gemini-backed research model override | `gemini-3.8-flash` |
-| `AI_REPORT_MODEL` | Legacy Gemini-backed report model override | `gemini-4-argon` |
+| `AI_REPORT_MODEL` | Legacy Gemini-backed report model override | `gemini-4-carbon` |
 | `VERBOSE` | Enable verbose output | `false` |
 | `DEBUG` | Enable debug mode | `false` |
 | `PRIMR_INFERENCE_PROFILE` | Runtime capability-routing profile for wired stages. Supported values are `cloud` and `hybrid`. `cloud` is the default; `hybrid` enables the current routed utility-stage pilots. Route metadata is recorded in `_run_state.json`. Prefer the `--inference` CLI flag for normal use. Internal enum values used by tests and evals are not supported configuration. | `cloud` |
@@ -58,16 +58,11 @@ provider API keys listed above.
 
 Note: Legacy Gemini model override variables are still supported for Gemini-backed stages. Provider-aware routing otherwise uses the model registry and configured provider keys. Current Gemini defaults:
 - `gemini-3.8-flash` - Current stable Flash model; the default for legacy Gemini paths
-- `gemini-4-argon` - Current stable Pro-class model; the default Gemini reasoning model
+- `gemini-4-carbon` - Strongest current Gemini 4 model; the default Gemini reasoning model. Introductory rates are $2/$10 per 1M tokens through 2026-11-30, then $4/$20.
 
-Gemini 3.1 Pro Preview is the default Pro model. It has tiered pricing: $2/$12 per 1M tokens for prompts ≤200k, $4/$18 for >200k. Most Primr calls stay well under 200k tokens. Cost estimates (`--dry-run`) use conservative high-tier pricing; actual costs are typically lower. Model IDs marked deprecated in the registry are not supported override targets.
+Superseded model ids stay in the registry for historical quotes and are rejected for new requests. Cost estimates (`--dry-run`) use the selected model's published rates. Model IDs marked unavailable in the registry are not supported override targets.
 
-Gemini 3.7 Flash, Gemini 3.6 Flash, and Gemini 3.5 Flash-Lite are registered
-evaluation candidates, not production defaults. Primr omits sampling controls
-on these current request paths and keeps thinking levels explicit. The 3.6 and
-3.7 registry prices switch from Google's introductory rates to the published
-January 1, 2027 rates by pricing date, so future dry-runs do not silently
-underquote. Promotion still requires a representative quality/cost evaluation.
+Gemini 3.8 Flash is the Flash default and Gemini 3.5 Flash-Lite is the lite default. Primr omits sampling controls on current Gemini 4 and Claude adaptive-thinking request paths and keeps thinking levels explicit. Gemini 3.8 Flash registry prices switch from Google's introductory rates to the published January 1, 2027 rates by pricing date, so future dry-runs do not silently underquote.
 See Google's [latest-model migration guide](https://ai.google.dev/gemini-api/docs/latest-model)
 and [pricing page](https://ai.google.dev/gemini-api/docs/pricing).
 
@@ -284,7 +279,7 @@ Controls AI model behavior.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `research_model` | str | `gemini-3.8-flash` | Legacy Gemini-backed research model override |
-| `report_model` | str | `gemini-4-argon` | Legacy Gemini-backed report model override |
+| `report_model` | str | `gemini-4-carbon` | Legacy Gemini-backed report model override |
 | `max_retries` | int | 3 | Maximum retry attempts |
 | `grade_threshold` | int | 70 | Quality threshold (0-100) |
 | `default_temperature` | float | 1.0 | Model temperature (0.0-2.0) |

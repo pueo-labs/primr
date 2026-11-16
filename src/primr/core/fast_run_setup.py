@@ -65,7 +65,7 @@ def resolve_fast_run_setup(
     # estimator already prices writing via pick_model_for_role(Role.WRITING),
     # which prefers Gemini Flash-Lite when GEMINI_API_KEY is set. Until
     # this fix, perform_fast_research kept using the Grok-tier writer
-    # (grok-4.20-non-reasoning), so a max_estimated_cost_usd cap approved
+    # (grok-4.7), so a max_estimated_cost_usd cap approved
     # against a ~$0.79 Gemini estimate could let through a real ~$5.09 Grok
     # run. MAX is the explicit "Grok everywhere" opt-in and still uses the
     # Grok-tier writer for both reasoning and writing.
@@ -103,16 +103,16 @@ def resolve_fast_run_setup(
     if _active_recipe is not None and _active_recipe.writing:
         grok_writing = _active_recipe.writing
     # The recipe's reasoning model must win too, not just writing - otherwise a
-    # cross-provider slot that declares e.g. reasoning="claude-opus-4-8" or
-    # "gpt-5.6-terra" silently runs Grok reasoning and the eval cell is invalid. The
+    # cross-provider slot that declares e.g. reasoning="claude-opus-5-5" or
+    # "gpt-6.1-terra" silently runs Grok reasoning and the eval cell is invalid. The
     # grok_llm cross-provider dispatch routes the non-Grok model correctly.
     if _active_recipe is not None and _active_recipe.reasoning:
         grok_reasoning = _active_recipe.reasoning
 
     # Print the resolved models so an eval cell can verify (before any LLM
     # spend) that the recipe override actually flowed through. This is a
-    # cheap correctness check — if the run-log shows grok_writing=grok-4.20-NR
-    # when the recipe specified gemini-3.1-flash-lite, the override didn't
+    # cheap correctness check. If the run-log shows grok_writing=grok-4.7
+    # when the recipe specified gemini-3.5-flash-lite, the override didn't
     # work and the cell should be aborted before paying for the full run.
     if _active_recipe is not None:
         from primr.utils.console import console as _console

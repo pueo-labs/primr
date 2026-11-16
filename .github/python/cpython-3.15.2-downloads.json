@@ -1,0 +1,155 @@
+{
+  "cpython-3.15.2-linux-x86_64-gnu": {
+    "name": "cpython",
+    "arch": {
+      "family": "x86_64",
+      "variant": null
+    },
+    "os": "linux",
+    "libc": "gnu",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "ad23d1b73fac26440b0306ae06911031344c49a90ec19716c8362e7fa40cae43",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-linux-x86_64_v2-gnu": {
+    "name": "cpython",
+    "arch": {
+      "family": "x86_64",
+      "variant": "v2"
+    },
+    "os": "linux",
+    "libc": "gnu",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-x86_64_v2-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "82236a90cfa3bcca2a5624ac7de579249541e8529b0d02b36a670276a3677428",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-linux-x86_64_v3-gnu": {
+    "name": "cpython",
+    "arch": {
+      "family": "x86_64",
+      "variant": "v3"
+    },
+    "os": "linux",
+    "libc": "gnu",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-x86_64_v3-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "d565d9cfe46e0d213778a3f1fd6ab3715b59d2b57d7535f7ecc7d6c970834c39",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-linux-x86_64_v4-gnu": {
+    "name": "cpython",
+    "arch": {
+      "family": "x86_64",
+      "variant": "v4"
+    },
+    "os": "linux",
+    "libc": "gnu",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-x86_64_v4-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "42a5a322cd6f63f6834ad569e6121cd9a2c5a13d2844e1ccb8c3f6abd42f1197",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-linux-aarch64-gnu": {
+    "name": "cpython",
+    "arch": {
+      "family": "aarch64",
+      "variant": null
+    },
+    "os": "linux",
+    "libc": "gnu",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "d1367a6c3cd86a9e35712072841f1376859f3b47a2a54e224421a0f9fd169047",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-darwin-aarch64-none": {
+    "name": "cpython",
+    "arch": {
+      "family": "aarch64",
+      "variant": null
+    },
+    "os": "darwin",
+    "libc": "none",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-aarch64-apple-darwin-install_only_stripped.tar.gz",
+    "sha256": "7e58607647b5b4832092a339ff1c55eeeccee128221232509b8fc8d27957065e",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-darwin-x86_64-none": {
+    "name": "cpython",
+    "arch": {
+      "family": "x86_64",
+      "variant": null
+    },
+    "os": "darwin",
+    "libc": "none",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-x86_64-apple-darwin-install_only_stripped.tar.gz",
+    "sha256": "11143c2a2556b14619e8241d3f74bb43ad97181c0eb4909bab87d7aad1154e49",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-windows-x86_64-none": {
+    "name": "cpython",
+    "arch": {
+      "family": "x86_64",
+      "variant": null
+    },
+    "os": "windows",
+    "libc": "none",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-x86_64-pc-windows-msvc-install_only_stripped.tar.gz",
+    "sha256": "ecd90d78accb906e3d47f6cdb409a610da10475f94d15ebdd8cb2e0561b71df6",
+    "variant": null,
+    "build": "20261110"
+  },
+  "cpython-3.15.2-windows-aarch64-none": {
+    "name": "cpython",
+    "arch": {
+      "family": "aarch64",
+      "variant": null
+    },
+    "os": "windows",
+    "libc": "none",
+    "major": 3,
+    "minor": 15,
+    "patch": 2,
+    "prerelease": "",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.15.2%2B20261110-aarch64-pc-windows-msvc-install_only_stripped.tar.gz",
+    "sha256": "f53641fd0bc1d0b0946069647a5c2c44b5acb33aed53be2855e9a674b8585b20",
+    "variant": null,
+    "build": "20261110"
+  }
+}

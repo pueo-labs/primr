@@ -15,10 +15,17 @@ from dataclasses import dataclass, replace
 from datetime import date
 from math import isfinite
 
-from primr.config.gemini_models import GEMINI_ALIASES_VERIFIED_ON, GEMINI_MODEL_ALIASES
+from primr.config.gemini_models import (
+    GEMINI_25_BILLING_REDIRECT,
+    GEMINI_25_BILLING_REDIRECT_ON,
+    GEMINI_ALIASES_VERIFIED_ON,
+    GEMINI_MODEL_ALIASES,
+)
 from primr.config.model_registry import (
     DEFAULT_FLASH_MODEL,
     DEFAULT_PRO_MODEL,
+    GROK_41_FAST_CURRENT_PRICE,
+    GROK_41_FAST_RETIRED_ON,
     GrokTier,
     ModelConfig,
     ModelRegistry,
@@ -176,7 +183,7 @@ class PrimrModels:
     # PRIMARY MODELS - UPDATE THESE TO CHANGE MODELS GLOBALLY
     # =========================================================================
     FLASH_MODEL = DEFAULT_FLASH_MODEL  # Gemini 3.8 Flash - $0.75/$3.75 per 1M
-    PRO_MODEL = DEFAULT_PRO_MODEL  # Gemini 4 Argon - $2/$10 per 1M
+    PRO_MODEL = DEFAULT_PRO_MODEL  # Gemini 4 Carbon - $2/$10 per 1M through 2026-11-30
     DEEP_RESEARCH_AGENT = ModelRegistry.DEEP_RESEARCH_AGENT  # Autonomous 12+ page reports
 
     # =========================================================================
@@ -200,12 +207,11 @@ class PrimrModels:
     IMAGE_MODEL = ModelRegistry.GEMINI_NANO_BANANA_2_1.name
     # Opt-in remote icon providers. These are image endpoints priced per image
     # or per image token, so they stay out of the text-token pricing registry.
-    # Verified 2026-10-27: gpt-image-1 shut down 2026-10-23 and OpenAI names
-    # gpt-image-2.5-flare as a substitute; xAI retires grok-imagine-image-quality
-    # on 2026-11-02 and serves grok-imagine-image-2.0 at low quality instead.
-    # Medium is the highest documented quality, chosen to keep the retired
-    # slug's intent rather than inherit the auto default (low for generation).
-    OPENAI_IMAGE_MODEL = "gpt-image-2.5-flare"
+    # Checked 2026-11-14: gpt-image-2.6-flare accepts the same
+    # images.generations arguments this client sends (model, prompt, n, size)
+    # and still returns data[0].b64_json. xAI image generation uses
+    # grok-imagine-image-2.0 at explicit medium quality.
+    OPENAI_IMAGE_MODEL = "gpt-image-2.6-flare"
     XAI_IMAGE_MODEL = "grok-imagine-image-2.0"
     XAI_IMAGE_QUALITY = "medium"
 
@@ -227,9 +233,7 @@ class PrimrModels:
 
     # --- GROK MODELS (xAI - for fast mode) ---
     GROK_MODEL = ModelRegistry.GROK_4_7.name  # 4.7 flagship, reasoning in every tier
-    GROK_MODEL_WRITING = (
-        ModelRegistry.GROK_4_20_NR_NEW.name
-    )  # 4.20 non-reasoning, the current xAI non-reasoning model
+    GROK_MODEL_WRITING = ModelRegistry.GROK_4_7.name  # grok-4.7 for every xAI tier
     GROK_MODEL_43 = ModelRegistry.GROK_4_3.name  # 4.3, previous value default
     GROK_MODEL_45 = ModelRegistry.GROK_4_5.name  # 4.5, previous MAX-tier pin
     GROK_MODEL_46 = ModelRegistry.GROK_4_6.name  # 4.6, previous flagship
@@ -242,6 +246,7 @@ class PrimrModels:
     # Model registry for lookups
     ALL_MODELS = {
         # Google / Gemini
+        ModelRegistry.GEMINI_4_CARBON.name: ModelRegistry.GEMINI_4_CARBON,
         ModelRegistry.GEMINI_4_ARGON.name: ModelRegistry.GEMINI_4_ARGON,
         ModelRegistry.GEMINI_NANO_BANANA_2_1.name: ModelRegistry.GEMINI_NANO_BANANA_2_1,
         ModelRegistry.GEMINI_3_PRO_IMAGE_STABLE.name: ModelRegistry.GEMINI_3_PRO_IMAGE_STABLE,
@@ -316,9 +321,9 @@ class PrimrModels:
         """Return (reasoning_model, writing_model) for the given Grok tier.
 
         Tier mapping (October 2026):
-        FAST: grok-4.7 (reasoning_effort=low) + grok-4.20-non-reasoning
-        HYBRID: grok-4.7 + grok-4.20-non-reasoning  (default)
-        MAX: grok-4.7 + grok-4.7  (flagship writing too; higher cost, re-estimate)
+        FAST: grok-4.7 (reasoning_effort=low) + grok-4.7
+        HYBRID: grok-4.7 + grok-4.7  (default)
+        MAX: grok-4.7 + grok-4.7
 
         FAST and HYBRID use the same models; the difference is in
         reasoning_effort (low for FAST, default/high for HYBRID), handled by
@@ -351,12 +356,20 @@ class PrimrModels:
     ) -> ModelConfig | None:
         """Use verified current alias prices without rewriting older records.
 
-        Google does not publish an alias cutover date. Earlier dated accounting
-        retains its historical catalog rates; do not invent a backdated change.
-        The requested route identity remains unchanged.
+        Google does not publish an alias cutover date for the 3.5 and 3.7
+        Flash aliases. Earlier dated accounting retains its historical catalog
+        rates. From 2026-12-01, gemini-2.5-pro and gemini-2.5-flash quotes
+        follow the successor Google bills for the automatic route. From
+        2026-05-15, retired Grok 4.1 Fast ids quote as grok-4.7. The requested
+        route identity remains unchanged.
         """
-        if (pricing_date or date.today()) >= GEMINI_ALIASES_VERIFIED_ON:
+        effective = pricing_date or date.today()
+        if effective >= GEMINI_ALIASES_VERIFIED_ON:
             model_name = GEMINI_MODEL_ALIASES.get(model_name, model_name)
+        if effective >= GEMINI_25_BILLING_REDIRECT_ON:
+            model_name = GEMINI_25_BILLING_REDIRECT.get(model_name, model_name)
+        if effective >= GROK_41_FAST_RETIRED_ON:
+            model_name = GROK_41_FAST_CURRENT_PRICE.get(model_name, model_name)
         return cls._resolve_config(model_name)
 
     @classmethod
@@ -380,11 +393,12 @@ class PrimrModels:
             ModelRegistry.OPENAI_GPT_6_1_SOL.name,
             ModelRegistry.OPENAI_GPT_6_1_TERRA.name,
             ModelRegistry.OPENAI_GPT_6_LUNA.name,
-            ModelRegistry.ANTHROPIC_FABLE_5_1.name,
+            ModelRegistry.ANTHROPIC_FABLE_5_2.name,
             ModelRegistry.ANTHROPIC_OPUS_5_5.name,
             ModelRegistry.ANTHROPIC_SONNET_5_5.name,
             ModelRegistry.ANTHROPIC_HAIKU_5_5.name,
             ModelRegistry.GROK_4_7.name,
+            ModelRegistry.GEMINI_4_CARBON.name,
             ModelRegistry.GEMINI_4_ARGON.name,
             ModelRegistry.GEMINI_3_8_FLASH.name,
             ModelRegistry.GEMINI_3_5_FLASH_LITE.name,

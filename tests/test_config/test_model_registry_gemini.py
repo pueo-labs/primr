@@ -15,6 +15,7 @@ import pytest
 from primr.config.models import PrimrModels
 
 NEW_GEMINI_MODELS = [
+    "gemini-4-carbon",
     "gemini-4-argon",
     "gemini-3.8-flash",
     "gemini-3.7-flash",
@@ -37,7 +38,7 @@ def test_new_gemini_model_is_registered_and_priced(model: str) -> None:
 
 def test_default_tiers_are_the_latest_stable_gemini_models() -> None:
     assert PrimrModels.FLASH_MODEL == "gemini-3.8-flash"
-    assert PrimrModels.PRO_MODEL == "gemini-4-argon"
+    assert PrimrModels.PRO_MODEL == "gemini-4-carbon"
     for model in (PrimrModels.FLASH_MODEL, PrimrModels.PRO_MODEL):
         assert "preview" not in model
         assert PrimrModels.get_model_config(model).available
@@ -62,8 +63,13 @@ def test_argon_has_synchronous_limits_and_scheduled_standard_cache_prices() -> N
 @pytest.mark.parametrize(
     ("name", "before", "retired", "replacement"),
     [
-        ("gemini-3-pro-preview", date(2026, 3, 8), date(2026, 3, 9), "gemini-3.1-pro-preview"),
-        ("gemini-3-pro-image-preview", date(2026, 6, 24), date(2026, 6, 25), "gemini-3-pro-image"),
+        ("gemini-3-pro-preview", date(2026, 3, 8), date(2026, 3, 9), "gemini-4-carbon"),
+        (
+            "gemini-3-pro-image-preview",
+            date(2026, 6, 24),
+            date(2026, 6, 25),
+            "gemini-nano-banana-2.1",
+        ),
     ],
 )
 def test_retired_routes_reject_new_work_but_keep_historical_costs(
@@ -79,13 +85,17 @@ def test_retired_routes_reject_new_work_but_keep_historical_costs(
 
 @pytest.mark.parametrize(
     "model",
-    ["gemini-3-flash-preview", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite"],
+    ["gemini-3-flash-preview"],
 )
-def test_direct_google_routes_without_announced_shutdown_remain_available(model):
+def test_direct_google_routes_without_announced_shutdown_are_not_selectable(model):
+    """Rows without a shutdown date can still be kept off the automatic route."""
     config = PrimrModels.get_model_config(model)
     assert config is not None
     assert config.expiration_date is None
-    config.require_available(date(2026, 10, 20))
+    assert config.available is False
+    assert config.replacement_model
+    with pytest.raises(ValueError, match="unavailable"):
+        config.require_available(date(2026, 10, 20))
 
 
 @pytest.mark.parametrize("method", ["chat", "search_and_summarize"])
@@ -97,7 +107,7 @@ def test_retired_gemini_request_stops_before_sdk_client_creation(method, monkeyp
     monkeypatch.setattr(provider, "_get_client", client_factory)
     call = getattr(provider, method)
     argument = [{"role": "user", "content": "control"}] if method == "chat" else "control"
-    with pytest.raises(ValueError, match=r"gemini-3\.1-pro-preview"):
+    with pytest.raises(ValueError, match="gemini-4-carbon"):
         call(argument, model="gemini-3-pro-preview")
     client_factory.assert_not_called()
 
@@ -107,11 +117,12 @@ def test_retired_configured_utility_route_stops_during_selection(monkeypatch):
 
     monkeypatch.setenv("GEMINI_API_KEY", "fake-key-for-ci-tests")
     monkeypatch.setenv("PRIMR_GEMINI_UTILITY_MODEL", "gemini-3-pro-preview")
-    with pytest.raises(ValueError, match=r"gemini-3\.1-pro-preview"):
+    with pytest.raises(ValueError, match="gemini-4-carbon"):
         pick_model_for_role(Role.UTILITY)
 
 
 def test_aliases_and_restricted_legacy_models_do_not_advertise_as_flagships():
+    assert PrimrModels.is_latest_model("gemini-4-carbon")
     assert PrimrModels.is_latest_model("gemini-4-argon")
     assert PrimrModels.is_latest_model("gemini-3.8-flash")
     for name in (
@@ -124,6 +135,47 @@ def test_aliases_and_restricted_legacy_models_do_not_advertise_as_flagships():
     ):
         assert PrimrModels.get_model_config(name) is not None
         assert not PrimrModels.is_latest_model(name)
+
+
+def test_gemini_25_quotes_follow_announced_successor_without_rewriting_history():
+    """Dec 1, 2026 quotes use the successor record. The id stays selectable until then."""
+    pro = PrimrModels.get_model_config("gemini-2.5-pro")
+    flash = PrimrModels.get_model_config("gemini-2.5-flash")
+    lite = PrimrModels.get_model_config("gemini-2.5-flash-lite")
+    assert pro is not None
+    assert flash is not None
+    assert lite is not None
+    assert pro.name == "gemini-2.5-pro"
+    assert flash.name == "gemini-2.5-flash"
+    assert pro.cost_per_1m_input_tokens == 1.25
+    assert flash.cost_per_1m_input_tokens == 0.30
+    assert pro.expiration_date == date(2026, 12, 1)
+    assert flash.expiration_date == date(2026, 12, 1)
+    assert pro.available is True
+    assert flash.available is True
+    assert pro.replacement_model == "gemini-3.8-flash"
+    assert flash.replacement_model == "gemini-3.5-flash-lite"
+    assert not lite.deprecated
+    assert lite.available is True
+    assert lite.expiration_date is None
+    before = PrimrModels._resolve_pricing_config("gemini-2.5-pro", date(2026, 11, 30))
+    after = PrimrModels._resolve_pricing_config("gemini-2.5-pro", date(2026, 12, 1))
+    assert before is not None
+    assert before.name == "gemini-2.5-pro"
+    assert after is not None
+    assert after.name == "gemini-3.8-flash"
+    flash_after = PrimrModels._resolve_pricing_config("gemini-2.5-flash", date(2026, 12, 1))
+    assert flash_after is not None
+    assert flash_after.name == "gemini-3.5-flash-lite"
+    assert PrimrModels.get_price("gemini-2.5-pro", date(2026, 11, 30)) == (1.25, 10.0)
+    assert PrimrModels.get_price("gemini-2.5-flash", date(2026, 11, 30)) == (0.30, 2.50)
+    assert PrimrModels.get_price("gemini-2.5-pro", date(2026, 12, 1)) == (0.75, 3.75)
+    assert PrimrModels.get_price("gemini-2.5-pro", date(2027, 1, 1)) == (1.50, 7.50)
+    assert PrimrModels.get_price("gemini-2.5-flash", date(2026, 12, 1)) == (0.30, 2.50)
+    pro.require_available(date(2026, 11, 30))
+    with pytest.raises(ValueError, match=r"expired on 2026-12-01.*gemini-3.8-flash"):
+        pro.require_available(date(2026, 12, 1))
+    lite.require_available(date(2026, 12, 1))
 
 
 def test_verified_alias_prices_are_current_without_rewriting_historical_identity():
@@ -141,4 +193,5 @@ def test_verified_alias_prices_are_current_without_rewriting_historical_identity
         cached_input_tokens=500_000,
         pricing_date=date(2026, 10, 20),
     ) == pytest.approx(4.1625)
-    assert PrimrModels.require_model_available(legacy.name) == legacy.name
+    with pytest.raises(ValueError, match="unavailable"):
+        PrimrModels.require_model_available(legacy.name)

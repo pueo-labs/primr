@@ -38,9 +38,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="grok43-flashlite",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gemini-3.1-flash-lite",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="gemini-3.5-flash-lite",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=0.65,
         description=(
@@ -52,9 +52,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="grok45-flashlite",
         recipe=ProfileRecipe(
-            reasoning="grok-4.5",
-            writing="gemini-3.1-flash-lite",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="gemini-3.5-flash-lite",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=1.20,
         description=(
@@ -67,9 +67,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="grok46-flashlite",
         recipe=ProfileRecipe(
-            reasoning="grok-4.6",
-            writing="gemini-3.1-flash-lite",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="gemini-3.5-flash-lite",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=1.30,
         description=(
@@ -82,9 +82,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="grok43-nano",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gpt-5.4-nano",
-            utility="gpt-5.4-nano",
+            reasoning="grok-4.7",
+            writing="gpt-6-luna",
+            utility="gpt-6-luna",
         ),
         estimated_cost_usd=0.55,
         description=(
@@ -96,9 +96,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="grok43-luna",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gpt-5.6-luna",
-            utility="gpt-5.6-luna",
+            reasoning="grok-4.7",
+            writing="gpt-6-luna",
+            utility="gpt-6-luna",
         ),
         estimated_cost_usd=0.55,
         description=(
@@ -110,9 +110,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="grok43-mini",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gpt-5.4-mini",
-            utility="gpt-5.4-mini",
+            reasoning="grok-4.7",
+            writing="gpt-6.1-terra",
+            utility="gpt-6.1-terra",
         ),
         estimated_cost_usd=0.85,
         description=(
@@ -124,9 +124,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="grok43-haiku-batch",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="claude-haiku-4-5",
-            utility="claude-haiku-4-5",
+            reasoning="grok-4.7",
+            writing="claude-haiku-5-5",
+            utility="claude-haiku-5-5",
         ),
         estimated_cost_usd=0.80,
         description=(
@@ -140,9 +140,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="all-gemini",
         recipe=ProfileRecipe(
-            reasoning="gemini-3.1-pro-preview",
-            writing="gemini-3.1-flash-lite",
-            utility="gemini-3-flash-preview",
+            reasoning="gemini-4-carbon",
+            writing="gemini-3.5-flash-lite",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=0.95,
         description=(
@@ -155,9 +155,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
     EvalProfileSlot(
         name="terra-flashlite",
         recipe=ProfileRecipe(
-            reasoning="gpt-5.6-terra",
-            writing="gemini-3.1-flash-lite",
-            utility="gemini-3-flash-preview",
+            reasoning="gpt-6.1-terra",
+            writing="gemini-3.5-flash-lite",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=1.50,
         description=(
@@ -178,9 +178,9 @@ _V1_24_0_CLOUD_CANDIDATES = (
 _V1_24_0_CEILING_CANDIDATE = EvalProfileSlot(
     name="grok43max-flashlite",
     recipe=ProfileRecipe(
-        reasoning="grok-4.3",  # max reasoning effort
-        writing="gemini-3-flash-preview",  # 3 Flash, not Flash-Lite — slightly stronger
-        utility="gemini-3-flash-preview",
+        reasoning="grok-4.7",  # max reasoning effort
+        writing="gemini-3.8-flash",  # 3.8 Flash, not Flash-Lite, slightly stronger
+        utility="gemini-3.8-flash",
     ),
     estimated_cost_usd=1.50,
     description=(
@@ -208,9 +208,9 @@ _GEMINI_35_PRO_TIER_EVAL = (
     EvalProfileSlot(
         name="protier-gemini31pro",  # reference (current PRO model)
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gemini-3.1-pro-preview",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="gemini-4-carbon",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=1.30,
         description=(
@@ -221,9 +221,9 @@ _GEMINI_35_PRO_TIER_EVAL = (
     EvalProfileSlot(
         name="protier-gemini35flash",  # candidate (May 2026 refresh)
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gemini-3.5-flash",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="gemini-3.8-flash",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=1.05,
         description=(
@@ -236,9 +236,9 @@ _GEMINI_35_PRO_TIER_EVAL = (
     EvalProfileSlot(
         name="protier-gemini36flash",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gemini-3.6-flash",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="gemini-3.8-flash",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=0.80,
         description=(
@@ -250,9 +250,9 @@ _GEMINI_35_PRO_TIER_EVAL = (
     EvalProfileSlot(
         name="protier-gemini37flash",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="gemini-3.7-flash",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="gemini-3.8-flash",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=0.80,
         description=(
@@ -264,7 +264,7 @@ _GEMINI_35_PRO_TIER_EVAL = (
     EvalProfileSlot(
         name="protier-gemini38flash",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
+            reasoning="grok-4.7",
             writing="gemini-3.8-flash",
             utility="gemini-3.8-flash",
         ),
@@ -290,9 +290,9 @@ _PREMIUM_CANDIDATES = (
     EvalProfileSlot(
         name="premium-opus-reason",
         recipe=ProfileRecipe(
-            reasoning="claude-opus-4-8",
-            writing="gemini-3.1-flash-lite",
-            utility="gemini-3-flash-preview",
+            reasoning="claude-opus-5-5",
+            writing="gemini-3.5-flash-lite",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=1.25,
         description=(
@@ -306,9 +306,9 @@ _PREMIUM_CANDIDATES = (
     EvalProfileSlot(
         name="premium-sonnet-write",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
-            writing="claude-sonnet-5",
-            utility="gemini-3-flash-preview",
+            reasoning="grok-4.7",
+            writing="claude-sonnet-5-5",
+            utility="gemini-3.8-flash",
         ),
         estimated_cost_usd=2.50,
         description=(
@@ -364,7 +364,7 @@ _V1_24_0_LOCAL_CANDIDATES = (
     EvalProfileSlot(
         name="hybrid-grok-local",
         recipe=ProfileRecipe(
-            reasoning="grok-4.3",
+            reasoning="grok-4.7",
             writing="qwen3.6:35b-a3b",
             utility="qwen3:7b",
         ),
@@ -388,9 +388,9 @@ _V1_24_0_LOCAL_CANDIDATES = (
 _V1_24_0_CURRENT_BASELINE = EvalProfileSlot(
     name="grok43-current-default",
     recipe=ProfileRecipe(
-        reasoning="grok-4.3",
-        writing="grok-4.20-non-reasoning",
-        utility="grok-4.20-non-reasoning",
+        reasoning="grok-4.7",
+        writing="grok-4.7",
+        utility="grok-4.7",
     ),
     estimated_cost_usd=5.09,
     description=(
@@ -487,9 +487,9 @@ _OPENROUTER_EVAL_CANDIDATES = (
     EvalProfileSlot(
         name="openrouter-curated",
         recipe=ProfileRecipe(
-            reasoning="deepseek/deepseek-r1",
-            writing="openai/gpt-5.4-mini",
-            utility="google/gemini-3.7-flash",
+            reasoning="deepseek/deepseek-v4.1-flash",
+            writing="openai/gpt-6.1-terra",
+            utility="google/gemini-3.8-flash",
         ),
         estimated_cost_usd=0.75,
         description=(

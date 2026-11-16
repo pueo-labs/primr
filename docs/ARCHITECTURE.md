@@ -1441,13 +1441,14 @@ Playwright tiers now perform adaptive lazy-load scrolling (up to 20 steps by def
 
 | Model | Role | Pricing (per 1M tokens) |
 |-------|------|-------------------------|
-| Grok 4.7 | Default reasoning in every tier (analysis, workbook, cross-validation); `--grok-tier max` also writes with it | $2/$6 (<200k) · $4/$12 (>=200k) · $0.50 cached below the boundary |
-| Grok 4.3 | 1M-context analysis fallback after 4.7 | $1.25/$2.50 (<200k) · $2.50/$5.00 (>=200k) · $0.20 cached below the boundary |
-| Grok 4.20 non-reasoning | XAI-only utility and writing fallback when Gemini is not configured | See registry / estimator |
-| Grok 4.20 reasoning | Legacy — resume of in-flight runs and deeper analysis fallback | See registry / estimator |
+| Grok 4.7 | Default reasoning in every tier. xAI-only writing and utility use it too, and `--grok-tier max` writes with it | $2/$6 (<200k) · $4/$12 (>=200k) · $0.50 cached below the boundary |
+| Grok 4.3 | Registered for historical quotes. Not in the analysis fallback chain | $1.25/$2.50 (<200k) · $2.50/$5.00 (>=200k) · $0.20 cached below the boundary |
+| Grok 4.20 non-reasoning | Registered historical id. New xAI writing requests use Grok 4.7 | See registry / estimator |
+| Grok 4.20 reasoning | Registered historical id | See registry / estimator |
 | Gemini 3.5 Flash-Lite | Default routed writing path when `GEMINI_API_KEY` is configured | $0.30/$2.50 |
-| Gemini 3.8 Flash | Default utility (Flash) model | $0.75/$3.75; $1.50/$7.50 from 2027-01-01 |
-| Gemini 4 Argon | Default PRO-tier model | $2/$10; $4/$20 from 2026-12-01 |
+| Gemini 3.8 Flash | Default utility (Flash) model, and the last step of the analysis fallback chain | $0.75/$3.75; $1.50/$7.50 from 2027-01-01 |
+| Gemini 4 Carbon | Default Pro model | $2/$10 through 2026-11-30; $4/$20 from 2026-12-01 |
+| Gemini 4 Argon | Registered Gemini 4 model. Not the Pro default. Same scheduled rates as Carbon | $2/$10; $4/$20 from 2026-12-01 |
 | Configured Gemini Flash | Active Deep/Premium sequential section writer | See provider pricing in the estimator |
 | Deep Research Agent | `--mode deep` and `--premium`: autonomous dossier research | ~$2.50 planning estimate per standard task; actual token and tool billing varies |
 
@@ -1465,9 +1466,10 @@ included. The earlier Grok 4.3 recipe measured $0.79 in the v1.24.0 eval.
 `--grok-tier max` routes writing through Grok 4.7 as well as reasoning. It is
 a higher-cost opt-in: the current static MAX plan is about **$8.65** for the
 base report or **$10.05** with the default AI Strategy. Grok 4.7 has a 500k
-context window, so Grok 4.3 (1M) is the next analysis fallback.
+context window. The analysis fallback chain is Grok 4.7, then Claude Sonnet
+5.5, GPT-6.1 Terra, and Gemini 3.8 Flash.
 
-XAI-only setups still work with the legacy writing/utility fallback path.
+XAI-only writing and utility use Grok 4.7.
 OpenAI, Anthropic, and local OpenAI-compatible providers remain available for
 fallback, utility, evaluation, and backend-freedom routing. Full-report
 execution requires xAI, Gemini, or a configured OpenRouter key with the

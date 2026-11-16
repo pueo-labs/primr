@@ -170,7 +170,7 @@ def test_current_bedrock_claude_payload_omits_invalid_sampling(model):
 
 def test_defaults_track_the_current_provider_flagships():
     assert PrimrModels.FLASH_MODEL == "gemini-3.8-flash"
-    assert PrimrModels.PRO_MODEL == "gemini-4-argon"
+    assert PrimrModels.PRO_MODEL == "gemini-4-carbon"
     assert PrimrModels.get_grok_models(GrokTier.MAX) == ("grok-4.7", "grok-4.7")
 
 
@@ -183,7 +183,7 @@ def test_local_library_candidates_have_no_cloud_cost_or_cloud_tag(model):
     assert PrimrModels.calculate_cost(model, 100_000, 10_000) == 0
 
 
-@pytest.mark.parametrize("model", ["claude-opus-5-5", "claude-fable-5-1"])
+@pytest.mark.parametrize("model", ["claude-opus-5-5", "claude-fable-5-2"])
 def test_always_thinking_models_reject_disable_before_sdk(model):
     provider = AnthropicProvider()
     client = MagicMock()
@@ -271,7 +271,12 @@ def test_current_gateway_base_catalog_no_longer_announces_old_retirement(monkeyp
     config = PrimrModels.get_model_config(model)
     assert config is not None
     assert config.expiration_date is None
-    config.require_available(date(2026, 10, 22))
+    if model == "google/gemini-2.5-flash-lite":
+        assert config.available is False
+        with pytest.raises(ValueError, match="unavailable"):
+            config.require_available(date(2026, 10, 22))
+    else:
+        config.require_available(date(2026, 10, 22))
 
 
 def test_foundry_responses_is_explicit_and_preserves_deployment_on_wire(monkeypatch):

@@ -177,7 +177,7 @@ class TestProviderAwareFallbackChain:
 
         retired = ModelRegistry.OPENAI_O4_MINI
         retired.require_available(date(2026, 10, 22))
-        with pytest.raises(ValueError, match="gpt-5.6-terra"):
+        with pytest.raises(ValueError, match=r"gpt-6\.1-terra"):
             retired.require_available(date(2026, 10, 23))
 
     @pytest.mark.parametrize(
@@ -230,7 +230,7 @@ class TestProviderAwareFallbackChain:
             assert pick_model_for_role(Role.WRITING) == ModelRegistry.GEMINI_3_5_FLASH_LITE.name
 
     def test_gemini_only_reasoning(self) -> None:
-        """Gemini-only → Pro model (gemini-4-argon)."""
+        """Gemini-only reasoning uses the Pro model, gemini-4-carbon."""
         env = _scrubbed_env(GEMINI_API_KEY="test-gemini")
         with patch.dict("os.environ", env, clear=True):
             assert pick_model_for_role(Role.REASONING) == PrimrModels.PRO_MODEL
@@ -468,25 +468,25 @@ class TestEvalRecipeOverride:
         assert get_active_eval_recipe() is None
 
     def test_override_replaces_utility(self) -> None:
-        recipe = ProfileRecipe(utility="gpt-5.4-nano")
+        recipe = ProfileRecipe(utility="gpt-6-luna")
         with EvalRecipeOverride(recipe):
-            assert pick_model_for_role(Role.UTILITY) == "gpt-5.4-nano"
+            assert pick_model_for_role(Role.UTILITY) == "gpt-6-luna"
 
     def test_override_replaces_writing(self) -> None:
-        recipe = ProfileRecipe(writing="gemini-3.1-flash-lite")
+        recipe = ProfileRecipe(writing="gemini-3.5-flash-lite")
         with EvalRecipeOverride(recipe):
-            assert pick_model_for_role(Role.WRITING) == "gemini-3.1-flash-lite"
+            assert pick_model_for_role(Role.WRITING) == "gemini-3.5-flash-lite"
 
     def test_override_replaces_reasoning(self) -> None:
-        recipe = ProfileRecipe(reasoning="claude-opus-4-8")
+        recipe = ProfileRecipe(reasoning="claude-opus-5-5")
         with EvalRecipeOverride(recipe):
-            assert pick_model_for_role(Role.REASONING) == "claude-opus-4-8"
+            assert pick_model_for_role(Role.REASONING) == "claude-opus-5-5"
 
     def test_override_replaces_legacy_pro_alias(self) -> None:
         """Role.PRO with override should still hit the recipe's reasoning slot."""
-        recipe = ProfileRecipe(reasoning="claude-opus-4-8")
+        recipe = ProfileRecipe(reasoning="claude-opus-5-5")
         with EvalRecipeOverride(recipe):
-            assert pick_model_for_role(Role.PRO) == "claude-opus-4-8"
+            assert pick_model_for_role(Role.PRO) == "claude-opus-5-5"
 
     def test_partial_recipe_falls_through_for_unset_roles(self) -> None:
         """A recipe with only writing set should override writing but leave
@@ -495,23 +495,23 @@ class TestEvalRecipeOverride:
         Uses XAI-only env so default routing predictably returns Grok models
         (the v1.24.0 Gemini-prefer rule would otherwise change utility's default).
         """
-        recipe = ProfileRecipe(writing="gemini-3.1-flash-lite")
+        recipe = ProfileRecipe(writing="gemini-3.5-flash-lite")
         env = _scrubbed_env(XAI_API_KEY="test-xai")
         with patch.dict("os.environ", env, clear=True), EvalRecipeOverride(recipe):
-            assert pick_model_for_role(Role.WRITING) == "gemini-3.1-flash-lite"
+            assert pick_model_for_role(Role.WRITING) == "gemini-3.5-flash-lite"
             # Reasoning and utility still hit XAI-only defaults.
             assert pick_model_for_role(Role.REASONING) == PrimrModels.GROK_MODEL
             assert pick_model_for_role(Role.UTILITY) == PrimrModels.GROK_MODEL_WRITING
 
     def test_context_manager_clears_on_exit(self) -> None:
-        recipe = ProfileRecipe(utility="gpt-5.4-nano")
+        recipe = ProfileRecipe(utility="gpt-6-luna")
         with EvalRecipeOverride(recipe):
             assert get_active_eval_recipe() is recipe
         # After exit the override is gone.
         assert get_active_eval_recipe() is None
 
     def test_context_manager_clears_on_exception(self) -> None:
-        recipe = ProfileRecipe(utility="gpt-5.4-nano")
+        recipe = ProfileRecipe(utility="gpt-6-luna")
         with pytest.raises(RuntimeError, match="boom"), EvalRecipeOverride(recipe):
             raise RuntimeError("boom")
         # Even if the block raised, override is cleared.
@@ -519,11 +519,11 @@ class TestEvalRecipeOverride:
 
     def test_set_and_reset_via_token(self) -> None:
         """Lower-level set/reset API works for callers that don't want a context manager."""
-        recipe = ProfileRecipe(reasoning="grok-4.3", writing="gemini-3.1-flash-lite")
+        recipe = ProfileRecipe(reasoning="grok-4.7", writing="gemini-3.5-flash-lite")
         token = set_active_eval_recipe(recipe)
         try:
             assert get_active_eval_recipe() is recipe
-            assert pick_model_for_role(Role.REASONING) == "grok-4.3"
+            assert pick_model_for_role(Role.REASONING) == "grok-4.7"
         finally:
             reset_active_eval_recipe(token)
         assert get_active_eval_recipe() is None
@@ -536,7 +536,7 @@ class TestEvalRecipeOverride:
 
     def test_none_recipe_is_a_noop_clear(self) -> None:
         """Passing None to EvalRecipeOverride explicitly clears any active recipe."""
-        outer_recipe = ProfileRecipe(utility="gpt-5.4-nano")
+        outer_recipe = ProfileRecipe(utility="gpt-6-luna")
         with EvalRecipeOverride(outer_recipe):
             with EvalRecipeOverride(None):
                 # Inner block has no active recipe; falls back to default.

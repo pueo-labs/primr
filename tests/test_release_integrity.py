@@ -46,7 +46,7 @@ def _read_uv_lock() -> dict:
 def _read_pyproject_python_floor() -> str:
     pyproject_path = REPO_ROOT / "pyproject.toml"
     match = re.search(
-        r'^\s*requires-python\s*=\s*">=(?P<floor>\d+\.\d+)"\s*$',
+        r'^\s*requires-python\s*=\s*">=(?P<floor>\d+\.\d+)(?:\.\d+)?"\s*$',
         pyproject_path.read_text(encoding="utf-8"),
         re.MULTILINE,
     )

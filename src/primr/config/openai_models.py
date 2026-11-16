@@ -131,7 +131,7 @@ def build_openai_models() -> dict[str, ModelConfig]:
         cost_per_1m_input_tokens_cached=0.275,
         deprecated=True,
         expiration_date=date(2026, 10, 23),
-        replacement_model="gpt-5.6-terra",
+        replacement_model="gpt-6.1-terra",
     )
     # Standard USD rates; >272K prompts reprice the full request.
     for key, name, display, input_rate, output_rate, cached_rate in (
@@ -162,6 +162,22 @@ def build_openai_models() -> dict[str, ModelConfig]:
                 model.cost_per_1m_input_tokens_write_ceiling_high = (
                     model.cost_per_1m_input_tokens_high * 2.5
                 )
+    superseded = {
+        "gpt-5.6-sol": "gpt-6.1-sol",
+        "gpt-5.6": "gpt-6.1-sol",
+        "gpt-5.6-terra": "gpt-6.1-terra",
+        "gpt-5.6-luna": "gpt-6-luna",
+        "gpt-5.5": "gpt-6.1-sol",
+        "gpt-5.4": "gpt-6.1-sol",
+        "gpt-5.4-mini": "gpt-6.1-terra",
+        "gpt-5.4-nano": "gpt-6-luna",
+        "gpt-6-sol": "gpt-6.1-sol",
+    }
+    for model in models.values():
+        replacement = superseded.get(model.name)
+        if replacement is not None and model.available:
+            model.available = False
+            model.replacement_model = replacement
     return models
 
 

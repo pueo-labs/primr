@@ -47,6 +47,11 @@ parity. Model defaults and prices were rechecked against every provider on
 the default full run from $1.24 to about $1.26 ($1.08 without the AI Strategy).
 Catalogs were rechecked on 2026-11-02. No newer generally available flagship
 and no price change. Scheduled Gemini steps are unchanged.
+A later owner decision, recorded 2026-11-14 and rechecked for Gemini 2.5 on
+2026-11-16, moves the Pro default from Gemini 4 Argon to `gemini-4-carbon`
+at the same $2/$10 rate through 2026-11-30 and $4/$20 from 2026-12-01.
+Argon stays registered. Every xAI tier, including writing, uses `grok-4.7`.
+Direct `gemini-2.5-pro` and `gemini-2.5-flash` shut down on 2026-12-01.
 v1.39.33 states plainly that Primr's reports mix
 cited facts with reasoned strategy and that Primr is not only a fact checker.
 v1.39.32 refocuses v1.40 on making the

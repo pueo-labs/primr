@@ -285,7 +285,7 @@ def grok_llm(
         prompt: The user prompt to send.
         model: Model ID. ``None`` selects the default
                (``grok-4.7``). Use
-               ``grok-4.20-non-reasoning`` for writing tasks.
+               ``grok-4.7`` for writing tasks.
         temperature: Sampling temperature.
         max_tokens: Maximum output tokens.
         retries: Number of retries on transient errors (429/5xx/network timeouts).
@@ -312,12 +312,12 @@ def grok_llm(
     messages.append({"role": "user", "content": prompt})
 
     # Cross-provider dispatch (v1.24.0). When the resolved model is not an xAI
-    # model, e.g. an eval recipe override has set writing="gemini-3.1-flash-lite",
+    # model, e.g. an eval recipe override has set writing="gemini-3.5-flash-lite",
     # route the call to that model's native provider instead of trying to
     # call xAI with a non-Grok model ID. The function name stays grok_llm for
     # back-compat but it now acts as a generic chat dispatcher when needed.
     # Production reasoning-tier calls without an override still hit the xAI
-    # path below since they resolve to grok-4.7 / grok-4.20-NR.
+    # path below since both roles resolve to grok-4.7.
     from primr.config.models import PrimrModels as _PrimrModels
 
     _model_config = _PrimrModels.get_model_config(model)

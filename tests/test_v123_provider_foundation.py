@@ -27,16 +27,16 @@ class TestRetirementMigration:
     """Task 1.6 — Verify xAI model retirement migration is correct."""
 
     def test_get_grok_models_fast_tier(self) -> None:
-        """FAST tier returns (grok-4.7, grok-4.20-non-reasoning)."""
+        """FAST tier returns grok-4.7 for reasoning and writing."""
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.FAST)
         assert reasoning == "grok-4.7"
-        assert writing == "grok-4.20-non-reasoning"
+        assert writing == "grok-4.7"
 
     def test_get_grok_models_hybrid_tier(self) -> None:
-        """HYBRID tier returns (grok-4.7, grok-4.20-non-reasoning)."""
+        """HYBRID tier returns grok-4.7 for reasoning and writing."""
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.HYBRID)
         assert reasoning == "grok-4.7"
-        assert writing == "grok-4.20-non-reasoning"
+        assert writing == "grok-4.7"
 
     def test_get_grok_models_max_tier(self) -> None:
         """MAX tier returns the version-pinned flagship Grok 4.7 pair."""
@@ -74,8 +74,8 @@ class TestRetirementMigration:
         assert PrimrModels.GROK_MODEL_46 == "grok-4.6"
 
     def test_grok_model_writing_resolves_to_420_nr(self) -> None:
-        """PrimrModels.GROK_MODEL_WRITING resolves to grok-4.20-non-reasoning."""
-        assert PrimrModels.GROK_MODEL_WRITING == "grok-4.20-non-reasoning"
+        """PrimrModels.GROK_MODEL_WRITING resolves to grok-4.7."""
+        assert PrimrModels.GROK_MODEL_WRITING == "grok-4.7"
 
     def test_deprecated_models_have_deprecated_flag(self) -> None:
         """Retired models grok-4-1-fast-reasoning and grok-4-1-fast-non-reasoning are deprecated."""
@@ -83,6 +83,38 @@ class TestRetirementMigration:
         fast_nr = ModelRegistry.GROK_4_1_FAST_NR
         assert fast.deprecated is True
         assert fast_nr.deprecated is True
+        assert fast.replacement_model == "grok-4.7"
+        assert fast_nr.replacement_model == "grok-4.7"
+
+    def test_retired_grok_41_fast_current_quote_uses_grok_47_rates(self) -> None:
+        """Historical list price stays; quotes from the retirement date match grok-4.7.
+
+        docs.x.ai/developers/pricing on 2026-11-14: $2/$0.50 cached/$6 below
+        200k prompt tokens, and $4/$1 cached/$12 at or above 200k.
+        """
+        for name in ("grok-4-1-fast-reasoning", "grok-4-1-fast-non-reasoning"):
+            assert PrimrModels.get_price(name, date(2026, 5, 14)) == (0.20, 0.50)
+            assert PrimrModels.get_price(name, date(2026, 5, 15)) == (2.00, 6.00)
+            historical = PrimrModels.calculate_cost_breakdown(
+                name, 1_000_000, 1_000, prompt_tokens=200_000, pricing_date=date(2026, 5, 14)
+            )
+            current = PrimrModels.calculate_cost_breakdown(
+                name, 1_000_000, 1_000, prompt_tokens=200_000, pricing_date=date(2026, 11, 14)
+            )
+            flagship = PrimrModels.calculate_cost_breakdown(
+                "grok-4.7",
+                1_000_000,
+                1_000,
+                prompt_tokens=200_000,
+                pricing_date=date(2026, 11, 14),
+            )
+            assert historical.input_rate_per_million == 0.20
+            assert historical.output_rate_per_million == 0.50
+            assert current.model_name == name
+            assert current.total_cost == flagship.total_cost
+            assert current.input_rate_per_million == 4.00
+            assert current.cached_input_rate_per_million == 1.00
+            assert current.output_rate_per_million == 12.00
 
     def test_deprecated_models_not_in_active_fallback_chains(self) -> None:
         """Deprecated models are NOT in any active fallback chain's routing path."""
@@ -107,7 +139,7 @@ class TestRetirementMigration:
 
     def test_pick_model_for_role_utility_with_xai_only(self, monkeypatch) -> None:
         """XAI-only fallback path: pick_model_for_role(Role.UTILITY) returns
-        grok-4.20-non-reasoning when only XAI_API_KEY is set.
+        grok-4.7 when only XAI_API_KEY is set.
 
         The Gemini key wins the utility tier (gemini-3.8-flash),
         so this test scrubs GEMINI_API_KEY to exercise the XAI-only fallback path.
@@ -119,7 +151,7 @@ class TestRetirementMigration:
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
         result = pick_model_for_role(Role.UTILITY)
-        assert result == "grok-4.20-non-reasoning"
+        assert result == "grok-4.7"
 
 
 # =============================================================================
@@ -270,7 +302,7 @@ class TestCurrentGeminiCandidates:
     def test_latest_stable_gemini_models_are_production_defaults(self) -> None:
         assert PrimrModels.is_latest_model("gemini-3.8-flash")
         assert PrimrModels.FLASH_MODEL == "gemini-3.8-flash"
-        assert PrimrModels.PRO_MODEL == "gemini-4-argon"
+        assert PrimrModels.PRO_MODEL == "gemini-4-carbon"
 
     @pytest.mark.parametrize("model", ["gemini-3.6-flash", "gemini-3.7-flash"])
     def test_scheduled_2027_price_change(self, model: str) -> None:

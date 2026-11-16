@@ -170,7 +170,7 @@ def classify_via_llm(
     try:
         raw = grok_llm(
             prompt,
-            model="grok-4.20-non-reasoning",
+            model="grok-4.7",
             temperature=0.1,
             max_tokens=1_000,
             retries=1,

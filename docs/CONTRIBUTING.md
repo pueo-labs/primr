@@ -37,13 +37,18 @@ Source: `docs/images/primr-demo-terminal.html`. Requires Playwright Chromium
    `pyproject.toml`, run `uv lock` and regenerate the container exports below.
    Use **uv 0.13.5**, the version pinned in CI; export formatting is part of
    the reproducibility check. Install uv from https://docs.astral.sh/uv/ if you
-   don't have it.
+   don't have it. That uv release can download CPython only through 3.15.1.
+   CI installs 3.15.2, the newest stable patch, from
+   `.github/python/cpython-3.15.2-downloads.json` into the job workspace.
 
    Transitive security floors in `[tool.uv].constraint-dependencies` protect
    locked source, development, and exported container environments. They do
    not become published wheel requirements; pip installations resolve their
    own transitive versions. Keep constraints, the lock, and container exports
-   consistent when refreshing security dependencies.
+   consistent when refreshing security dependencies. `soupsieve` 4.0.0
+   requires Python >=3.11.5, and that patch is the published
+   `requires-python` floor. Python 3.11 through 3.15 stay the supported
+   minors.
 
    **Option B - manual pip (cross-platform):**
    ```bash

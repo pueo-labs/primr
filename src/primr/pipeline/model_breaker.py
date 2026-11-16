@@ -74,7 +74,6 @@ ANALYSIS_FALLBACK_CHAIN = FallbackChain(
     name="analysis",
     models=(
         PrimrModels.GROK_MODEL,  # grok-4.7 (default primary)
-        PrimrModels.GROK_MODEL_43,  # grok-4.3 (1M-context xAI fallback)
         ModelRegistry.ANTHROPIC_SONNET_5_5.name,  # Anthropic cross-provider fallback
         ModelRegistry.OPENAI_GPT_6_1_TERRA.name,  # OpenAI cross-provider fallback
         PrimrModels.FLASH_MODEL,  # gemini-3.8-flash (last resort)
@@ -84,7 +83,7 @@ ANALYSIS_FALLBACK_CHAIN = FallbackChain(
 UTILITY_FALLBACK_CHAIN = FallbackChain(
     name="utility",
     models=(
-        PrimrModels.GROK_MODEL_WRITING,  # Primary utility (xAI 4.20 non-reasoning)
+        PrimrModels.GROK_MODEL_WRITING,  # Primary utility (grok-4.7)
         ModelRegistry.OPENAI_GPT_6_LUNA.name,  # OpenAI fallback
         PrimrModels.FLASH_MODEL,  # Gemini fallback
     ),
@@ -93,7 +92,7 @@ UTILITY_FALLBACK_CHAIN = FallbackChain(
 PREMIUM_FALLBACK_CHAIN = FallbackChain(
     name="premium",
     models=(
-        PrimrModels.PRO_MODEL,  # gemini-4-argon (primary)
+        PrimrModels.PRO_MODEL,  # gemini-4-carbon (primary)
         ModelRegistry.ANTHROPIC_OPUS_5_5.name,  # Anthropic fallback
         ModelRegistry.OPENAI_GPT_6_1_SOL.name,  # OpenAI fallback
         PrimrModels.GROK_MODEL,  # xAI flagship fallback

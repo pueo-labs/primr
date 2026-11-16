@@ -61,7 +61,7 @@ class TestAIClient:
         mock_settings.ai.pro_model = "gemini-3-pro-preview"
         monkeypatch.setattr("primr.ai.client.get_settings", lambda: mock_settings)
         client = AIClient(api_key="fake-key-for-ci-tests")
-        with pytest.raises(ValueError, match=r"gemini-3\.1-pro-preview"):
+        with pytest.raises(ValueError, match="gemini-4-carbon"):
             client.generate("control", model_type="report")
         mock_genai_client.models.generate_content.assert_not_called()
 
@@ -102,7 +102,7 @@ class TestAIClient:
         assert call_args.kwargs["model"] == "test-pro-model"
 
     def test_generate_omits_sampling_for_gemini_37(self, mock_genai_client, mock_settings):
-        mock_settings.ai.flash_model = "gemini-3.7-flash"
+        mock_settings.ai.flash_model = "gemini-3.8-flash"
         client = AIClient()
 
         client.generate("Test", model_type="research", temperature=0.2)
@@ -111,7 +111,7 @@ class TestAIClient:
         assert config.temperature is None
 
     def test_generate_accepts_current_medium_thinking_level(self, mock_genai_client, mock_settings):
-        mock_settings.ai.flash_model = "gemini-3.7-flash"
+        mock_settings.ai.flash_model = "gemini-3.8-flash"
         client = AIClient()
 
         client.generate("Test", thinking_level="medium")
@@ -120,7 +120,7 @@ class TestAIClient:
         assert str(config.thinking_config.thinking_level).lower().endswith("medium")
 
     def test_generate_rejects_minimal_for_gemini_37(self, mock_genai_client, mock_settings):
-        mock_settings.ai.flash_model = "gemini-3.7-flash"
+        mock_settings.ai.flash_model = "gemini-4-carbon"
         client = AIClient()
 
         with pytest.raises(ValueError, match="low, medium, high"):
@@ -128,7 +128,7 @@ class TestAIClient:
         mock_genai_client.models.generate_content.assert_not_called()
 
     def test_generate_accepts_minimal_for_gemini_36(self, mock_genai_client, mock_settings):
-        mock_settings.ai.flash_model = "gemini-3.6-flash"
+        mock_settings.ai.flash_model = "gemini-3.8-flash"
         client = AIClient()
 
         client.generate("Test", thinking_level="minimal")

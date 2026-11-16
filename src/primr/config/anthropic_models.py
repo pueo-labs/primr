@@ -78,9 +78,13 @@ def build_anthropic_models() -> dict[str, ModelConfig]:
         cost_per_1m_input_tokens_cached=0.08,
         deprecated=True,
         expiration_date=date(2026, 2, 19),
-        replacement_model="claude-haiku-4-5",
+        replacement_model="claude-haiku-5-5",
     )
     for key, name, display, input_rate, output_rate, cached_rate in (
+        # $8/$40 from the 2026-11-09 Fable 5.2 release. Cache is 2.5% of input,
+        # the ratio Fable 5.1 publishes ($0.25 on $10). No separate cache line
+        # was on the card checked 2026-11-14.
+        ("ANTHROPIC_FABLE_5_2", "claude-fable-5-2", "Claude Fable 5.2", 8.0, 40.0, 0.2),
         ("ANTHROPIC_FABLE_5_1", "claude-fable-5-1", "Claude Fable 5.1", 10.0, 50.0, 0.25),
         ("ANTHROPIC_OPUS_5_5", "claude-opus-5-5", "Claude Opus 5.5", 4.0, 20.0, 0.2),
         ("ANTHROPIC_SONNET_5_5", "claude-sonnet-5-5", "Claude Sonnet 5.5", 2.0, 10.0, 0.1),
@@ -107,6 +111,18 @@ def build_anthropic_models() -> dict[str, ModelConfig]:
             model.cost_per_1m_input_tokens_write_ceiling_high = (
                 model.cost_per_1m_input_tokens_high * 2
             )
+    superseded = {
+        "claude-opus-4-8": "claude-opus-5-5",
+        "claude-sonnet-5": "claude-sonnet-5-5",
+        "claude-sonnet-4-6": "claude-sonnet-5-5",
+        "claude-haiku-4-5": "claude-haiku-5-5",
+        "claude-fable-5-1": "claude-fable-5-2",
+    }
+    for model in models.values():
+        replacement = superseded.get(model.name)
+        if replacement is not None and model.available:
+            model.available = False
+            model.replacement_model = replacement
     return models
 
 

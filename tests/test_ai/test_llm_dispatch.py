@@ -267,7 +267,7 @@ class TestLLMDispatch:
         assert provider.chat.call_args.kwargs["retries"] == 0
         assert provider.chat.call_args.kwargs["max_tokens"] == 256
 
-    @pytest.mark.parametrize("model_name", ["gpt-5.4-mini", "claude-haiku-4-5"])
+    @pytest.mark.parametrize("model_name", ["gpt-6.1-terra", "claude-haiku-5-5"])
     def test_zero_retry_cross_provider_route_reaches_provider(self, model_name) -> None:
         from primr.ai.providers import ChatResponse
 

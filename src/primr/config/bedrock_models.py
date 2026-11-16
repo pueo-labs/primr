@@ -24,7 +24,7 @@ def build_current_bedrock_models() -> tuple[ModelConfig, ...]:
             )
         )
         for name, display, input_rate, output_rate, cache in (
-            ("claude-fable-5-1", "Claude Fable 5.1", 10.0, 50.0, 0.25),
+            ("claude-fable-5-2", "Claude Fable 5.2", 8.0, 40.0, 0.2),
             ("claude-opus-5-5", "Claude Opus 5.5", 4.0, 20.0, 0.2),
             ("claude-sonnet-5-5", "Claude Sonnet 5.5", 2.0, 10.0, 0.1),
             ("claude-haiku-5-5", "Claude Haiku 5.5", 0.1, 0.5, 0.01),
