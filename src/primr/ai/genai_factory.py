@@ -1,24 +1,24 @@
-"""Default HTTP options for google-genai clients: a finite request timeout.
+"""Default HTTP options for google-genai clients.
 
-Root cause this exists for: the google-genai SDK ships with NO default HTTP
-timeout. A live run hung for 3.5 hours in ``ssl.read`` — the Gemini endpoint
-went quiet mid-response during a writing-tier call and the socket blocked
-forever, freezing the whole pipeline past the point any retry loop could
-help (the call simply never returned). Stack: ``genai._api_client._request``
--> ``httpx`` -> ``ssl.read``, no deadline anywhere.
+The SDK ships with no default HTTP timeout. A live run hung for 3.5 hours
+in ``ssl.read`` when the Gemini endpoint went quiet mid-response. The stack
+was ``genai._api_client._request`` to the HTTP client to ``ssl.read``, with
+no deadline. Every ``genai.Client(...)`` construction passes
+``http_options=default_genai_http_options()`` so each request has a finite
+timeout (default 5 minutes). That is long enough for a legitimate
+``generate_content`` call and short enough for the provider retry loops to
+regain control. Override it with ``PRIMR_GEMINI_HTTP_TIMEOUT_MS``.
 
-Every ``genai.Client(...)`` construction in primr passes
-``http_options=default_genai_http_options()`` so each HTTP request carries a
-finite timeout (default 5 minutes — generous enough for the longest
-legitimate ``generate_content`` call, finite enough that the provider retry
-loops regain control). Override per machine with
-``PRIMR_GEMINI_HTTP_TIMEOUT_MS``.
+SDK 3 defaults the Gemini Developer API to ``v1``. Deep research calls the
+Agents API, which is still ``v1beta`` only, so these options also set
+``api_version`` to ``v1beta``. The timeout stays an integer millisecond
+count. Primr does not pass HTTP-client objects into ``HttpOptions``.
 
-Design note: call sites keep constructing through their own module's
-``genai.Client`` reference (rather than a central factory) so the existing
-test seam — patching ``<module>.genai.Client`` — keeps working; this module
-only supplies the options object. ``google.genai`` is imported lazily so
-importing this module never pulls the SDK at startup.
+Call sites keep constructing through their own module's ``genai.Client``
+reference so the existing test seam, patching ``<module>.genai.Client``,
+keeps working. This module only supplies the options object.
+``google.genai`` is imported lazily so importing this module never pulls
+the SDK at startup.
 """
 
 from __future__ import annotations
@@ -32,6 +32,10 @@ logger = get_logger("ai.genai_factory")
 
 # 5 minutes per HTTP request. The SDK value is in milliseconds.
 DEFAULT_GENAI_HTTP_TIMEOUT_MS = 300_000
+
+# SDK 3 defaults the Developer API to v1. The Agents API used by deep
+# research is v1beta-only, so the shared client options keep that route.
+GENAI_API_VERSION = "v1beta"
 
 
 def accepts_sampling_parameters(model: str) -> bool:
@@ -99,7 +103,10 @@ def get_genai_http_timeout_ms() -> int:
 
 
 def default_genai_http_options() -> Any:
-    """HttpOptions with a finite request timeout, for genai.Client(...)."""
+    """HttpOptions with a finite timeout and the v1beta Agents API route."""
     from google.genai import types as genai_types
 
-    return genai_types.HttpOptions(timeout=get_genai_http_timeout_ms())
+    return genai_types.HttpOptions(
+        timeout=get_genai_http_timeout_ms(),
+        api_version=GENAI_API_VERSION,
+    )

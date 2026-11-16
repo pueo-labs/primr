@@ -38,7 +38,9 @@ classifiers = [
 # made known-breaking changes (see [project.optional-dependencies].a2a) — hard
 # caps on a library cause resolution conflicts for downstream consumers.
 dependencies = [
-    "google-genai>=2.3.0",
+    # SDK 3 is the tested line. Clients stay on API version v1beta because
+    # deep research uses the Agents API, which is not available on v1.
+    "google-genai>=3.3.0",
     # The default pipeline routes reasoning through xAI/Grok, which - like
     # OpenAI and Ollama - speaks the OpenAI chat-completions protocol via the
     # `openai` SDK (see ai/providers/openai_compatible.py). It is therefore a

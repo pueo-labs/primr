@@ -196,6 +196,23 @@ def test_a2a_extra_uses_sdk_1() -> None:
     assert all(version.split(".", 1)[0] == "1" for version in versions)
 
 
+def test_google_genai_floor_is_sdk_3() -> None:
+    """SDK 3 is the tested line. The lock stays on that major."""
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    requirement = next(
+        Requirement(value)
+        for value in project["dependencies"]
+        if Requirement(value).name == "google-genai"
+    )
+    lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
+    versions = [entry["version"] for entry in lock["package"] if entry["name"] == "google-genai"]
+
+    assert requirement.specifier == SpecifierSet(">=3.3.0")
+    assert versions, "google-genai must remain a core dependency"
+    assert all(version in requirement.specifier for version in versions)
+    assert all(version.split(".", 1)[0] == "3" for version in versions)
+
+
 def test_scheduled_audits_and_grouped_dependency_proposals() -> None:
     workflow = WORKFLOW_DIR / "dependency-audit.yml"
 
