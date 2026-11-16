@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Protocol, runtime_checkable
 
-from deploy.control_plane.job_store import JobStatus, JobStore
+from deploy.control_plane.job_store import JobRecord, JobStatus, JobStore
 
 
 class CancellationResult(str, Enum):
@@ -321,6 +321,15 @@ class CancellationService:
         self.job_store = job_store
         self.provider = provider or NoOpCancellation()
 
+    def _mark_cancel_requested(self, job: JobRecord) -> None:
+        """Record the first cancel request and leave a later repeat unchanged."""
+        from deploy.control_plane.job_store import format_timestamp, utc_now
+
+        if not job.timing.cancel_requested_at:
+            job.timing.cancel_requested_at = format_timestamp(utc_now())
+        job.status = JobStatus.CANCEL_REQUESTED
+        self.job_store.update(job)
+
     def cancel_job(self, job_id: str) -> CancelResponse:
         """
         Cancel a job.
@@ -381,8 +390,7 @@ class CancellationService:
                             message="Job cancelled",
                         )
                     else:
-                        job.status = JobStatus.CANCEL_REQUESTED
-                        self.job_store.update(job)
+                        self._mark_cancel_requested(job)
                         return CancelResponse(
                             result=CancellationResult.CANCEL_REQUESTED,
                             status=JobStatus.CANCEL_REQUESTED,
@@ -396,16 +404,17 @@ class CancellationService:
                     )
             else:
                 # No execution_id - mark as cancel requested
-                job.status = JobStatus.CANCEL_REQUESTED
-                self.job_store.update(job)
+                self._mark_cancel_requested(job)
                 return CancelResponse(
                     result=CancellationResult.CANCEL_REQUESTED,
                     status=JobStatus.CANCEL_REQUESTED,
                     message="Cancellation requested",
                 )
 
-        # CANCEL_REQUESTED - already cancelling
+        # CANCEL_REQUESTED - already cancelling. A repeat must not move the clock.
         if job.status == JobStatus.CANCEL_REQUESTED:
+            if not job.timing.cancel_requested_at:
+                self._mark_cancel_requested(job)
             return CancelResponse(
                 result=CancellationResult.CANCEL_REQUESTED,
                 status=JobStatus.CANCEL_REQUESTED,

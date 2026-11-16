@@ -204,22 +204,29 @@ class Reconciler:
             result.manifest_reconciled += 1
             return
 
-        # Check if grace period exceeded
-        # Use started_at as proxy for when cancel was requested
-        # (In production, you'd track cancel_requested_at separately)
-        started_at = self._parse_timestamp(job.timing.started_at)
-        if started_at:
-            duration = (now - started_at).total_seconds()
-            if duration > self.config.max_duration_seconds + self.config.cancellation_grace_seconds:
-                logger.warning(f"Job {job.job_id} cancellation timed out")
+        # Grace starts at the cancel request, not at job start. A timeout
+        # means this control plane stopped waiting. It does not prove the
+        # provider process has exited.
+        requested_at = self._parse_timestamp(job.timing.cancel_requested_at)
+        if requested_at is None:
+            # Older records have no cancel-request time. Start one grace
+            # period at first observation so a long-running job is not failed
+            # immediately and a record with no started_at can still time out.
+            job.timing.cancel_requested_at = format_timestamp(now)
+            self.job_store.update(job)
+            return
 
-                job.status = JobStatus.FAILED
-                job.timing.completed_at = format_timestamp(now)
-                job.error_message = "cancellation_timeout"
-                job.no_runner_manifest = True
-                self.job_store.update(job)
+        elapsed = (now - requested_at).total_seconds()
+        if elapsed > self.config.cancellation_grace_seconds:
+            logger.warning(f"Job {job.job_id} cancellation timed out")
 
-                result.cancellation_timeout += 1
+            job.status = JobStatus.FAILED
+            job.timing.completed_at = format_timestamp(now)
+            job.error_message = "cancellation_timeout"
+            job.no_runner_manifest = True
+            self.job_store.update(job)
+
+            result.cancellation_timeout += 1
 
     def _status_from_manifest(self, manifest_status: str) -> JobStatus:
         """Convert manifest status string to JobStatus enum."""
