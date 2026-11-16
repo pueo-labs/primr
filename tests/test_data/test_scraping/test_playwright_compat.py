@@ -8,7 +8,10 @@ import pytest
 
 from primr.data.scraping import stealth_browser
 from primr.data.scraping.playwright_compat import (
+    PLAYWRIGHT_BROWSERS_MISSING,
     SYNC_BROWSER_UNAVAILABLE_REASON,
+    chromium_launch_status,
+    chromium_readiness_probe,
     sync_browser_runtime_supported,
 )
 
@@ -32,6 +35,45 @@ def test_sync_browser_runtime_boundary(version, expected, monkeypatch):
 def test_python_315_rejects_unverified_greenlet_builds(installed, monkeypatch):
     monkeypatch.setitem(sys.modules, "greenlet", SimpleNamespace(__version__=installed))
     assert not sync_browser_runtime_supported((3, 15))
+
+
+def test_missing_browser_uses_one_sentence():
+    playwright = MagicMock()
+    playwright.chromium.launch.side_effect = RuntimeError(
+        "BrowserType.launch: Executable doesn't exist at /tmp/chrome"
+    )
+    sync_playwright = MagicMock(return_value=playwright)
+    sync_playwright.return_value.start.return_value = playwright
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setitem(
+            sys.modules,
+            "playwright.sync_api",
+            SimpleNamespace(sync_playwright=sync_playwright),
+        )
+        assert chromium_launch_status() == PLAYWRIGHT_BROWSERS_MISSING
+
+    assert "playwright install chromium" in PLAYWRIGHT_BROWSERS_MISSING
+    probe = chromium_readiness_probe()
+    assert "chromium_launch_status" in probe
+    assert "SystemExit(2 if missing else 1)" in probe
+
+
+def test_chromium_launch_reports_other_failures():
+    playwright = MagicMock()
+    playwright.chromium.launch.side_effect = RuntimeError("driver closed")
+    sync_playwright = MagicMock()
+    sync_playwright.return_value.start.return_value = playwright
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setitem(
+            sys.modules,
+            "playwright.sync_api",
+            SimpleNamespace(sync_playwright=sync_playwright),
+        )
+        status = chromium_launch_status()
+
+    assert status == "Playwright check failed: driver closed"
 
 
 def test_unavailable_reason_is_actionable():
