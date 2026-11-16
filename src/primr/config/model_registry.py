@@ -15,9 +15,9 @@ from primr.config.openrouter_models import build_openrouter_models
 class GrokTier(str, Enum):
     """Grok model tier — controls quality/cost tradeoff in fast mode."""
 
-    FAST = "fast"  # grok-4.7 (reasoning_effort=low) + grok-4.7
-    HYBRID = "hybrid"  # 4.3 + 4.20-nr (~$5.09 xAI-only base) - DEFAULT
-    MAX = "max"  # 4.5 evaluated pin; 4.6 is registered but promotion is eval-gated
+    FAST = "fast"  # grok-4.7 for reasoning and writing; reasoning_effort=low
+    HYBRID = "hybrid"  # grok-4.7 for reasoning and writing; default tier
+    MAX = "max"  # grok-4.7 for reasoning and writing
 
 
 class ModelType(Enum):

@@ -78,8 +78,9 @@ from Gemini 3.5 Flash-Lite writing output ($2.50 versus $1.50 per 1M) and
 about $0.11 from Grok 4.7 reasoning. Gemini 4 Argon rates rise to $4/$20 on
 2026-12-01 and Gemini 3.8 Flash to $1.50/$7.50 on 2027-01-01; estimates now
 disclose such scheduled changes so an approval made before the date is not
-silently repriced. Grok 4.7 has a 500k context window, half of Grok 4.3's,
-so the analysis fallback chain keeps Grok 4.3 as its 1M-context second step.
+silently repriced. Grok 4.7 has a 500k context window, half of Grok 4.3's.
+This 2026-10-28 decision kept Grok 4.3 as the 1M-context analysis fallback.
+The 2026-11-14 decision removes that step.
 
 Longer Strategic Overview section floors move this static estimator again.
 xAI plus Gemini HYBRID is about $1.08 ($1.26 with the AI Strategy). xAI-only
@@ -89,7 +90,9 @@ above remains the 2026-10-28 flagship record.
 
 Catalog recheck (2026-11-02): the xAI models page, the Gemini pricing page,
 the OpenAI pricing page, and the Claude Sonnet 5.5 and Haiku 5.5 pages list
-the same default IDs and rates. No default moves.
+the same default IDs and rates. No default moves on that date.
+The 2026-11-14 decision above moves the Pro default to `gemini-4-carbon`
+and uses `grok-4.7` for xAI writing.
 `grok-4.20-non-reasoning` remains the documented alias of
 `grok-4.20-0309-non-reasoning`.
 

@@ -229,12 +229,13 @@ Primary sources are linked inline with the integration facts they support:
   interaction references the store. Imported store data persists until manual
   deletion; raw File API uploads are deleted after 48 hours. See Google's
   [File Search guide](https://ai.google.dev/gemini-api/docs/file-search).
-- Gemini 4 Argon, 3.8 Flash, 3.6 Flash, and 3.5 Flash-Lite are registered
-  evaluation candidates. Argon is $2/$10, cached $0.10, through November 30,
-  then $4/$20, cached $0.20. Flash 3.8 is $0.75/$3.75, cached $0.075, through
-  December 31, then $1.50/$7.50, cached $0.15. Flash 3.5 and 3.7 are provider
-  aliases; their first observed accounting cutover stays October 20 when the
-  catalog is rechecked. Direct Gemini production defaults remain pinned. Primr omits
+- Gemini 4 Carbon is the direct Pro default: $2/$10, cached $0.10, through
+  2026-11-30, then $4/$20, cached $0.20. Gemini 4 Argon stays registered at
+  the same schedule and is not the default. Gemini 3.8 Flash is the Flash
+  default at $0.75/$3.75, cached $0.075, through December 31, then
+  $1.50/$7.50, cached $0.15. Gemini 3.5 Flash-Lite is the lite default.
+  Flash 3.5 and 3.7 are provider aliases; their first observed accounting
+  cutover stays October 20 when the catalog is rechecked. Primr omits
   unsupported sampling controls on these request paths, records explicit
   thinking levels, and applies Google's published January 1, 2027 price change
   to 3.6 and 3.7 by pricing date. Promotion still requires representative

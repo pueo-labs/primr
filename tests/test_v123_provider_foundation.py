@@ -27,13 +27,13 @@ class TestRetirementMigration:
     """Task 1.6 — Verify xAI model retirement migration is correct."""
 
     def test_get_grok_models_fast_tier(self) -> None:
-        """FAST tier returns (grok-4.7, grok-4.20-non-reasoning)."""
+        """FAST tier returns grok-4.7 for reasoning and writing."""
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.FAST)
         assert reasoning == "grok-4.7"
         assert writing == "grok-4.7"
 
     def test_get_grok_models_hybrid_tier(self) -> None:
-        """HYBRID tier returns (grok-4.7, grok-4.20-non-reasoning)."""
+        """HYBRID tier returns grok-4.7 for reasoning and writing."""
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.HYBRID)
         assert reasoning == "grok-4.7"
         assert writing == "grok-4.7"
@@ -74,7 +74,7 @@ class TestRetirementMigration:
         assert PrimrModels.GROK_MODEL_46 == "grok-4.6"
 
     def test_grok_model_writing_resolves_to_420_nr(self) -> None:
-        """PrimrModels.GROK_MODEL_WRITING resolves to grok-4.20-non-reasoning."""
+        """PrimrModels.GROK_MODEL_WRITING resolves to grok-4.7."""
         assert PrimrModels.GROK_MODEL_WRITING == "grok-4.7"
 
     def test_deprecated_models_have_deprecated_flag(self) -> None:
@@ -139,7 +139,7 @@ class TestRetirementMigration:
 
     def test_pick_model_for_role_utility_with_xai_only(self, monkeypatch) -> None:
         """XAI-only fallback path: pick_model_for_role(Role.UTILITY) returns
-        grok-4.20-non-reasoning when only XAI_API_KEY is set.
+        grok-4.7 when only XAI_API_KEY is set.
 
         The Gemini key wins the utility tier (gemini-3.8-flash),
         so this test scrubs GEMINI_API_KEY to exercise the XAI-only fallback path.

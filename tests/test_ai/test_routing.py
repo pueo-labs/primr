@@ -230,7 +230,7 @@ class TestProviderAwareFallbackChain:
             assert pick_model_for_role(Role.WRITING) == ModelRegistry.GEMINI_3_5_FLASH_LITE.name
 
     def test_gemini_only_reasoning(self) -> None:
-        """Gemini-only → Pro model (gemini-4-argon)."""
+        """Gemini-only reasoning uses the Pro model, gemini-4-carbon."""
         env = _scrubbed_env(GEMINI_API_KEY="test-gemini")
         with patch.dict("os.environ", env, clear=True):
             assert pick_model_for_role(Role.REASONING) == PrimrModels.PRO_MODEL

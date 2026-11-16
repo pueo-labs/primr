@@ -112,6 +112,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The OpenRouter row for that id is not selectable. Deprecation notes were
   rechecked against the Gemini deprecations page on 2026-11-16. Other
   superseded ids are not selectable.
+- Current architecture, run-mode, onboarding, and queue notes name
+  `gemini-4-carbon` as the Pro default and `grok-4.7` for every xAI tier.
+  Gemini 4 Argon stays registered. The 2026-10-28 flagship table stays as
+  history.
 - The Strategic Overview voice now covers the fast-mode system prompt, the
   composed overview persona, and the section briefs. Those paths no longer
   tell the writer to treat every claim as a hypothesis or to hedge wins,

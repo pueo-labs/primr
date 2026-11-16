@@ -82,7 +82,7 @@ When both `XAI_API_KEY` and `GEMINI_API_KEY` are configured, Primr uses:
 - Gemini for bulk writing and utility stages.
 - DuckDuckGo search by default, which does not require a search API key.
 
-This measured recipe is much cheaper than the older xAI-only path while preserving the trust gate used in evaluation. XAI-only runs still work and keep the legacy writing and utility path.
+This measured recipe is much cheaper than the older xAI-only path while preserving the trust gate used in evaluation. XAI-only runs still work. Their writing and utility stages use Grok 4.7.
 
 OpenAI, Anthropic, and local OpenAI-compatible endpoints are wired into the provider layer for fallback, utility, evaluation, and planned backend-freedom routing. Full-report execution still uses the supported direct provider path described in [API Key Setup](API_KEYS.md).
 

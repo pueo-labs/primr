@@ -738,7 +738,7 @@ class TestFastModeAIStrategy:
         assert estimate.mode == "full (Grok 4.7 hybrid)"
 
     def test_fast_mode_explicit_fast_tier_label(self, monkeypatch):
-        """Fast mode with explicit fast tier should report 'full (Grok 4.3 (low-effort))'."""
+        """Fast mode with explicit fast tier should report 'full (Grok 4.7 (low-effort))'."""
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
@@ -748,7 +748,7 @@ class TestFastModeAIStrategy:
 
 
 class TestGrokTier:
-    """Tests for Grok 4.20 tier support."""
+    """Tests for Grok tier selection."""
 
     def test_grok_tier_enum_values(self):
         """GrokTier enum has fast, hybrid, max."""
@@ -759,7 +759,7 @@ class TestGrokTier:
         assert GrokTier.MAX.value == "max"
 
     def test_get_grok_models_fast(self):
-        """Fast tier returns grok-4.7 reasoning + grok-4.20-non-reasoning writing."""
+        """Fast tier returns grok-4.7 for reasoning and writing."""
         from primr.config.models import GrokTier
 
         reasoning, writing = PrimrModels.get_grok_models(GrokTier.FAST)
@@ -947,11 +947,7 @@ class TestGrokTier:
         assert abs(hybrid_est.total_cost - fast_est.total_cost) < 0.001
 
     def test_max_tier_dearer_than_hybrid_when_xai_only(self, monkeypatch):
-        """MAX uses Grok 4.5 everywhere; hybrid keeps 4.3 + 4.20-nr writing.
-
-        4.5 is the version-pinned premium route and is priced higher, so MAX should cost
-        more than hybrid on an xAI-only key set.
-        """
+        """xAI-only MAX and HYBRID both use grok-4.7, so the static totals match."""
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
@@ -963,8 +959,8 @@ class TestGrokTier:
         assert max_est.total_cost == hybrid_est.total_cost
 
     def test_hybrid_cheaper_than_max_with_gemini(self, monkeypatch):
-        """With GEMINI_API_KEY set, HYBRID routes writing to gemini-3.1-flash-lite
-        while MAX stays all-Grok 4.5. HYBRID should stay under MAX."""
+        """With GEMINI_API_KEY set, HYBRID writes with Gemini and MAX stays on
+        grok-4.7, so HYBRID stays under MAX."""
         monkeypatch.setenv("GEMINI_API_KEY", "fake-test-key")
         monkeypatch.setenv("XAI_API_KEY", "fake-test-key")
         hybrid_est = estimate_cost(
@@ -972,8 +968,7 @@ class TestGrokTier:
         )
         max_est = estimate_cost("complete", fast_mode=True, use_historical=False, grok_tier="max")
         assert hybrid_est.total_cost < max_est.total_cost
-        # Standard-mode default should now sit in the sub-$2 band, not the
-        # legacy $4+ band — guard against regression of the v1.24.x routing fix.
+        # The two-key standard estimate stays under $2.
         assert hybrid_est.total_cost < 2.00
 
     def test_hybrid_tier_mode_label(self, monkeypatch):
@@ -1004,8 +999,8 @@ class TestGrokTier:
         assert estimate.mode == "full (Grok 4.7 max)"
 
     def test_fast_tier_cost_range_xai_only(self, monkeypatch):
-        """Fast tier in legacy XAI-only mode: grok-4.7 reasoning + grok-4.20-nr writing,
-        currently $5.235 on the static token plan."""
+        """Fast xAI-only tier uses grok-4.7 for reasoning and writing.
+        The static token plan totals about $8.65."""
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
