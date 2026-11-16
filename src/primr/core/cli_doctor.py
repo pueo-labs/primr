@@ -40,10 +40,46 @@ from primr.utils.terminal import can_prompt_for_input
 logger = logging.getLogger(__name__)
 
 
-def _check_api_keys(all_passed: bool, warnings_count: int) -> tuple[bool, int]:
-    """Check API key configuration and actually test connectivity."""
-    import requests
+def _is_offline_error(exc: BaseException) -> bool:
+    """Return whether a search probe failed because the network or DNS is down."""
+    name = type(exc).__name__.lower()
+    if "dns" in name or "timeout" in name or name in {"connectionerror", "connecterror"}:
+        return True
+    text = str(exc).lower()
+    return any(
+        needle in text
+        for needle in (
+            "error resolving dns",
+            "name or service not known",
+            "temporary failure in name resolution",
+            "no connections available",
+            "network is unreachable",
+        )
+    )
 
+
+def _report_offline_search(warnings_count: int) -> int:
+    console.warn("No network or DNS; search checks skipped")
+    console.info("  Check the network or DNS, then rerun primr doctor")
+    return warnings_count + 1
+
+
+def _search_probe_configured() -> bool:
+    """Return whether a live search probe should run.
+
+    Missing Google Search credentials are a configuration error, reported
+    before this probe. The default web search probe always runs.
+    """
+    search_provider = os.environ.get("SEARCH_PROVIDER", "auto").lower().strip()
+    if search_provider != "google":
+        return True
+    search_key = os.environ.get("SEARCH_API_KEY", "")
+    search_engine_id = os.environ.get("SEARCH_ENGINE_ID", "")
+    return len(search_key) >= 10 and len(search_engine_id) >= 10
+
+
+def _check_api_keys(all_passed: bool, warnings_count: int) -> tuple[bool, int]:
+    """Check API key configuration. Live search probes run separately."""
     # Key presence is reported once in the provider table. Keep malformed
     # credentials actionable without treating an optional missing key as failure.
     from primr.ai.providers import KNOWN_PROVIDERS
@@ -75,53 +111,65 @@ def _check_api_keys(all_passed: bool, warnings_count: int) -> tuple[bool, int]:
                 "  Get it at: https://programmablesearchengine.google.com/controlpanel/all"
             )
             all_passed = False
-        else:
-            try:
-                test_url = "https://www.googleapis.com/customsearch/v1"
-                params: dict[str, str | int] = {
-                    "q": "test",
-                    "key": search_key,
-                    "cx": search_engine_id,
-                    "num": 1,
-                }
-                response = requests.get(test_url, params=params, timeout=10)
-                if response.status_code == 200:
-                    console.ok("Google Search API working")
-                elif response.status_code == 400:
-                    error_detail = response.json().get("error", {}).get("message", "Bad Request")
-                    console.error(f"Google Search API config invalid: {error_detail}")
-                    console.info(
-                        "  Check SEARCH_ENGINE_ID at: "
-                        "https://programmablesearchengine.google.com/controlpanel/all"
-                    )
-                    all_passed = False
-                elif response.status_code == 403:
-                    console.error("Google Search API key invalid or quota exceeded")
-                    all_passed = False
-                else:
-                    console.error(f"Google Search API error: HTTP {response.status_code}")
-                    all_passed = False
-            except requests.exceptions.Timeout:
-                console.error("Google Search API timeout")
-                all_passed = False
-            except Exception as e:
-                console.error(f"Google Search API check failed: {e}")
-                all_passed = False
-    else:
-        try:
-            from ddgs import DDGS
-
-            results = DDGS().text("test", max_results=1)
-            if results:
-                console.ok("DuckDuckGo search working (no API key needed)")
-            else:
-                console.warn("DuckDuckGo returned no results for test query")
-                warnings_count += 1
-        except Exception as e:
-            console.error(f"DuckDuckGo search check failed: {e}")
-            all_passed = False
 
     return all_passed, warnings_count
+
+
+def _check_search_connectivity(all_passed: bool, warnings_count: int) -> tuple[bool, int]:
+    """Probe search without treating a dead network as a configuration failure.
+
+    The default backend is chosen by the search library and can be Brave rather
+    than DuckDuckGo, so the label is web search.
+    """
+    search_provider = os.environ.get("SEARCH_PROVIDER", "auto").lower().strip()
+    if search_provider == "google":
+        import requests
+
+        search_key = os.environ.get("SEARCH_API_KEY", "")
+        search_engine_id = os.environ.get("SEARCH_ENGINE_ID", "")
+        try:
+            response = requests.get(
+                "https://www.googleapis.com/customsearch/v1",
+                params={"q": "test", "key": search_key, "cx": search_engine_id, "num": 1},
+                timeout=10,
+            )
+        except Exception as exc:
+            if _is_offline_error(exc):
+                return all_passed, _report_offline_search(warnings_count)
+            console.error(f"Google Search API check failed: {exc}")
+            return False, warnings_count
+        if response.status_code == 200:
+            console.ok("Google Search API working")
+        elif response.status_code == 400:
+            error_detail = response.json().get("error", {}).get("message", "Bad Request")
+            console.error(f"Google Search API config invalid: {error_detail}")
+            console.info(
+                "  Check SEARCH_ENGINE_ID at: "
+                "https://programmablesearchengine.google.com/controlpanel/all"
+            )
+            all_passed = False
+        elif response.status_code == 403:
+            console.error("Google Search API key invalid or quota exceeded")
+            all_passed = False
+        else:
+            console.error(f"Google Search API error: HTTP {response.status_code}")
+            all_passed = False
+        return all_passed, warnings_count
+
+    try:
+        from ddgs import DDGS
+
+        results = DDGS().text("test", max_results=1)
+    except Exception as exc:
+        if _is_offline_error(exc):
+            return all_passed, _report_offline_search(warnings_count)
+        console.error(f"Web search check failed: {exc}")
+        return False, warnings_count
+    if results:
+        console.ok("Web search working (no API key needed)")
+        return all_passed, warnings_count
+    console.warn("Web search returned no results for test query")
+    return all_passed, warnings_count + 1
 
 
 def _check_provider_availability(warnings_count: int) -> int:
@@ -487,6 +535,10 @@ def run_doctor(*, fix: bool = False) -> int:
     console.step("Configuration")
     all_passed, warnings_count = _check_api_keys(all_passed, warnings_count)
     warnings_count = _check_key_shadowing(warnings_count)
+
+    if _search_probe_configured():
+        console.step("Connectivity")
+        all_passed, warnings_count = _check_search_connectivity(all_passed, warnings_count)
 
     console.step("Providers")
     warnings_count = _check_provider_availability(warnings_count)

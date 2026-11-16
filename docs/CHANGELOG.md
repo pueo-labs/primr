@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `primr doctor` probes web search under Connectivity. The default engine is
+  no longer labeled DuckDuckGo. A DNS failure says
+  `no network or DNS; search checks skipped` and does not send the user to
+  `primr doctor --fix`.
+
 ## [1.39.35] - 2026-11-16
 
 ### Security
