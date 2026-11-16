@@ -677,7 +677,12 @@ class TestRejectsSamplingParams:
 
 
 def test_installed_sdk_create_omits_sampling_parameters() -> None:
-    """The locked SDK 2 signature has no sampling parameters to forward."""
+    """The locked SDK 2 signature has no sampling parameters to forward.
+
+    Cross-platform CI installs the dev, api, and a2a extras. The primary
+    matrix installs every extra, and that is where this signature is checked.
+    """
+    pytest.importorskip("anthropic")
     import inspect
 
     from anthropic.resources.messages.messages import Messages
