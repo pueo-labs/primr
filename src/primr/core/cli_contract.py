@@ -182,6 +182,7 @@ class CLIConfig:
     init_yes: bool = False
     init_skip_browsers: bool = False
     init_no_doctor: bool = False
+    execs: bool = False
 
     @property
     def cloud_vendors(self) -> tuple[str, ...]:

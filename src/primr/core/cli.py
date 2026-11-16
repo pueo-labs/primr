@@ -175,9 +175,7 @@ def parse_args(args: list[str] | None = None) -> CLIConfig:
     else:
         banner_mode = banner_arg
 
-    # Provider-backed commands require an explicit approval by default.
-    # ``--skip-confirm`` is the deliberate non-interactive approval override,
-    # including for an ordinary single-company research run.
+    # ``--skip-confirm`` approves a provider-backed run without a prompt.
     skip_confirm = bool(getattr(parsed, "skip_confirm", False))
 
     # Handle --platform / --cloud-vendor resolution
@@ -244,6 +242,7 @@ def parse_args(args: list[str] | None = None) -> CLIConfig:
         framing_audience=getattr(parsed, "audience", None),
         framing_decision=getattr(parsed, "decision", None),
         framing_question=getattr(parsed, "question", None),
+        execs=getattr(parsed, "execs", False),
         improve_path=(
             getattr(parsed, "improve", None)
             or (

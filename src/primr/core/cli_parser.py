@@ -274,6 +274,16 @@ def add_research_input_arguments(parser: argparse.ArgumentParser) -> None:
         type=str,
         help="The single most important question the brief should answer.",
     )
+    parser.add_argument(
+        "--execs",
+        action="store_true",
+        help=(
+            "Optional leadership context, off by default. Does not change the "
+            "Strategic Overview or search the web. This slice renders a brief "
+            "only from sources already in hand, for at most three roles, and "
+            "does not call a model."
+        ),
+    )
 
 
 def _determine_command(
