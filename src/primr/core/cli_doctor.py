@@ -127,10 +127,16 @@ def _check_search_connectivity(all_passed: bool, warnings_count: int) -> tuple[b
 
         search_key = os.environ.get("SEARCH_API_KEY", "")
         search_engine_id = os.environ.get("SEARCH_ENGINE_ID", "")
+        params: dict[str, str | int] = {
+            "q": "test",
+            "key": search_key,
+            "cx": search_engine_id,
+            "num": 1,
+        }
         try:
             response = requests.get(
                 "https://www.googleapis.com/customsearch/v1",
-                params={"q": "test", "key": search_key, "cx": search_engine_id, "num": 1},
+                params=params,
                 timeout=10,
             )
         except Exception as exc:
