@@ -13,10 +13,11 @@ on:
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
-# Allow one concurrent deployment; let an in-progress run finish.
+# Pages publishes one at a time. Pending publishes wait; none are cancelled.
 concurrency:
   group: pages
   cancel-in-progress: false
+  queue: max
 
 permissions:
   contents: read
