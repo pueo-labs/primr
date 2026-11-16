@@ -9,6 +9,8 @@ SDK. Handles:
 - Cache-aware token tracking (``cache_read_input_tokens``, ``cache_creation_input_tokens``)
 - Passthrough of Anthropic-specific kwargs where supported (``thinking``,
   ``output_config.effort``)
+- Sampling parameters are omitted. API version 2026-10-21 rejects
+  ``temperature``, ``top_p``, and ``top_k`` on every model.
 
 Prompt caching note: Anthropic's prompt caching is configured via ``cache_control``
 directives embedded *inside* message content blocks (not as a top-level API
@@ -99,7 +101,11 @@ _VALID_THINKING_DISPLAY: frozenset[str] = frozenset({"omitted", "summarized"})
 
 
 def _rejects_sampling_params(model: str) -> bool:
-    """Return True when ``model`` 400s on temperature/top_p/top_k."""
+    """Return True for Claude families that removed sampling before the API did.
+
+    Messages requests omit temperature for every model. The family split
+    stays so older and newer Claude ids remain distinguishable.
+    """
     return rejects_claude_sampling(model)
 
 
@@ -321,6 +327,10 @@ class AnthropicProvider(Provider):
     ) -> ChatResponse:
         """Send a Messages API request with retry/backoff.
 
+        ``temperature`` stays on the shared provider interface and is not
+        forwarded. API version 2026-10-21 rejects temperature, top_p, and
+        top_k on every model, so the request samples at the API default.
+
         Raises QuotaExhaustedError on billing exhaustion (HTTP 403 with
         specific error codes or 429 with daily limit indicators).
         """
@@ -356,13 +366,10 @@ class AnthropicProvider(Provider):
             "messages": anthropic_messages,
         }
 
-        # Sampling parameters (temperature/top_p/top_k) were removed on the
-        # newest Claude tiers (Opus 4.7+, Sonnet 5, Fable/Mythos 5) and now
-        # return a 400. Behaviour is steered by prompting and effort instead.
-        # Older tiers (Sonnet 4.6, Haiku 4.5, Opus 4.6 and earlier) still accept
-        # temperature, so only send it where valid.
-        if not _rejects_sampling_params(model):
-            sdk_kwargs["temperature"] = temperature
+        # API version 2026-10-21 rejects temperature, top_p, and top_k on
+        # every model, including values that used to be accepted. The
+        # provider argument stays on the shared interface and is not sent.
+        del temperature
 
         if system_text is not None:
             sdk_kwargs["system"] = system_text

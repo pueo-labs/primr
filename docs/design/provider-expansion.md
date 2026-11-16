@@ -453,7 +453,9 @@ the operator must explicitly acknowledge that metered API billing may apply.
    `requires_responses_api`.
 2. **Sampling-param guard**: the LLM call seam consults
    `supports_temperature` before setting sampling params (Fable 5 /
-   Opus 4.7+ reject them).
+   Opus 4.7+ reject them). The Anthropic provider already omits
+   `temperature`, `top_p`, and `top_k` on every model, because SDK 2
+   sends API version 2026-10-21 and that version rejects them.
 3. **Web-search capability routing**: the browse/search stage dispatches to
    the provider-native tool (OpenAI Responses `web_search`, Anthropic
    `web_search_20260209`) when the recipe's provider has one; DDG remains
