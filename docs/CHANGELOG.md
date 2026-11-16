@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The optional Anthropic extra now installs SDK 2 (`anthropic>=2,<3`).
+  Messages requests omit `temperature`, `top_p`, and `top_k`. API version
+  2026-10-21 rejects those parameters on every model, so the call samples
+  at the API default. The provider argument stays on the shared interface.
 - GitHub Actions runs finish even when a newer commit is pushed on the same
   pull request. Release publishing and the docs site still run one at a time,
   and a waiting run stays queued instead of being replaced.

@@ -271,7 +271,8 @@ must use the shared sampling-capability policy so 3.5 Flash-Lite, 3.6 Flash,
 3.7 Flash, and later families do not receive removed `temperature`, `top_p`,
 or `top_k` fields. Convert only model-supported thinking levels through the
 SDK enum and test direct clients as well as the provider adapter before adding
-an eval profile.
+an eval profile. Anthropic requests omit those three fields for every model.
+SDK 2 sends API version 2026-10-21, and that version rejects them.
 
 ## Doc updates
 

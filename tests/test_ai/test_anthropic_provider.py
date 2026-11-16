@@ -295,37 +295,32 @@ class TestChat:
         assert usage["input_tokens"] == 200
         assert usage["output_tokens"] == 100
 
-    def test_temperature_sent_for_models_that_accept_it(self, monkeypatch):
-        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
-        provider = self._make_provider_with_mock_client()
-        provider._client.messages.create.return_value = self._make_response()
-
-        provider.chat(
-            [{"role": "user", "content": "Hi"}],
-            model="claude-sonnet-4-6",
-            temperature=0.3,
-        )
-
-        call_kwargs = provider._client.messages.create.call_args[1]
-        assert call_kwargs["temperature"] == 0.3
-
-    def test_temperature_omitted_for_newest_models(self, monkeypatch):
-        # Opus 4.7+, Sonnet 5, and Fable/Mythos 5 reject temperature with a 400.
-        # It must be left out entirely.
+    def test_temperature_omitted_for_every_model(self, monkeypatch):
+        # API version 2026-10-21 rejects temperature, top_p, and top_k on every
+        # model. Older tiers that used to receive temperature must omit it too.
         monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
         provider = self._make_provider_with_mock_client()
         provider._client.messages.create.return_value = self._make_response()
 
         for model in (
+            "claude-sonnet-4-6",
+            "claude-haiku-4-5",
+            "claude-opus-4-6",
             "claude-opus-4-8",
             "claude-opus-4-7",
             "claude-sonnet-5",
             "claude-fable-5",
         ):
             provider._client.messages.create.reset_mock()
-            provider.chat([{"role": "user", "content": "Hi"}], model=model)
+            provider.chat(
+                [{"role": "user", "content": "Hi"}],
+                model=model,
+                temperature=0.3,
+            )
             call_kwargs = provider._client.messages.create.call_args[1]
             assert "temperature" not in call_kwargs, f"{model} must not receive temperature"
+            assert "top_p" not in call_kwargs
+            assert "top_k" not in call_kwargs
 
     def test_latest_anthropic_effort_levels_map_to_output_config(self, monkeypatch):
         monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
@@ -660,7 +655,11 @@ class TestChat:
 
 
 class TestRejectsSamplingParams:
-    """The substring gate that decides whether to send temperature."""
+    """Families that removed sampling before API version 2026-10-21.
+
+    The request path omits temperature for every model. This gate still
+    records which families dropped it first.
+    """
 
     def test_rejector_models(self):
         for model in (
@@ -672,9 +671,23 @@ class TestRejectsSamplingParams:
         ):
             assert _rejects_sampling_params(model) is True
 
-    def test_accepting_models(self):
+    def test_families_that_accepted_sampling_before_the_api_change(self):
         for model in ("claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-4-6"):
             assert _rejects_sampling_params(model) is False
+
+
+def test_installed_sdk_create_omits_sampling_parameters() -> None:
+    """The locked SDK 2 signature has no sampling parameters to forward."""
+    import inspect
+
+    from anthropic.resources.messages.messages import Messages
+
+    parameters = inspect.signature(Messages.create).parameters
+    assert "temperature" not in parameters
+    assert "top_p" not in parameters
+    assert "top_k" not in parameters
+    assert "output_config" in parameters
+    assert "thinking" in parameters
 
 
 class TestSonnet5CapabilityGates:

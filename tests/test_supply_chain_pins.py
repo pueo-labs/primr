@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 import yaml
 from packaging.requirements import Requirement
+from packaging.specifiers import SpecifierSet
 
 ROOT = Path(__file__).resolve().parent.parent
 WORKFLOW_DIR = ROOT / ".github" / "workflows"
@@ -161,8 +162,8 @@ def test_transitive_security_constraints_and_locked_versions(
     assert all(version in specifier for version in versions)
 
 
-def test_anthropic_sdk_stays_below_messages_api_break() -> None:
-    """SDK 1.0 drops temperature from messages.create; SDK 2.0 rejects it on every model."""
+def test_anthropic_extra_uses_sdk_2() -> None:
+    """SDK 2 omits sampling parameters. The next major stays out until retested."""
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
     requirement = next(
         Requirement(value)
@@ -172,11 +173,10 @@ def test_anthropic_sdk_stays_below_messages_api_break() -> None:
     lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
     versions = [entry["version"] for entry in lock["package"] if entry["name"] == "anthropic"]
 
-    assert "0.109.1" in requirement.specifier
-    assert "1.0.0" not in requirement.specifier
-    assert "2.3.0" not in requirement.specifier
+    assert requirement.specifier == SpecifierSet(">=2,<3")
     assert versions, "anthropic must remain available as the optional Claude extra"
     assert all(version in requirement.specifier for version in versions)
+    assert all(version.split(".", 1)[0] == "2" for version in versions)
 
 
 def test_scheduled_audits_and_grouped_dependency_proposals() -> None:

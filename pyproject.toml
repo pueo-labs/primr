@@ -152,13 +152,10 @@ fast = [
 anthropic = [
     # Optional: enables the Anthropic Claude provider (reasoning/writing/pro).
     # `primr doctor` flags a set ANTHROPIC_API_KEY whose SDK is missing and can
-    # install this for you. The July 2026 floor is needed for current Messages
-    # request fields such as output_config.effort and adaptive thinking config.
-    # Capped below 1.0. SDK 1.0 removed temperature from messages.create, and
-    # SDK 2.0 sends API version 2026-10-21, which rejects temperature on every
-    # model. Older Claude tiers still receive it as a top-level argument.
-    # Lifting the cap requires that call to move and the provider to be retested.
-    "anthropic>=0.109.1,<1",
+    # install this for you. SDK 2 sends API version 2026-10-21, which rejects
+    # temperature, top_p, and top_k on every model. The provider omits them.
+    # The next major stays capped until that release is retested.
+    "anthropic>=2,<3",
 ]
 bedrock = [
     # Optional: enables the Amazon Bedrock provider via the boto3 bedrock-runtime
