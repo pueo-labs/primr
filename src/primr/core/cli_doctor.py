@@ -211,8 +211,14 @@ def _check_provider_availability(warnings_count: int) -> int:
             elif os.environ.get(entry.api_key_env) and len(os.environ[entry.api_key_env]) < 10:
                 state, detail = "failed", "credential too short"
         if entry is not None:
-            roles = "/".join(entry.roles) or "any"
-            detail = roles if state == "not configured" else f"{roles}; {detail}"
+            # OpenAI and Anthropic can price a dry-run and serve eval routes.
+            # They cannot execute a full report, so the row must not list those
+            # roles as if the key were enough.
+            if entry.name in {"openai", "anthropic"}:
+                scope = "estimate/eval only"
+            else:
+                scope = "/".join(entry.roles) or "any"
+            detail = scope if state == "not configured" else f"{scope}; {detail}"
         console.state_row(label, state, detail, label_width=18)
         if state in {"unreachable", "failed", "busy"}:
             warnings_count += 1

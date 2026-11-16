@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   missing browser fails doctor and names `playwright install chromium`.
   `primr doctor --fix` still offers to install it. A native probe crash stays
   a warning so doctor itself keeps running.
+- A missing model key now suggests only Gemini, xAI, and OpenRouter, the
+  providers that can run a full report. OpenAI and Anthropic stay available
+  for estimates and evals. `primr doctor` marks those two rows
+  `estimate/eval only`.
 - `primr doctor` probes web search under Connectivity. The default engine is
   no longer labeled DuckDuckGo. A DNS failure says
   `no network or DNS; search checks skipped` and does not send the user to
