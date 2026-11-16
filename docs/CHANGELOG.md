@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `primr --execs` requests optional leadership context. It stays off unless
+  the flag is set and does not change the Strategic Overview. This slice
+  renders a brief from sources already in hand, for at most three roles.
+  It does not search the web, call a model, or add model spend.
 - The Google GenAI SDK floor is now 3.3.0. Clients keep API version
   `v1beta` because deep research uses the Agents API, which is not in
   `v1`. The request timeout stays finite.

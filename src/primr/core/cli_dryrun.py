@@ -196,12 +196,25 @@ def run_dry_run(config: CLIConfig) -> int:
         )
         payload["provider_ready"] = provider_ready
         payload["execution_ready"] = execution_ready
+        if config.execs:
+            payload["leadership"] = {
+                "requested": True,
+                "max_subjects": 3,
+                "incremental_model_spend_usd": 0,
+                "artifact": "leadership_context",
+            }
         emit_json(payload)
         return 0
 
     from primr.utils.console import console
 
     console.header("Cost estimate", mode_label)
+    if config.execs:
+        console.muted(
+            "Leadership context requested. This slice adds no model spend and "
+            "does not search the web. A brief is rendered only when sources "
+            "are already in hand."
+        )
     if config.ai_strategy and not use_fast_mode:
         strategy_label = (
             "AI Strategy (Pro mode)" if config.lite_strategy else "AI Strategy analysis"

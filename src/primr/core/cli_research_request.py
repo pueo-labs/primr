@@ -72,6 +72,7 @@ class ValidatedResearchRequest:
 
     company_name: str
     website: str
+    leadership: bool = False
 
 
 def validate_research_request(config: _ResearchConfig) -> ValidatedResearchRequest | None:
@@ -157,7 +158,11 @@ def validate_research_request(config: _ResearchConfig) -> ValidatedResearchReque
     elif not prepare_inference_runtime(config, console):
         return None
 
-    return ValidatedResearchRequest(company_name=company_name, website=website)
+    return ValidatedResearchRequest(
+        company_name=company_name,
+        website=website,
+        leadership=bool(getattr(config, "execs", False)),
+    )
 
 
 def ensure_research_approval_transport(config: _ResearchConfig) -> bool:

@@ -17,6 +17,7 @@ _DIAGNOSTIC_ARTIFACT_TYPES = frozenset(
 )
 _PRIMARY_REPORT_MARKERS = ("strategic_overview", "company_overview")
 _WORKING_BRIEF_MARKERS = ("working_brief",)
+_LEADERSHIP_MARKERS = ("leadership_context",)
 _ADDITIONAL_STRATEGY_MODULE_MARKERS = ("ai_first_transformation", "skills_ideation")
 _PREP_STAGING_PREFIX = ".primr-prep-"
 
@@ -64,6 +65,8 @@ def infer_artifact_role(path: Path, artifact_type: str | None = None) -> str:
     stem = path.stem.lower()
     if resolved_type == "working_brief" or any(marker in stem for marker in _WORKING_BRIEF_MARKERS):
         return "working_brief"
+    if any(marker in stem for marker in _LEADERSHIP_MARKERS):
+        return "leadership_context"
     if resolved_type in _REPORT_ARTIFACT_TYPES:
         if any(marker in stem for marker in _PRIMARY_REPORT_MARKERS):
             return "primary_report"
