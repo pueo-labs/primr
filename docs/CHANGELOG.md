@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `primr doctor` launches Chromium with the same check preflight uses. A
+  missing browser fails doctor and names `playwright install chromium`.
+  `primr doctor --fix` still offers to install it. A native probe crash stays
+  a warning so doctor itself keeps running.
+
 ## [1.39.35] - 2026-11-16
 
 ### Security

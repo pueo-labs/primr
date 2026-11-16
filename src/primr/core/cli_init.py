@@ -21,6 +21,7 @@ from typing import Any
 from primr.ai.genai_factory import default_genai_http_options
 from primr.data.scraping.playwright_compat import (
     SYNC_BROWSER_UNAVAILABLE_REASON,
+    chromium_launch_status,
     sync_browser_runtime_supported,
 )
 from primr.utils.console import console
@@ -142,18 +143,7 @@ def _playwright_browsers_ready() -> bool:
     """Return whether Playwright can launch Chromium."""
     if not sync_browser_runtime_supported():
         return False
-    try:
-        from playwright.sync_api import sync_playwright
-
-        pw = sync_playwright().start()
-        try:
-            browser = pw.chromium.launch(headless=True)
-            browser.close()
-        finally:
-            pw.stop()
-        return True
-    except Exception:
-        return False
+    return chromium_launch_status() is None
 
 
 def _install_playwright_browsers() -> bool:

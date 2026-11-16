@@ -776,7 +776,7 @@ class TestRunDoctor:
             patch("primr.core.cli_doctor._check_filesystem") as mock_fs,
             patch("primr.core.cli_doctor._check_api_connectivity") as mock_api,
         ):
-            mock_deps.return_value = 0
+            mock_deps.return_value = (True, 0)
             mock_fs.return_value = (True, 0)
             mock_api.return_value = (True, 0)
             result = run_doctor()
