@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   time gets one grace period from the first reconciliation that sees it.
   `cancellation_timeout` means the control plane stopped waiting. It does not
   prove the provider process has exited.
+- A failed queue accept no longer leaves an approved job stuck in `QUEUED`.
+  The same idempotency key retries the accept once. A request that already
+  reached the queue is not submitted again, and a new key still is.
 
 ### Changed
 

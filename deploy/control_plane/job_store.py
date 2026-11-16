@@ -166,6 +166,7 @@ class JobRecord:
     error_message: str | None = None
     ttl: int = 0  # Unix timestamp for auto-expiry
     no_runner_manifest: bool = False  # True if runner couldn't write manifest
+    enqueue_pending: bool = False  # True until the queue accepts this attempt
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -186,6 +187,7 @@ class JobRecord:
             "error_message": self.error_message,
             "ttl": self.ttl,
             "no_runner_manifest": self.no_runner_manifest,
+            "enqueue_pending": self.enqueue_pending,
         }
 
     @classmethod
@@ -208,6 +210,7 @@ class JobRecord:
             error_message=data.get("error_message"),
             ttl=data.get("ttl", 0),
             no_runner_manifest=data.get("no_runner_manifest", False),
+            enqueue_pending=bool(data.get("enqueue_pending", False)),
         )
 
 
