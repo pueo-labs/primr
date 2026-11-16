@@ -1,6 +1,6 @@
 # Next Steps
 
-Released baseline: **v1.39.34**
+Released baseline: **v1.39.35**
 
 Next implementation candidate: **v1.40.0**
 
@@ -40,10 +40,13 @@ product.
 
 ## Current executable card
 
-v1.39.34 is the released baseline. It orders the roadmap around Primr's
-outputs: Overview depth, the strategy library, skill packs, and Primr Zero
-parity. Model defaults and prices were rechecked against every provider on
-2026-10-29 with no catalog change. Longer Strategic Overview sections move
+v1.39.35 is the released baseline. It raises the soupsieve and dnspython
+floors, installs CPython 3.15.2 in CI, and makes new requests use current
+model ids. The Strategic Overview writing steps on this line are included
+and still await the side-by-side read before v1.40. v1.39.34 ordered the
+roadmap around Primr's outputs: Overview depth, the strategy library, skill
+packs, and Primr Zero parity. Model defaults and prices were rechecked
+against every provider on 2026-10-29 with no catalog change. Longer Strategic Overview sections move
 the default full run from $1.24 to about $1.26 ($1.08 without the AI Strategy).
 Catalogs were rechecked on 2026-11-02. No newer generally available flagship
 and no price change. Scheduled Gemini steps are unchanged.
@@ -129,18 +132,18 @@ paid run needs a fresh estimate, explicit approval, and a cost cap.
 unapproved paid runs, a deterministic prose-quality gate, memory, and a new
 public command.
 
-**Implementation status (2026-11-02):** steps 1 to 4 below are on main for the
-standard writer, the fast-mode system prompt, and the deep-research overview
-prompts (higher section floors, build-don't-restate, disclosed financial
-anchors, load-bearing labels, no stray scaffolding, and one analytical voice).
-The composed overview selects its own persona, and the section briefs use that
-same voice. Strategy prompts are unchanged. A follow-through on 2026-11-03
-stops the composed overview, the fast trust polish, and the company-brief
-example from replacing a disclosed or reported figure with a wide band.
-These steps are unreleased until
-step 5 compares outputs side by side. That comparison needs an approved,
-capped paid run because the Standard writer is provider-backed. Frozen
-evidence can avoid a new collection, and it does not make the rewrite free.
+**Implementation status (2026-11-16):** steps 1 to 4 below shipped in v1.39.35
+for the standard writer, the fast-mode system prompt, and the deep-research
+overview prompts (higher section floors, build-don't-restate, disclosed
+financial anchors, load-bearing labels, no stray scaffolding, and one
+analytical voice). The composed overview selects its own persona, and the
+section briefs use that same voice. Strategy prompts are unchanged. A
+follow-through on 2026-11-03 stops the composed overview, the fast trust
+polish, and the company-brief example from replacing a disclosed or reported
+figure with a wide band. v1.40 still waits on step 5, which compares outputs
+side by side. That comparison needs an approved, capped paid run because the
+Standard writer is provider-backed. Frozen evidence can avoid a new
+collection, and it does not make the rewrite free.
 
 **Next, in order (2026-10-29):**
 
@@ -155,7 +158,8 @@ evidence can avoid a new collection, and it does not make the rewrite free.
 4. Remove leftover scaffolding in rendered text (stray labels, duplicated
    validation lines).
 5. Compare before and after on the same companies, using frozen evidence where
-   possible so the comparison is free.
+   possible. Frozen evidence skips a new collection. The rewrite still needs
+   an approved, capped paid run.
 
 ## Follow-through after v1.40
 
@@ -234,7 +238,7 @@ support. Use the [compatibility review](ROADMAP_REVIEW.md) as a dated evidence
 snapshot, then recheck primary sources when upgrading. Keep transport and
 installed-layout regressions in the normal free release gate.
 
-## Version gates after v1.39.34
+## Version gates after v1.39.35
 
 Later bands advance in dependency order. A version is cut when its exit criteria
 hold, not because a date or effort estimate was written down.
