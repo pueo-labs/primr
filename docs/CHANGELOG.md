@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `primr doctor --fix` still offers to install it. A native probe crash stays
   a warning so doctor itself keeps running.
 
+## [1.39.35] - 2026-11-16
+
 ### Security
 
 - Raise the transitive `soupsieve` floor to 4.0.0 and the `dnspython` floor to
