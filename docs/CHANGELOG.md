@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.39.36] - 2026-11-16
+
 ### Fixed
 
 - `primr doctor` launches Chromium with the same check preflight uses. A
