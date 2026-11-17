@@ -173,8 +173,10 @@ does not finish step 5, and v1.40 still waits on the side-by-side read.
 1. **Then the strategy library, skill packs, and Primr Zero parity** (v1.41 to
    v1.43), each checked by side by side reads. The AI Strategy card now asks
    for the smallest useful intervention. A job ad, a DNS signal, or a public
-   complaint stays too weak to justify a skill or an agent. Persisted skill-pack
-   linkage remains later work on this lane.
+   complaint stays too weak to justify a skill or an agent. The role plan can
+   now store an explicit link or an explicit refusal. Pack authoring still
+   does not turn a weak signal into a skill. The paid side-by-side read
+   remains later work on this lane.
 2. **Then compare backends.** Use frozen evidence and output contracts, record
    quality, reliability, latency, and measured cost, and make an explicit
    promotion decision. Preserve preview status when evidence is inconclusive.
@@ -182,6 +184,11 @@ does not finish step 5, and v1.40 still waits on the side-by-side read.
 Maintenance that may ship as patch releases meanwhile: client-facing report
 polish found in real output, a model-currency recheck against the provider
 catalogs before each release, and reviewed dependency updates.
+
+Read-only UTCP discovery for cloud job status is not planned. No named
+consumer is blocked on a UTCP manual. `GET /status/{job_id}` and the MCP job
+check already return the owner-checked status envelope. A UTCP runtime would
+be a new dependency, so it stays out of the package.
 
 The [evaluation plan](design/eval-plan.md) owns measurement design. These steps
 do not authorize paid runs or create another active release card.

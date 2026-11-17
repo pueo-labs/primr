@@ -9,13 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- A skill-pack role plan can record which skill names answer a strategy
+  opportunity. The link stores the workflow, intervention class, and evidence
+  note. A hiring advertisement, a DNS or recon signal, or another weak basis
+  is stored as a refusal. A plan with no strategy context says that no
+  opportunity is linked. This does not add a model call, and it does not
+  author the skill.
 - The AI Strategy prompt contract is 2.3.0. Each prioritized initiative names
   the smallest useful intervention: a reusable skill, a deterministic workflow,
   a bounded agent, or a human-led, defer, or no-AI alternative. Allowed actions
   and stopping conditions are required only for a bounded agent. A job
   advertisement, a DNS or recon signal, or a public complaint is too weak to
   justify a skill or an agent. Unknown baselines, owners, and permissions stay
-  unknown. Skill-pack linkage is unchanged.
+  unknown.
 
 ## [1.39.36] - 2026-11-16
 
