@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The roadmap's current next-step paragraph matches the executable queue.
   v1.40 still waits on the Strategic Overview side-by-side read. The shipped
   AI Strategy card and skill-pack link record do not finish that read.
+- `primr --execs` writes a leadership brief beside a completed report. The
+  brief records that the run has no structured leadership sources. It does
+  not search, call a model, or change the Strategic Overview.
 
 ## [1.39.38] - 2026-11-17
 

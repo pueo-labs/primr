@@ -49,10 +49,14 @@ an explicit link or an explicit refusal. A job ad, a DNS or recon signal, or
 another weak basis does not become a skill.
 v1.39.36 keeps doctor, cancellation, and queue accept honest, updates the
 optional Anthropic, A2A, and Google GenAI SDKs, and adds an opt-in leadership
-brief from sources already in hand. That brief does not search the web or
-change the Strategic Overview. v1.39.35 raises the soupsieve and dnspython
-floors, installs CPython 3.15.2 in CI, and makes new requests use current
-model ids. The Strategic Overview writing steps on this line are included.
+brief from sources already in hand. That library brief does not search the
+web or change the Strategic Overview. A completed research run with `--execs`
+writes the brief beside the report and records that the run supplied no
+structured leadership sources. It does not search the web, call a model, or
+change the Strategic Overview. The leadership comparison remains later.
+v1.39.35 raises the soupsieve and dnspython floors, installs CPython 3.15.2
+in CI, and makes new requests use current model ids. The Strategic Overview
+writing steps on this line are included.
 v1.39.34 ordered the
 roadmap around Primr's outputs: Overview depth, the strategy library, skill
 packs, and Primr Zero parity. Model defaults and prices were rechecked

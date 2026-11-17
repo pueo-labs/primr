@@ -110,7 +110,10 @@ gemini-4-carbon. Direct gemini-2.5-pro and gemini-2.5-flash shut down on
 2026-12-01. v1.39.36 keeps doctor, cancellation, and queue accept honest,
 moves the optional Anthropic, A2A, and Google GenAI clients onto their
 current SDKs, and adds an opt-in leadership brief from sources already in
-hand. The brief does not search the web or change the Strategic Overview.
+hand. A completed research run with `--execs` writes that brief beside the
+report and records that the run supplied no structured leadership sources.
+The brief does not search the web, call a model, or change the Strategic
+Overview. The leadership comparison remains later.
 v1.39.37 names the smallest useful intervention on the AI Strategy card and
 lets a skill-pack role plan record an explicit link or an explicit refusal.
 Pack authoring still does not turn a weak signal into a skill. v1.39.38

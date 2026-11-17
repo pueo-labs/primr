@@ -1993,7 +1993,6 @@ def _handle_research(config: CLIConfig) -> int:
         console.info("Run 'primr doctor' for detailed diagnostics")
         return 1
 
-    # Local checks are safe to run before the cost gate.
     if not config.json_output:
         console.step("Preflight checks")
     preflight_ok, preflight_errors = _run_preflight_checks(
@@ -2103,7 +2102,8 @@ def _handle_research(config: CLIConfig) -> int:
         from primr.utils.run_budget import clear_run_budget
 
         clear_run_budget()
-
+    if request.leadership:
+        run_context["leadership"] = "requested"
     from primr.core.cli_research_result import finalize_research_command
 
     return finalize_research_command(
