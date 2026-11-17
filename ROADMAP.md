@@ -1,6 +1,6 @@
 # Primr Roadmap
 
-Current State: v1.39.38
+Current State: v1.39.39
 
 Primr takes a company name and website, researches the company, and produces
 evidence-grounded, long-form strategic reports as polished Word and Markdown
@@ -53,7 +53,7 @@ releases inside a band; only cut the major when its pillars hold together.
 
 | Band | Theme | Why this order |
 |------|--------|----------------|
-| **v1.39.x** (current) | Operator polish, security floors, routing honesty, maintainable stage ownership | Ship safe defaults and truthful CLI/MCP surfaces while quality instrumentation matures. The published tip is v1.39.38. The v1.40 gate is still the unread Overview comparison. |
+| **v1.39.x** (current) | Operator polish, security floors, routing honesty, maintainable stage ownership | Ship safe defaults and truthful CLI/MCP surfaces while quality instrumentation matures. The published tip is v1.39.39. The v1.40 gate is still the unread Overview comparison. |
 | **v1.40** | Strategic Overview depth and quality | The Overview is the primary product: a 50+ page consultant-prep document with clear sections where every section adds depth. Confirm each change by reading outputs side by side. |
 | **v1.41** | Strategy library quality | AI Strategy is the default of a YAML library. Every listed strategy is complete, role-agnostic, and 30+ pages; placeholders are finished or clearly marked. |
 | **v1.42** | Skill packs tied to roles and strategy | From the same research, especially hiring, identify the roles that matter and draft skills that accelerate their work and parts of the strategy. |
@@ -73,8 +73,9 @@ records dependency order so it does not become a competing current queue.
 **Next implementation candidate:** v1.40.0 is the Strategic Overview
 side-by-side read. Steps 1 to 4 shipped in v1.39.35. The AI Strategy card and
 the skill-pack link record shipped in v1.39.37 and v1.39.38 and do not finish
-that read. v1.39.18 ships the OpenRouter utility successor, redirect
-honesty, prep completeness, and the section-writer ownership move.
+that read. The v1.39.39 leadership brief does not finish that read.
+v1.39.18 ships the OpenRouter utility successor, redirect honesty, prep
+completeness, and the section-writer ownership move.
 v1.39.19 adds provider-specific retirement checks and consistent configured
 utility/reasoning routes without promoting quality or backend readiness.
 v1.39.20 completes the open operator-polish and source-quality backlog, updates
@@ -110,16 +111,16 @@ gemini-4-carbon. Direct gemini-2.5-pro and gemini-2.5-flash shut down on
 2026-12-01. v1.39.36 keeps doctor, cancellation, and queue accept honest,
 moves the optional Anthropic, A2A, and Google GenAI clients onto their
 current SDKs, and adds an opt-in leadership brief from sources already in
-hand. A completed research run with `--execs` writes that brief beside the
-report and records that the run supplied no structured leadership sources.
-The brief does not search the web, call a model, or change the Strategic
-Overview. The leadership comparison remains later.
+hand. The brief does not search the web or change the Strategic Overview.
 v1.39.37 names the smallest useful intervention on the AI Strategy card and
 lets a skill-pack role plan record an explicit link or an explicit refusal.
 Pack authoring still does not turn a weak signal into a skill. v1.39.38
 repeats those recorded links and refusals on the skill-pack report and does
-not write a refusal into a skill body. The Overview side-by-side read remains
-the v1.40 gate.
+not write a refusal into a skill body. v1.39.39 writes that leadership brief
+beside a completed report and records that the run supplied no structured
+leadership sources. It does not search the web, call a model, or change the
+Strategic Overview. The leadership comparison remains later. The Overview
+side-by-side read remains the v1.40 gate.
 
 **What is next and why (2026-11-17):** v1.40.0 is the open release band. The
 October decision still holds: quality is a side-by-side read of whole reports,
@@ -132,8 +133,9 @@ Primr Zero to the same quality with no API spend. Backend and agent
 control-plane work follows. Steps 1 to 4 of the Overview card shipped in
 v1.39.35. v1.40 is not cut until step 5 compares before and after reports for
 the same companies. Frozen evidence can skip a new collection. The rewrite
-still needs an approved, capped paid run. The AI Strategy card and the
-skill-pack link record shipped as v1.39.x patches and do not finish that read.
+still needs an approved, capped paid run. The AI Strategy card, the
+skill-pack link record, and the v1.39.39 leadership brief shipped as patches
+and do not finish that read.
 Open issues 302, 301, and 287 stay open and do not move ahead of it. A patch
 may still carry client-facing report polish, a model-catalog recheck before a
 release, or a reviewed dependency update. The ordered work and exit criteria
@@ -2275,6 +2277,7 @@ live in [the changelog](docs/CHANGELOG.md) and
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.39.39 | Nov 2026 | **Sparse leadership brief.** A completed research run with `--execs` writes a leadership brief beside the report. The brief records that the run supplied no structured leadership sources. It does not search, call a model, or change the Strategic Overview. The leadership comparison remains later. v1.40 still waits on the Overview side-by-side read. |
 | 1.39.38 | Nov 2026 | **Pack report linkage.** A skill-pack report repeats recorded opportunity links and refusals. A recorded skill is marked included or not included. A refusal stays out of the skill body. v1.40 still waits on the Overview side-by-side read. |
 | 1.39.37 | Nov 2026 | **Intervention choice.** The AI Strategy card names a reusable skill, a deterministic workflow, a bounded agent, or a human-led, defer, or no-AI alternative. A skill-pack role plan can record that choice as a link or a refusal. v1.40 still waits on the Overview side-by-side read. |
 | 1.39.36 | Nov 2026 | **Operator honesty and current SDKs.** Doctor, cancellation grace, and queue accept stay truthful. Anthropic SDK 2, A2A SDK 1, and Google GenAI 3.3.0. Optional `--execs` renders leadership context from sources already in hand and does not search the web. v1.40 still waits on the Overview side-by-side read. |
