@@ -13,7 +13,7 @@
 # =============================================================================
 # Stage 1: Builder - Build wheel from source
 # =============================================================================
-FROM python:3.15-slim@sha256:2da676046630d7bf14c6764ae1143dc7fa0377a53f94bf5a642f0b214aca5bce AS builder
+FROM python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928 AS builder
 
 # Hash-bootstrap pip before using its vendored TLS trust store.
 RUN python -m pip install --no-cache-dir --no-deps "https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
@@ -36,7 +36,7 @@ RUN python -m build --wheel --no-isolation --outdir /build/dist
 # =============================================================================
 # Stage 2: Runtime - Install wheel in minimal image
 # =============================================================================
-FROM python:3.15-slim@sha256:2da676046630d7bf14c6764ae1143dc7fa0377a53f94bf5a642f0b214aca5bce
+FROM python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928
 
 # Create non-root user (primr, uid 1000)
 # Requirements: 1.4 (non-root execution)
