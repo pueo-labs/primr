@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -228,4 +229,91 @@ def _append_posting_coverage(lines: list[str], summary: dict[str, Any]) -> None:
     lines.append("")
 
 
-__all__ = ["persist_plan", "render_plan_md"]
+def append_pack_plan_lines(
+    lines: list[str],
+    plan: RolePlan,
+    *,
+    observed: int,
+    plausible: int,
+    operator_added: int,
+    roster_size: int,
+    authored_skill_names: Sequence[str],
+) -> None:
+    """Add the role-plan section of a pack report, including recorded links.
+
+    A refusal stays a refusal. This does not author a skill or edit a body.
+    """
+
+    lines.extend(
+        [
+            "## Role Composition",
+            "",
+            f"- Observed (from job postings): **{observed}**",
+            f"- Plausible (from research / industry): **{plausible}**",
+            f"- Operator-added (via --roles-add): **{operator_added}**",
+            f"- Final roster size: **{roster_size}**",
+            f"- Industry: **{plan.industry.business_model}** / "
+            f"**{plan.industry.industry_vertical}** / "
+            f"**{plan.industry.company_stage}** "
+            f"(source: `{plan.industry.source}`, "
+            f"confidence: {plan.industry.confidence})",
+        ]
+    )
+    if plan.operator_skipped:
+        lines.append(
+            "- Operator-skipped (via --roles-skip): "
+            f"{len(plan.operator_skipped)} "
+            f"({', '.join(plan.operator_skipped[:6])}"
+            f"{'...' if len(plan.operator_skipped) > 6 else ''})"
+        )
+    if plan.plan_md_path:
+        lines.append(f"- Full role plan: `{plan.plan_md_path}`")
+    if plan.gap_flagged:
+        lines.append(
+            f"- Gap-flagged roles not authored: {len(plan.gap_flagged)} (see role plan for details)"
+        )
+    _append_posting_coverage_report_lines(lines, plan.evidence_summary)
+    _append_pack_opportunity_trace(lines, plan, authored_skill_names)
+    lines.append("")
+
+
+def _append_posting_coverage_report_lines(
+    lines: list[str],
+    evidence_summary: dict[str, object],
+) -> None:
+    if not evidence_summary.get("posting_coverage_warns"):
+        return
+    reason = str(evidence_summary.get("posting_coverage_reason") or "")
+    recommendation = str(evidence_summary.get("posting_coverage_recommendation") or "")
+    lines.append("- Posting coverage: **posting-incomplete**" + (f" - {reason}" if reason else ""))
+    if recommendation:
+        lines.append(f"- Recommended curation: {recommendation}")
+
+
+def _append_pack_opportunity_trace(
+    lines: list[str],
+    plan: RolePlan,
+    authored_skill_names: Sequence[str],
+) -> None:
+    authored = set(authored_skill_names)
+    lines.append("- Opportunity linkage:")
+    if not plan.opportunity_links and not plan.opportunity_refusals:
+        lines.append("  - No strategy opportunity is linked.")
+        return
+    for link in plan.opportunity_links:
+        status = "included" if link.skill_name in authored else "not included in this pack"
+        lines.append(
+            f"  - `{single_line(link.skill_name)}` ({status}): "
+            f"{single_line(link.intervention_name)} "
+            f"({single_line(link.intervention_class)}) for {single_line(link.workflow)}. "
+            f"Opportunity {single_line(link.opportunity_id)}. "
+            f"{single_line(link.evidence_note)}"
+        )
+    for refusal in plan.opportunity_refusals:
+        lines.append(
+            f"  - Refused {single_line(refusal.opportunity_id)}: "
+            f"{single_line(refusal.reason)}. No skill was authored from this refusal."
+        )
+
+
+__all__ = ["append_pack_plan_lines", "persist_plan", "render_plan_md"]

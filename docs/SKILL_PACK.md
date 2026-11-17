@@ -310,7 +310,7 @@ Each `primr skills` run produces:
   - Security Review Required (untrusted generated prose, review requirement, and required host execution controls)
   - Configuration (target roles, skills per role, formats, coherence pass)
   - Cowork Packaging (manifest skill count and companion-file limits)
-  - Role Composition (observed / plausible / operator-added counts; industry classification; posting-coverage warning when present; plan reference; gap-flagged count; operator-skipped names)
+  - Role Composition (observed / plausible / operator-added counts; industry classification; posting-coverage warning when present; plan reference; gap-flagged count; operator-skipped names; opportunity linkage copied from the role plan, marked included or not included, with refusals left as refusals)
   - Per-role section showing confidence, provenance, archetype, citations, summary, and the skills authored
   - Validation Scorecard (HARD / SOFT counts + per-finding table)
   - Refinement Iterations used
@@ -341,7 +341,7 @@ The JSON contains the full `RolePlan` shape (`observed`, `plausible`, `gap_flagg
 
 Authored bodies follow Anthropic's Agent Skills authoring conventions enforced by the validator. By default the frontmatter is clean Agent Skills standard frontmatter: `name` + `description` only. If you need machine-readable handoff metadata, pass `--emit-agent-metadata` or set `SkillPackConfig(emit_agent_metadata=True)` to add a primr-namespaced `metadata` block with role, provenance, confidence, approximate context-token budget, and refresh hints.
 
-The generated files are draft skills. They use company context to make the task procedure specific, but the `SKILL.md` body should not become a mini report, evidence appendix, role profile, or company background document. Detailed role grounding lives in `references/role-family.md` and is loaded only when the downstream agent needs it.
+The generated files are draft skills. They use company context to make the task procedure specific, but the `SKILL.md` body should not become a mini report, evidence appendix, role profile, or company background document. An opportunity link or refusal stays in the role plan and the pack report. It is not copied into the skill body. Detailed role grounding lives in `references/role-family.md` and is loaded only when the downstream agent needs it.
 
 ```markdown
 ---

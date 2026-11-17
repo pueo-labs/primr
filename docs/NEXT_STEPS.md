@@ -177,8 +177,9 @@ does not finish step 5, and v1.40 still waits on the side-by-side read.
    v1.43), each checked by side by side reads. The AI Strategy card now asks
    for the smallest useful intervention. A job ad, a DNS signal, or a public
    complaint stays too weak to justify a skill or an agent. The role plan can
-   now store an explicit link or an explicit refusal. Pack authoring still
-   does not turn a weak signal into a skill. The paid side-by-side read
+   now store an explicit link or an explicit refusal, and the pack report
+   repeats that record without writing it into a skill body. Pack authoring
+   still does not turn a weak signal into a skill. The paid side-by-side read
    remains later work on this lane.
 2. **Then compare backends.** Use frozen evidence and output contracts, record
    quality, reliability, latency, and measured cost, and make an explicit

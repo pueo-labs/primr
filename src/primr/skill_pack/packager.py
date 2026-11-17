@@ -37,6 +37,7 @@ import yaml
 from primr.skill_pack.config import SkillPackConfig
 from primr.skill_pack.icons import pillow_available
 from primr.skill_pack.image_generation import generate_icons
+from primr.skill_pack.plan_artifacts import append_pack_plan_lines
 from primr.skill_pack.publication import (
     cleanup_owned_tree,
     publish_staged_output,
@@ -299,38 +300,15 @@ def _build_pack_report_md(
     _append_cowork_packaging_report_lines(lines, pack, config, cowork_skill_count)
 
     if pack.plan is not None:
-        plan = pack.plan
-        lines.extend(
-            [
-                "## Role Composition",
-                "",
-                f"- Observed (from job postings): **{pack.observed_role_count}**",
-                f"- Plausible (from research / industry): **{pack.plausible_role_count}**",
-                f"- Operator-added (via --roles-add): **{pack.operator_added_role_count}**",
-                f"- Final roster size: **{len(pack.roles)}**",
-                f"- Industry: **{plan.industry.business_model}** / "
-                f"**{plan.industry.industry_vertical}** / "
-                f"**{plan.industry.company_stage}** "
-                f"(source: `{plan.industry.source}`, "
-                f"confidence: {plan.industry.confidence})",
-            ]
+        append_pack_plan_lines(
+            lines,
+            pack.plan,
+            observed=pack.observed_role_count,
+            plausible=pack.plausible_role_count,
+            operator_added=pack.operator_added_role_count,
+            roster_size=len(pack.roles),
+            authored_skill_names=[skill.name for role in pack.roles for skill in role.skills],
         )
-        if plan.operator_skipped:
-            lines.append(
-                f"- Operator-skipped (via --roles-skip): "
-                f"{len(plan.operator_skipped)} "
-                f"({', '.join(plan.operator_skipped[:6])}"
-                f"{'...' if len(plan.operator_skipped) > 6 else ''})"
-            )
-        if plan.plan_md_path:
-            lines.append(f"- Full role plan: `{plan.plan_md_path}`")
-        if plan.gap_flagged:
-            lines.append(
-                f"- Gap-flagged roles not authored: {len(plan.gap_flagged)} "
-                "(see role plan for details)"
-            )
-        _append_posting_coverage_report_lines(lines, plan.evidence_summary)
-        lines.append("")
 
     lines.extend(
         [
@@ -496,19 +474,6 @@ def _count_bp_adherence_signals(pack: SkillPack) -> tuple[int, int, int]:
                 verifier_count += 1
 
     return gotchas_support, scripts_count, verifier_count
-
-
-def _append_posting_coverage_report_lines(
-    lines: list[str],
-    evidence_summary: dict[str, object],
-) -> None:
-    if not evidence_summary.get("posting_coverage_warns"):
-        return
-    reason = str(evidence_summary.get("posting_coverage_reason") or "")
-    recommendation = str(evidence_summary.get("posting_coverage_recommendation") or "")
-    lines.append("- Posting coverage: **posting-incomplete**" + (f" - {reason}" if reason else ""))
-    if recommendation:
-        lines.append(f"- Recommended curation: {recommendation}")
 
 
 def _append_cowork_packaging_report_lines(
