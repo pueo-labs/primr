@@ -7,19 +7,31 @@ from pathlib import Path
 
 import pytest
 
+from primr.skill_pack.config import SkillPackConfig
 from primr.skill_pack.curation import apply_curation
 from primr.skill_pack.opportunity_link import (
     OpportunityNeed,
     apply_opportunity_links,
     link_opportunities,
 )
+from primr.skill_pack.packager import _build_pack_report_md, _format_skill_md
 from primr.skill_pack.plan_artifacts import render_plan_md
 from primr.skill_pack.saved_plan import (
     SavedPlanValidationError,
     load_plan,
     saved_plan_approval_basis,
 )
-from primr.skill_pack.schema import MAX_OPPORTUNITY_LINKS, MAX_OPPORTUNITY_NEEDS, RolePlan
+from primr.skill_pack.schema import (
+    MAX_OPPORTUNITY_LINKS,
+    MAX_OPPORTUNITY_NEEDS,
+    Role,
+    RoleEvidence,
+    RolePlan,
+    Skill,
+    SkillPack,
+    SkillPackArtifacts,
+    ValidationReport,
+)
 
 ROSTER = ("quote-intake", "dispatch-notes", "rate-card")
 
@@ -570,3 +582,85 @@ def test_curation_keeps_recorded_links() -> None:
 
     assert [link.skill_name for link in plan.opportunity_links] == ["quote-intake"]
     assert plan.final_roster[0].name == "estimator"
+
+
+def test_pack_report_keeps_links_out_of_skill_bodies() -> None:
+    plan = apply_opportunity_links(
+        RolePlan(),
+        ("quote-intake", "dispatch-notes"),
+        (
+            _need(
+                "slow-quotes",
+                ("quote-intake", "dispatch-notes"),
+                workflow="commercial quote preparation",
+                intervention_class="reusable skill",
+                intervention_name="Quote intake completeness check",
+                evidence_note="The cause is recorded.\n## Injected",
+            ),
+            _need(
+                "hiring-only",
+                ("quote-intake",),
+                workflow="commercial quote preparation",
+                intervention_class="reusable skill",
+                intervention_name="Quote intake completeness check",
+                basis="hiring_ad",
+            ),
+        ),
+    )
+    plan.evidence_summary = {
+        "posting_coverage_warns": True,
+        "posting_coverage_reason": "clustered",
+        "posting_coverage_recommendation": "add a role",
+    }
+    skill = Skill(
+        name="quote-intake",
+        display_name="Quote intake",
+        description="Use when preparing a commercial quote.",
+        body="Check the quote inputs.",
+    )
+    pack = SkillPack(
+        company_name="ExampleCo",
+        company_url="https://exampleco.example",
+        generated_at="2026-11-17T00:00:00Z",
+        roles=[
+            Role(
+                name="estimator",
+                display_name="Estimator",
+                confidence="Inferred",
+                evidence=RoleEvidence(),
+                skills=[skill],
+            )
+        ],
+        validation=ValidationReport(),
+        plan=plan,
+    )
+
+    report = _build_pack_report_md(pack, SkillPackArtifacts(output_dir="out"), SkillPackConfig())
+    skill_md = _format_skill_md(skill)
+    headings = [line for line in report.splitlines() if line.startswith("## Injected")]
+
+    assert "`quote-intake` (included)" in report
+    assert "`dispatch-notes` (not included in this pack)" in report
+    assert "Refused hiring-only: hiring_ad. No skill was authored from this refusal." in report
+    assert "posting-incomplete" in report
+    assert "clustered" in report
+    assert "add a role" in report
+    assert headings == []
+    assert "The cause is recorded" not in skill_md
+    assert "hiring-only" not in skill_md
+    assert skill.body == "Check the quote inputs."
+
+
+def test_pack_report_says_when_no_opportunity_is_linked() -> None:
+    pack = SkillPack(
+        company_name="ExampleCo",
+        company_url="https://exampleco.example",
+        generated_at="2026-11-17T00:00:00Z",
+        roles=[],
+        validation=ValidationReport(),
+        plan=RolePlan(),
+    )
+
+    report = _build_pack_report_md(pack, SkillPackArtifacts(output_dir="out"), SkillPackConfig())
+
+    assert "No strategy opportunity is linked." in report

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- A skill-pack report repeats the role plan's opportunity linkage. A recorded
+  skill is marked included or not included. A refusal stays a refusal and is
+  not written into a SKILL.md body.
+
 ## [1.39.37] - 2026-11-17
 
 ### Changed
