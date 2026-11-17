@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.39.37] - 2026-11-17
+
 ### Changed
 
 - A skill-pack role plan can record which skill names answer a strategy

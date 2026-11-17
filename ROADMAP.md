@@ -1,6 +1,6 @@
 # Primr Roadmap
 
-Current State: v1.39.36
+Current State: v1.39.37
 
 Primr takes a company name and website, researches the company, and produces
 evidence-grounded, long-form strategic reports as polished Word and Markdown
@@ -109,7 +109,10 @@ gemini-4-carbon. Direct gemini-2.5-pro and gemini-2.5-flash shut down on
 moves the optional Anthropic, A2A, and Google GenAI clients onto their
 current SDKs, and adds an opt-in leadership brief from sources already in
 hand. The brief does not search the web or change the Strategic Overview.
-The Overview side-by-side read remains the v1.40 gate.
+v1.39.37 names the smallest useful intervention on the AI Strategy card and
+lets a skill-pack role plan record an explicit link or an explicit refusal.
+Pack authoring still does not turn a weak signal into a skill. The Overview
+side-by-side read remains the v1.40 gate.
 
 **What is next and why (2026-10-28):** v1.40.0 is the only open release band.
 It was blocked on a person adjudicating every clean case and reviewing every
@@ -2265,6 +2268,7 @@ live in [the changelog](docs/CHANGELOG.md) and
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.39.37 | Nov 2026 | **Intervention choice.** The AI Strategy card names a reusable skill, a deterministic workflow, a bounded agent, or a human-led, defer, or no-AI alternative. A skill-pack role plan can record that choice as a link or a refusal. v1.40 still waits on the Overview side-by-side read. |
 | 1.39.36 | Nov 2026 | **Operator honesty and current SDKs.** Doctor, cancellation grace, and queue accept stay truthful. Anthropic SDK 2, A2A SDK 1, and Google GenAI 3.3.0. Optional `--execs` renders leadership context from sources already in hand and does not search the web. v1.40 still waits on the Overview side-by-side read. |
 | 1.39.35 | Nov 2026 | **Security floors and current model ids.** soupsieve 4.0.0 and dnspython 2.9.2; Python floor 3.11.5; CI installs CPython 3.15.2. Pro default is gemini-4-carbon. Gemini 2.5 Pro and Flash shut down on 2026-12-01. Overview writing steps 1 to 4 are included and still await the side-by-side read. |
 | 1.39.34 | Oct 2026 | **Roadmap follows the outputs.** Overview depth (1.40), strategy library (1.41), skill packs (1.42), Primr Zero parity (1.43), then backends, control plane, and run history; length targets of 50+ and 30+ pages; models and prices rechecked with no change. |
