@@ -1,6 +1,6 @@
 # Next Steps
 
-Released baseline: **v1.39.36**
+Released baseline: **v1.39.37**
 
 Next implementation candidate: **v1.40.0**
 
@@ -40,11 +40,14 @@ product.
 
 ## Current executable card
 
-v1.39.36 is the released baseline. It keeps doctor, cancellation, and queue
-accept honest, updates the optional Anthropic, A2A, and Google GenAI SDKs,
-and adds an opt-in leadership brief from sources already in hand. That brief
-does not search the web or change the Strategic Overview. v1.40 still waits
-on the side-by-side read. v1.39.35 raises the soupsieve and dnspython
+v1.39.37 is the released baseline. The AI Strategy card names the smallest
+useful intervention, and a skill-pack role plan can record an explicit link
+or an explicit refusal. A job ad, a DNS or recon signal, or another weak
+basis does not become a skill. v1.40 still waits on the side-by-side read.
+v1.39.36 keeps doctor, cancellation, and queue accept honest, updates the
+optional Anthropic, A2A, and Google GenAI SDKs, and adds an opt-in leadership
+brief from sources already in hand. That brief does not search the web or
+change the Strategic Overview. v1.39.35 raises the soupsieve and dnspython
 floors, installs CPython 3.15.2 in CI, and makes new requests use current
 model ids. The Strategic Overview writing steps on this line are included.
 v1.39.34 ordered the
@@ -255,7 +258,7 @@ support. Use the [compatibility review](ROADMAP_REVIEW.md) as a dated evidence
 snapshot, then recheck primary sources when upgrading. Keep transport and
 installed-layout regressions in the normal free release gate.
 
-## Version gates after v1.39.36
+## Version gates after v1.39.37
 
 Later bands advance in dependency order. A version is cut when its exit criteria
 hold, not because a date or effort estimate was written down.
