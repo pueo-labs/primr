@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from primr.skill_pack.schema import Role, RolePlan
+from primr.skill_pack.schema import Role, RolePlan, single_line
 from primr.utils.security import write_redacted_text
 
 logger = logging.getLogger(__name__)
@@ -69,6 +69,7 @@ def render_plan_md(
         lines.append(f"- {key}: {value}")
     lines.append("")
 
+    _append_opportunity_linkage(lines, plan)
     _append_posting_coverage(lines, plan.evidence_summary)
 
     lines.append(f"## Observed Roles - {len(plan.observed)} (from postings)")
@@ -182,6 +183,29 @@ def _format_role_block(role: Role) -> str:
             trimmed = citation if len(citation) <= 220 else citation[:217] + "..."
             lines.append(f"- {trimmed}")
     return "\n".join(lines)
+
+
+def _append_opportunity_linkage(lines: list[str], plan: RolePlan) -> None:
+    lines.append("## Opportunity linkage")
+    lines.append("")
+    if not plan.opportunity_links and not plan.opportunity_refusals:
+        lines.append("No strategy opportunity is linked.")
+        lines.append("")
+        return
+    for link in plan.opportunity_links:
+        lines.append(
+            f"- {single_line(link.skill_name)}: {single_line(link.intervention_name)} "
+            f"({single_line(link.intervention_class)}) for {single_line(link.workflow)}. "
+            f"Opportunity {single_line(link.opportunity_id)}. "
+            f"{single_line(link.evidence_note)}"
+        )
+    if plan.opportunity_links:
+        lines.append("")
+    if plan.opportunity_refusals:
+        lines.append("Refused:")
+        for refusal in plan.opportunity_refusals:
+            lines.append(f"- {single_line(refusal.opportunity_id)}: {single_line(refusal.reason)}")
+        lines.append("")
 
 
 def _append_posting_coverage(lines: list[str], summary: dict[str, Any]) -> None:

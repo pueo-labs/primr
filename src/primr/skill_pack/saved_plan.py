@@ -22,11 +22,18 @@ from primr.core.trusted_report import (
 from primr.skill_pack.config import MAX_ROLES
 from primr.skill_pack.curation import apply_curation
 from primr.skill_pack.schema import (
+    ALLOWED_INTERVENTION_CLASSES,
+    MAX_OPPORTUNITY_LINKS,
+    MAX_OPPORTUNITY_REFUSALS,
+    OPPORTUNITY_TEXT_LIMITS,
     IndustryClassification,
+    OpportunityLink,
+    OpportunityRefusal,
     Role,
     RoleEvidence,
     RolePlan,
     RoleProvenance,
+    single_line,
 )
 from primr.skill_pack.validator import validate_kebab_case
 
@@ -110,6 +117,83 @@ def _role_approval_dict(role: Role) -> dict[str, Any]:
             "citations": list(role.evidence.citations),
         },
     }
+
+
+def _hydrate_opportunity_links(value: object) -> list[OpportunityLink]:
+    entries = _saved_plan_object_list(
+        value,
+        "opportunity_links",
+        max_items=MAX_OPPORTUNITY_LINKS,
+    )
+    links: list[OpportunityLink] = []
+    for index, entry in enumerate(entries):
+        field = f"opportunity_links[{index}]"
+        intervention_class = _opportunity_text(entry, field, "intervention_class")
+        if intervention_class not in ALLOWED_INTERVENTION_CLASSES:
+            raise _saved_plan_error(f"{field}.intervention_class", "name a supported intervention")
+        skill_name = _opportunity_text(entry, field, "skill_name")
+        if not validate_kebab_case(skill_name):
+            raise _saved_plan_error(f"{field}.skill_name", "be a portable kebab-case name")
+        links.append(
+            OpportunityLink(
+                opportunity_id=_opportunity_text(entry, field, "opportunity_id"),
+                skill_name=skill_name,
+                workflow=_opportunity_text(entry, field, "workflow"),
+                intervention_class=intervention_class,
+                intervention_name=_opportunity_text(entry, field, "intervention_name"),
+                evidence_note=_opportunity_text(entry, field, "evidence_note"),
+            )
+        )
+    return links
+
+
+def _hydrate_opportunity_refusals(value: object) -> list[OpportunityRefusal]:
+    entries = _saved_plan_object_list(
+        value,
+        "opportunity_refusals",
+        max_items=MAX_OPPORTUNITY_REFUSALS,
+    )
+    refusals: list[OpportunityRefusal] = []
+    for index, entry in enumerate(entries):
+        field = f"opportunity_refusals[{index}]"
+        refusals.append(
+            OpportunityRefusal(
+                opportunity_id=_opportunity_text(entry, field, "opportunity_id"),
+                reason=_opportunity_text(entry, field, "reason"),
+            )
+        )
+    return refusals
+
+
+def _opportunity_text(entry: dict[str, Any], field: str, key: str) -> str:
+    limit = OPPORTUNITY_TEXT_LIMITS[key]
+    value = _required_saved_text(entry, field, key, limit=limit)
+    cleaned = single_line(value)
+    if not cleaned:
+        raise _saved_plan_error(f"{field}.{key}", "be non-empty text")
+    return cleaned
+
+
+def _saved_plan_object_list(value: object, field: str, *, max_items: int) -> list[dict[str, Any]]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise _saved_plan_error(field, "be a list")
+    if len(value) > max_items:
+        raise _saved_plan_error(field, f"contain at most {max_items} entries")
+    entries: list[dict[str, Any]] = []
+    for index, item in enumerate(value):
+        if not isinstance(item, dict):
+            raise _saved_plan_error(f"{field}[{index}]", "be an object")
+        entries.append(item)
+    return entries
+
+
+def _required_saved_text(entry: dict[str, Any], field: str, key: str, *, limit: int) -> str:
+    value = _saved_plan_text(entry.get(key), f"{field}.{key}", limit=limit)
+    if value is None or not value.strip():
+        raise _saved_plan_error(f"{field}.{key}", "be non-empty text")
+    return value
 
 
 def saved_plan_approval_basis(plan: RolePlan) -> tuple[str, int]:
@@ -356,6 +440,8 @@ def load_plan(json_path: Path) -> RolePlan:
         final_roster=_hydrate_list("final_roster"),
         industry=industry,
         evidence_summary=dict(evidence_summary),
+        opportunity_links=_hydrate_opportunity_links(data.get("opportunity_links")),
+        opportunity_refusals=_hydrate_opportunity_refusals(data.get("opportunity_refusals")),
         plan_md_path=_saved_plan_text(
             data.get("plan_md_path"),
             "plan_md_path",

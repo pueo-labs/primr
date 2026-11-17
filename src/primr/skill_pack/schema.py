@@ -46,6 +46,73 @@ class SkillIssue:
         }
 
 
+ALLOWED_INTERVENTION_CLASSES = (
+    "reusable skill",
+    "deterministic workflow or ordinary software",
+    "bounded agent",
+    "human-led change, defer, or no AI",
+)
+
+# A role plan can record one card per opportunity, with a few skill names each.
+# The saved-plan caps are the product of those bounds, so a link the planner
+# accepts can be loaded again.
+MAX_OPPORTUNITY_NEEDS = 32
+MAX_SKILLS_PER_OPPORTUNITY = 8
+MAX_OPPORTUNITY_LINKS = MAX_OPPORTUNITY_NEEDS * MAX_SKILLS_PER_OPPORTUNITY
+MAX_OPPORTUNITY_REFUSALS = MAX_OPPORTUNITY_NEEDS
+OPPORTUNITY_TEXT_LIMITS = {
+    "opportunity_id": 80,
+    "skill_name": 64,
+    "workflow": 200,
+    "intervention_class": 80,
+    "intervention_name": 120,
+    "evidence_note": 400,
+    "reason": 80,
+}
+
+
+def single_line(text: str) -> str:
+    """Collapse whitespace so one opportunity field stays one plan line."""
+
+    return " ".join(text.split())
+
+
+@dataclass(frozen=True)
+class OpportunityLink:
+    """One persisted tie from a strategy opportunity to a skill name.
+
+    The plan stores the tie. It does not author the skill or invent a basis.
+    """
+
+    opportunity_id: str
+    skill_name: str
+    workflow: str
+    intervention_class: str
+    intervention_name: str
+    evidence_note: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "opportunity_id": self.opportunity_id,
+            "skill_name": self.skill_name,
+            "workflow": self.workflow,
+            "intervention_class": self.intervention_class,
+            "intervention_name": self.intervention_name,
+            "evidence_note": self.evidence_note,
+        }
+
+
+@dataclass(frozen=True)
+class OpportunityRefusal:
+    """A candidate that was not linked. The reason is not evidence of absence."""
+
+    opportunity_id: str
+    reason: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {"opportunity_id": self.opportunity_id, "reason": self.reason}
+
+
 class RoleProvenance(str, Enum):
     """How a role entered the plan.
 
@@ -256,6 +323,9 @@ class RolePlan:
     final_roster: list[Role] = field(default_factory=list)
     industry: IndustryClassification = field(default_factory=IndustryClassification)
     evidence_summary: dict[str, Any] = field(default_factory=dict)
+    # Explicit strategy ties. Empty means no opportunity was linked.
+    opportunity_links: list[OpportunityLink] = field(default_factory=list)
+    opportunity_refusals: list[OpportunityRefusal] = field(default_factory=list)
     plan_md_path: str | None = None
     plan_json_path: str | None = None
 
@@ -289,6 +359,8 @@ class RolePlan:
             "final_roster": [_serialize_role(r) for r in self.final_roster],
             "industry": self.industry.to_dict(),
             "evidence_summary": dict(self.evidence_summary),
+            "opportunity_links": [link.to_dict() for link in self.opportunity_links],
+            "opportunity_refusals": [item.to_dict() for item in self.opportunity_refusals],
             "plan_md_path": self.plan_md_path,
             "plan_json_path": self.plan_json_path,
         }

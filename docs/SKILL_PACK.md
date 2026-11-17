@@ -325,6 +325,7 @@ Written during planning **before** authoring begins. Inspect the markdown to see
 The markdown layout:
 - `## Industry Classification` - business model, vertical, stage, employee estimate, confidence, cited evidence, source (report / llm)
 - `## Evidence Summary` - character counts and per-stage counts
+- `## Opportunity linkage` - strategy opportunity tied to a skill name, or an explicit refusal. An empty plan says that no strategy opportunity is linked. A hiring ad or recon signal is not a link. A saved plan stores at most 256 links and 32 refusals. Each skill name is kebab-case, each intervention class is one of the four strategy classes, and each field stays on one line.
 - `## Posting Coverage` - non-blocking warning when enterprise-scale observed postings cluster in one narrow band
 - `## Observed Roles` - posting-grounded roles with verbatim posting citations
 - `## Plausible Roles` - research/industry-grounded roles with citations
@@ -334,7 +335,7 @@ The markdown layout:
 - `## Final Roster` - numbered list with provenance + confidence per role
 - `## How to act on this plan` - operator next-step hints
 
-The JSON contains the full `RolePlan` shape (`observed`, `plausible`, `gap_flagged`, `operator_added`, `operator_skipped`, `final_roster`, `industry`, `evidence_summary`, `plan_md_path`, `plan_json_path`).
+The JSON contains the full `RolePlan` shape (`observed`, `plausible`, `gap_flagged`, `operator_added`, `operator_skipped`, `final_roster`, `industry`, `evidence_summary`, `opportunity_links`, `opportunity_refusals`, `plan_md_path`, `plan_json_path`). Older plan files omit the two opportunity fields and load as empty lists.
 
 ## SKILL.md structure
 
