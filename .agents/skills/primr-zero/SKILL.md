@@ -188,8 +188,14 @@ write a second Markdown document that:
 - Ties each prioritized initiative to a measurable business outcome, names the
   strongest non-AI alternative, and states the evidence that would change the
   call.
-- Never invents baselines, ROI, budgets, ownership, or adoption. Name the metric
-  to establish, and label an unknown owner "Owner to confirm."
+- Names the smallest useful intervention: a reusable skill, a deterministic
+  workflow, a bounded agent, or a human-led, defer, or no-AI alternative.
+  Allowed actions and stopping conditions appear only for a bounded agent.
+- Treats a job advertisement, a DNS or recon signal, and a public complaint as
+  too weak to justify a skill or an agent. Competing causes stay hypotheses
+  until a measurement selects one.
+- Never invents baselines, ROI, budgets, ownership, permissions, or adoption.
+  Name the metric to establish, and label an unknown owner "Owner to confirm."
 - Uses the same `[cite: N]` + `## Sources` citation format as the Overview.
 
 Name it `<Company>_AI_Strategy_<date>.md`, then `primr render` it to DOCX so the

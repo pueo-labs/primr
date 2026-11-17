@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The AI Strategy prompt contract is 2.3.0. Each prioritized initiative names
+  the smallest useful intervention: a reusable skill, a deterministic workflow,
+  a bounded agent, or a human-led, defer, or no-AI alternative. Allowed actions
+  and stopping conditions are required only for a bounded agent. A job
+  advertisement, a DNS or recon signal, or a public complaint is too weak to
+  justify a skill or an agent. Unknown baselines, owners, and permissions stay
+  unknown. Skill-pack linkage is unchanged.
+
 ## [1.39.36] - 2026-11-16
 
 ### Fixed

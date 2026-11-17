@@ -149,6 +149,9 @@ side by side. That comparison needs an approved, capped paid run because the
 Standard writer is provider-backed. Frozen evidence can avoid a new
 collection, and it does not make the rewrite free.
 
+The intervention distinction in the AI Strategy card is later lane work. It
+does not finish step 5, and v1.40 still waits on the side-by-side read.
+
 **Next, in order (2026-10-29):**
 
 1. Fix the prompt rules that cause restatement across sections: give each
@@ -168,7 +171,10 @@ collection, and it does not make the rewrite free.
 ## Follow-through after v1.40
 
 1. **Then the strategy library, skill packs, and Primr Zero parity** (v1.41 to
-   v1.43), each checked by side by side reads.
+   v1.43), each checked by side by side reads. The AI Strategy card now asks
+   for the smallest useful intervention. A job ad, a DNS signal, or a public
+   complaint stays too weak to justify a skill or an agent. Persisted skill-pack
+   linkage remains later work on this lane.
 2. **Then compare backends.** Use frozen evidence and output contracts, record
    quality, reliability, latency, and measured cost, and make an explicit
    promotion decision. Preserve preview status when evidence is inconclusive.
