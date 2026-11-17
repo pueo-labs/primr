@@ -1,6 +1,6 @@
 # Next Steps
 
-Released baseline: **v1.39.37**
+Released baseline: **v1.39.38**
 
 Next implementation candidate: **v1.40.0**
 
@@ -40,10 +40,13 @@ product.
 
 ## Current executable card
 
-v1.39.37 is the released baseline. The AI Strategy card names the smallest
-useful intervention, and a skill-pack role plan can record an explicit link
-or an explicit refusal. A job ad, a DNS or recon signal, or another weak
-basis does not become a skill. v1.40 still waits on the side-by-side read.
+v1.39.38 is the released baseline. A skill-pack report repeats a role plan's
+recorded opportunity links and refusals. A recorded skill is marked included
+or not included, and a refusal is not written into a skill body. v1.40 still
+waits on the side-by-side read. v1.39.37 names the smallest useful
+intervention on the AI Strategy card, and a skill-pack role plan can record
+an explicit link or an explicit refusal. A job ad, a DNS or recon signal, or
+another weak basis does not become a skill.
 v1.39.36 keeps doctor, cancellation, and queue accept honest, updates the
 optional Anthropic, A2A, and Google GenAI SDKs, and adds an opt-in leadership
 brief from sources already in hand. That brief does not search the web or
@@ -259,7 +262,7 @@ support. Use the [compatibility review](ROADMAP_REVIEW.md) as a dated evidence
 snapshot, then recheck primary sources when upgrading. Keep transport and
 installed-layout regressions in the normal free release gate.
 
-## Version gates after v1.39.37
+## Version gates after v1.39.38
 
 Later bands advance in dependency order. A version is cut when its exit criteria
 hold, not because a date or effort estimate was written down.

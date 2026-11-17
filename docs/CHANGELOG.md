@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.39.38] - 2026-11-17
+
 ### Changed
 
 - A skill-pack report repeats the role plan's opportunity linkage. A recorded
