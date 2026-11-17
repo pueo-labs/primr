@@ -1,6 +1,6 @@
 # Next Steps
 
-Released baseline: **v1.39.38**
+Released baseline: **v1.39.39**
 
 Next implementation candidate: **v1.40.0**
 
@@ -40,20 +40,21 @@ product.
 
 ## Current executable card
 
-v1.39.38 is the released baseline. A skill-pack report repeats a role plan's
-recorded opportunity links and refusals. A recorded skill is marked included
-or not included, and a refusal is not written into a skill body. v1.40 still
-waits on the side-by-side read. v1.39.37 names the smallest useful
-intervention on the AI Strategy card, and a skill-pack role plan can record
-an explicit link or an explicit refusal. A job ad, a DNS or recon signal, or
-another weak basis does not become a skill.
+v1.39.39 is the released baseline. A completed research run with `--execs`
+writes a leadership brief beside the report and records that the run supplied
+no structured leadership sources. The brief does not search the web, call a
+model, or change the Strategic Overview. The leadership comparison remains
+later. v1.40 still waits on the side-by-side read. v1.39.38 repeats a role
+plan's recorded opportunity links and refusals on the skill-pack report. A
+recorded skill is marked included or not included, and a refusal is not
+written into a skill body. v1.39.37 names the smallest useful intervention
+on the AI Strategy card, and a skill-pack role plan can record an explicit
+link or an explicit refusal. A job ad, a DNS or recon signal, or another weak
+basis does not become a skill.
 v1.39.36 keeps doctor, cancellation, and queue accept honest, updates the
 optional Anthropic, A2A, and Google GenAI SDKs, and adds an opt-in leadership
-brief from sources already in hand. That library brief does not search the
-web or change the Strategic Overview. A completed research run with `--execs`
-writes the brief beside the report and records that the run supplied no
-structured leadership sources. It does not search the web, call a model, or
-change the Strategic Overview. The leadership comparison remains later.
+brief from sources already in hand. That brief does not search the web or
+change the Strategic Overview.
 v1.39.35 raises the soupsieve and dnspython floors, installs CPython 3.15.2
 in CI, and makes new requests use current model ids. The Strategic Overview
 writing steps on this line are included.
@@ -159,9 +160,10 @@ side by side. That comparison needs an approved, capped paid run because the
 Standard writer is provider-backed. Frozen evidence can avoid a new
 collection, and it does not make the rewrite free.
 
-The intervention distinction in the AI Strategy card, and the v1.39.38 pack
-report that repeats a recorded link or refusal, are later lane work. They do
-not finish step 5, and v1.40 still waits on the side-by-side read.
+The intervention distinction in the AI Strategy card, the v1.39.38 pack
+report that repeats a recorded link or refusal, and the v1.39.39 leadership
+brief are later lane work. They do not finish step 5, and v1.40 still waits
+on the side-by-side read.
 
 **Next, in order (2026-10-29):**
 
@@ -267,7 +269,7 @@ support. Use the [compatibility review](ROADMAP_REVIEW.md) as a dated evidence
 snapshot, then recheck primary sources when upgrading. Keep transport and
 installed-layout regressions in the normal free release gate.
 
-## Version gates after v1.39.38
+## Version gates after v1.39.39
 
 Later bands advance in dependency order. A version is cut when its exit criteria
 hold, not because a date or effort estimate was written down.

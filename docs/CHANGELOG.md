@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.39.39] - 2026-11-17
+
 ### Changed
 
 - The roadmap's current next-step paragraph matches the executable queue.
