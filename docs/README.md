@@ -45,7 +45,7 @@ below (Diataxis: learning, doing, looking up, understanding).
 | [BATCH](BATCH.md) | Run primr across many companies from a CSV | 2026-07-18 |
 | [RECOVERY](RECOVERY.md) | Resume after a crash, reboot, or interrupted run | 2026-08-14 |
 | [IMPROVE](IMPROVE.md) | Improve and refine an existing report (`primr improve` / `refine`) | 2026-08-13 |
-| [SKILL_PACK](SKILL_PACK.md) | `primr skills` end to end: planning, curation, artifacts, CLI/MCP | 2026-08-14 |
+| [SKILL_PACK](SKILL_PACK.md) | `primr skills` end to end: planning, curation, artifacts, CLI/MCP | 2026-11-16 |
 | [EVAL](EVAL.md) | Evaluate and compare models with the eval harness | 2026-10-13 |
 | [MODEL_ONBOARDING](MODEL_ONBOARDING.md) | Register and validate a new model | 2026-08-13 |
 | [AGENT_INTEGRATION](AGENT_INTEGRATION.md) | Operate Primr from MCP, A2A, skills, and agent hosts | 2026-09-13 |
@@ -62,13 +62,13 @@ below (Diataxis: learning, doing, looking up, understanding).
 |----------|-------------|---------|
 | [API](API.md) | MCP server and A2A protocol, programmatic usage | 2026-08-13 |
 | [Job Status](JOB_STATUS.md) | Versioned CLI, MCP, A2A, and API lifecycle contract | 2026-08-05 |
-| [STRATEGY_PORTFOLIO](STRATEGY_PORTFOLIO.md) | YAML-defined long-form strategy documents and selection | 2026-08-30 |
-| [NEXT_STEPS](NEXT_STEPS.md) | One executable release card, dependency gates, and version update protocol | 2026-10-20 |
+| [STRATEGY_PORTFOLIO](STRATEGY_PORTFOLIO.md) | YAML-defined long-form strategy documents and selection | 2026-11-16 |
+| [NEXT_STEPS](NEXT_STEPS.md) | One executable release card, dependency gates, and version update protocol | 2026-11-17 |
 | [ROADMAP_REVIEW](ROADMAP_REVIEW.md) | Current-source evidence for priorities, MCP and Agent Plugins compatibility, evaluation, and development guidance | 2026-09-13 |
-| [CHANGELOG](CHANGELOG.md) | Version history | 2026-10-20 |
+| [CHANGELOG](CHANGELOG.md) | Version history | 2026-11-17 |
 | [MIGRATION](MIGRATION.md) | Error-hierarchy migration notes | 2026-02-02 |
 | [EVAL_V1_24_0](EVAL_V1_24_0.md) | Historical decision record: the v1.24.0 cross-provider eval plan | 2026-10-11 |
-| [ROADMAP](https://github.com/pueo-labs/primr/blob/main/ROADMAP.md) | Release dependencies, long-range gates, and implementation ledger | 2026-09-02 |
+| [ROADMAP](https://github.com/pueo-labs/primr/blob/main/ROADMAP.md) | Release dependencies, long-range gates, and implementation ledger | 2026-11-17 |
 
 ## Explanation (understanding why)
 

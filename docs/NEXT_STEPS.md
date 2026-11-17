@@ -155,8 +155,9 @@ side by side. That comparison needs an approved, capped paid run because the
 Standard writer is provider-backed. Frozen evidence can avoid a new
 collection, and it does not make the rewrite free.
 
-The intervention distinction in the AI Strategy card is later lane work. It
-does not finish step 5, and v1.40 still waits on the side-by-side read.
+The intervention distinction in the AI Strategy card, and the v1.39.38 pack
+report that repeats a recorded link or refusal, are later lane work. They do
+not finish step 5, and v1.40 still waits on the side-by-side read.
 
 **Next, in order (2026-10-29):**
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The roadmap's current next-step paragraph matches the executable queue.
+  v1.40 still waits on the Strategic Overview side-by-side read. The shipped
+  AI Strategy card and skill-pack link record do not finish that read.
+
 ## [1.39.38] - 2026-11-17
 
 ### Changed
