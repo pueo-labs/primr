@@ -53,7 +53,7 @@ releases inside a band; only cut the major when its pillars hold together.
 
 | Band | Theme | Why this order |
 |------|--------|----------------|
-| **v1.39.x** (current) | Operator polish, security floors, routing honesty, maintainable stage ownership | Ship safe defaults and truthful CLI/MCP surfaces while quality instrumentation matures. v1.39.24 refreshes provider catalogs, verified prices, and request compatibility while retaining frozen judge comparisons and the bounded-ingestion security baseline. |
+| **v1.39.x** (current) | Operator polish, security floors, routing honesty, maintainable stage ownership | Ship safe defaults and truthful CLI/MCP surfaces while quality instrumentation matures. The published tip is v1.39.38. The v1.40 gate is still the unread Overview comparison. |
 | **v1.40** | Strategic Overview depth and quality | The Overview is the primary product: a 50+ page consultant-prep document with clear sections where every section adds depth. Confirm each change by reading outputs side by side. |
 | **v1.41** | Strategy library quality | AI Strategy is the default of a YAML library. Every listed strategy is complete, role-agnostic, and 30+ pages; placeholders are finished or clearly marked. |
 | **v1.42** | Skill packs tied to roles and strategy | From the same research, especially hiring, identify the roles that matter and draft skills that accelerate their work and parts of the strategy. |
@@ -70,8 +70,10 @@ The exact implementation slice, acceptance criteria, approved spend, and
 parallel maintenance lanes live only in `docs/NEXT_STEPS.md`. This section
 records dependency order so it does not become a competing current queue.
 
-**Next implementation candidate:** v1.40.0 improves the Strategic Overview,
-AI Strategy, and skill pack directly. v1.39.18 ships the OpenRouter utility successor, redirect
+**Next implementation candidate:** v1.40.0 is the Strategic Overview
+side-by-side read. Steps 1 to 4 shipped in v1.39.35. The AI Strategy card and
+the skill-pack link record shipped in v1.39.37 and v1.39.38 and do not finish
+that read. v1.39.18 ships the OpenRouter utility successor, redirect
 honesty, prep completeness, and the section-writer ownership move.
 v1.39.19 adds provider-specific retirement checks and consistent configured
 utility/reasoning routes without promoting quality or backend readiness.
@@ -116,25 +118,25 @@ repeats those recorded links and refusals on the skill-pack report and does
 not write a refusal into a skill body. The Overview side-by-side read remains
 the v1.40 gate.
 
-**What is next and why (2026-10-28):** v1.40.0 is the only open release band.
-It was blocked on a person adjudicating every clean case and reviewing every
-queue, which pulled quality toward countable labeled claims. Primr is deep
-consultant preparation, not a fact lookup, so the roadmap now follows its
-outputs: v1.40 deepens the Strategic Overview (50+ pages, every section adding
-depth, company-specific substance, confident writing), v1.41 makes the strategy
-library complete and 30+ pages per document with AI Strategy first, v1.42 ties
-skill packs to the company's roles and strategy, and v1.43 brings Primr Zero to
-the same quality with no API spend. Backend and agent control-plane work
-follows. Each change is confirmed by reading before and after outputs side by
-side; model judges are a second opinion. Until those inputs exist, work stays in the parallel patch lanes:
-client-facing report polish, provider currency (defaults track the current
-flagships; recheck the provider catalogs before each release and record any
-retirement with its replacement), and reviewed dependency updates. Because the
-new defaults were adopted without a quality comparison, the first v1.40
-measurement should score them against the frozen v1.24.0-era recipe.
-The ordered work and exit criteria live in the [execution brief](docs/NEXT_STEPS.md). A
-candidate version is not a delivery promise and is changed before release if
-the accepted scope requires a different semantic version.
+**What is next and why (2026-11-17):** v1.40.0 is the open release band. The
+October decision still holds: quality is a side-by-side read of whole reports,
+not fact adjudication. Primr is deep consultant preparation. The roadmap follows
+its outputs: v1.40 deepens the Strategic Overview (50+ pages, every section
+adding depth, company-specific substance, confident writing), v1.41 makes the
+strategy library complete and 30+ pages per document with AI Strategy first,
+v1.42 ties skill packs to the company's roles and strategy, and v1.43 brings
+Primr Zero to the same quality with no API spend. Backend and agent
+control-plane work follows. Steps 1 to 4 of the Overview card shipped in
+v1.39.35. v1.40 is not cut until step 5 compares before and after reports for
+the same companies. Frozen evidence can skip a new collection. The rewrite
+still needs an approved, capped paid run. The AI Strategy card and the
+skill-pack link record shipped as v1.39.x patches and do not finish that read.
+Open issues 302, 301, and 287 stay open and do not move ahead of it. A patch
+may still carry client-facing report polish, a model-catalog recheck before a
+release, or a reviewed dependency update. The ordered work and exit criteria
+live in the [execution brief](docs/NEXT_STEPS.md). A candidate version is not a
+delivery promise and is changed before release if the accepted scope requires
+a different semantic version.
 
 The [current-source review](docs/ROADMAP_REVIEW.md) distinguishes protocol
 revisions, SDK support, plugin schema conformance, and actual runtime evidence.
