@@ -12,9 +12,13 @@ on:
 permissions:
   contents: read
 
+# Hosted Ubuntu is pinned to 26.04. The floating latest label still selects
+# 24.04 through the 2026-11-19 migration, so an unpinned job can change
+# images between runs. Each job installs its own interpreter.
+
 jobs:
   lint-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     name: lint-and-test (py${{ matrix.python-version }})
     timeout-minutes: 45
     strategy:
@@ -338,7 +342,7 @@ jobs:
         run: uv run --no-sync pytest tests/ --ignore=tests/manual --tb=short -q -k "not test_wait_times_out_when_no_change" -m "not integration and not timing"
 
   a2a-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     name: A2A Integration Tests
     timeout-minutes: 15
     env:
@@ -383,7 +387,7 @@ jobs:
   # fixable vuln or misconfig. Complements the pip-audit + bandit hard gates.
   # Dependency bumps this gate demands are applied by hand after review.
   supply-chain-scan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     name: Supply-chain scan (Trivy)
     timeout-minutes: 15
 
@@ -406,7 +410,7 @@ jobs:
           exit-code: "1"
 
   container-builds:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     name: Production container builds
     timeout-minutes: 40
 

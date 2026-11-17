@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Hosted Ubuntu jobs pin `ubuntu-26.04`. The floating latest label still
+  selects Ubuntu 24.04 through the 2026-11-19 migration, so an unpinned job
+  can land on either image. Windows and macOS stay on their latest labels
+  because those already select the current generally available images. Each
+  job still installs its own interpreter from the checked-in CPython 3.15.2
+  manifest. The uv pin stays 0.13.5. Container image digests are unchanged.
+
 ## [1.39.39] - 2026-11-17
 
 ### Changed
