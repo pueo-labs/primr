@@ -97,6 +97,13 @@ def finalize_research_command(
 
     if open_after and result_path:
         open_result(result_path)
+    _write_requested_leadership_brief(
+        run_context,
+        result_path=result_path,
+        company_name=company_name,
+        website=website,
+        json_output=json_output,
+    )
 
     if json_output:
         from primr.core.cli_output import emit_json, research_result_json
@@ -123,6 +130,34 @@ def finalize_research_command(
         console.text("Next: primr --list-recent" if result_path else "Next: primr doctor")
 
     return 0 if fulfillment_status == "completed" else 1
+
+
+def _write_requested_leadership_brief(
+    run_context: dict[str, str],
+    *,
+    result_path: str | None,
+    company_name: str,
+    website: str,
+    json_output: bool,
+) -> None:
+    """Write the sparse brief beside a completed report. Do not search or edit it."""
+
+    if run_context.get("leadership") != "requested" or not result_path:
+        return
+    report = Path(result_path)
+    if not report.is_file():
+        return
+    from primr.core.leadership_brief import write_leadership_artifacts
+
+    written = write_leadership_artifacts(
+        report.parent,
+        company_name,
+        website,
+        (),
+        enabled=True,
+    )
+    if written is not None and not json_output:
+        console.info(f"Leadership context: {written.markdown_path}")
 
 
 def _run_state_path(working_folder: str | None) -> str | None:

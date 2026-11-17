@@ -279,9 +279,9 @@ def add_research_input_arguments(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help=(
             "Optional leadership context, off by default. Does not change the "
-            "Strategic Overview or search the web. This slice renders a brief "
-            "only from sources already in hand, for at most three roles, and "
-            "does not call a model."
+            "Strategic Overview, search the web, or call a model. A completed "
+            "research run writes a brief that records the absence of structured "
+            "leadership sources."
         ),
     )
 

@@ -202,6 +202,7 @@ def run_dry_run(config: CLIConfig) -> int:
                 "max_subjects": 3,
                 "incremental_model_spend_usd": 0,
                 "artifact": "leadership_context",
+                "structured_sources": False,
             }
         emit_json(payload)
         return 0
@@ -211,9 +212,9 @@ def run_dry_run(config: CLIConfig) -> int:
     console.header("Cost estimate", mode_label)
     if config.execs:
         console.muted(
-            "Leadership context requested. This slice adds no model spend and "
-            "does not search the web. A brief is rendered only when sources "
-            "are already in hand."
+            "Leadership context requested. This adds no model spend and does "
+            "not search the web. A completed run writes a brief that records "
+            "the absence of structured leadership sources."
         )
     if config.ai_strategy and not use_fast_mode:
         strategy_label = (

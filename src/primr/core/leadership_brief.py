@@ -119,16 +119,28 @@ def render_leadership_markdown(
         "This brief uses sources already in hand. It does not search the web",
         "and it does not call a model. It is not the Strategic Overview.",
         "",
-        "## Stop reason",
-        "",
-        resolution.stop_reason.value,
-        "",
-        "A blocked, timed-out, or missing source is not evidence that a person is absent.",
-        "A rejection records why a role was not established.",
-        "",
-        "## Established roles",
-        "",
     ]
+    if not sources:
+        lines.extend(
+            [
+                "This research run did not supply structured leadership sources.",
+                "An empty source list is not a finding that the company has no leaders.",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "## Stop reason",
+            "",
+            resolution.stop_reason.value,
+            "",
+            "A blocked, timed-out, or missing source is not evidence that a person is absent.",
+            "A rejection records why a role was not established.",
+            "",
+            "## Established roles",
+            "",
+        ]
+    )
     lines.extend(_established_lines(resolution))
     lines.extend(["", "## Not established", ""])
     lines.extend(_unresolved_lines(resolution))

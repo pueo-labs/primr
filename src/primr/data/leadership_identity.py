@@ -3,8 +3,7 @@
 Callers pass source records they have already retrieved. This module decides
 which public professional roles are established for one company. It does not
 fetch pages, call a model, or add a command-line flag. A matching name is
-not an identity. The optional workflow stays off until a later slice renders
-it.
+not an identity. A caller renders the brief. This module does not.
 
 An accepted role needs one recorded basis: a first-party company source, two
 independent professional sources that agree, or an explicit operator

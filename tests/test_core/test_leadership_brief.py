@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import json
 
+import pytest
 from docx import Document
 
 from primr.core.cli import parse_args
 from primr.core.cli_dryrun import run_dry_run
 from primr.core.cli_research_request import validate_research_request
+from primr.core.cli_research_result import finalize_research_command
 from primr.core.leadership_brief import NextAction, choose_next_action, write_leadership_artifacts
 from primr.data.leadership_identity import (
     AccessStatus,
@@ -85,7 +87,17 @@ def test_dry_run_json_leadership_adds_no_model_spend(capsys) -> None:
     payload = json.loads(capsys.readouterr().out)
     assert payload["leadership"]["requested"] is True
     assert payload["leadership"]["incremental_model_spend_usd"] == 0
+    assert payload["leadership"]["structured_sources"] is False
     assert payload["total_cost"] == base_payload["total_cost"]
+
+
+def test_dry_run_text_records_the_sparse_brief(capsys) -> None:
+    requested = parse_args([COMPANY, WEBSITE, "--execs", "--dry-run", "--fast"])
+    assert run_dry_run(requested) == 0
+    output = " ".join(capsys.readouterr().out.split())
+    assert "records the absence of structured leadership sources" in output
+    assert "adds no model spend" in output
+    assert "does not search the web" in output
 
 
 def test_disabled_request_writes_nothing_and_keeps_the_overview(tmp_path) -> None:
@@ -121,6 +133,7 @@ def test_brief_keeps_the_citation_and_leaves_the_overview_in_place(tmp_path) -> 
     assert citation in markdown
     assert StopReason.COVERAGE_ADEQUATE.value in markdown
     assert "- Ada Lovelace, Chief Engineer. Basis: first-party profile link." in markdown
+    assert "did not supply structured leadership sources" not in markdown
     assert not any(line.startswith("#") and "Mallory" in line for line in markdown.splitlines())
     assert overview.read_text(encoding="utf-8") == "primary overview"
     assert infer_artifact_role(written.markdown_path) == "leadership_context"
@@ -139,6 +152,8 @@ def test_empty_sources_write_a_sparse_brief_without_invented_names(tmp_path) -> 
     assert written.next_action is NextAction.STOP
     markdown = written.markdown_path.read_text(encoding="utf-8")
     assert "No role was established from the sources in hand." in markdown
+    assert "This research run did not supply structured leadership sources." in markdown
+    assert "An empty source list is not a finding that the company has no leaders." in markdown
     assert "Ada Lovelace" not in markdown
     assert "sparse" in markdown.split("## Next action")[0]
 
@@ -270,3 +285,76 @@ def test_cancelled_brief_accepts_nobody(tmp_path) -> None:
     markdown = written.markdown_path.read_text(encoding="utf-8")
     assert "Ada Lovelace" not in markdown
     assert "cancelled" in markdown
+    assert "did not supply structured leadership sources" not in markdown
+
+
+def test_execs_help_states_the_sparse_brief(capsys) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        parse_args(["--help-all"])
+
+    assert exc_info.value.code == 0
+    output = " ".join(capsys.readouterr().out.split())
+    assert "records the absence of structured leadership sources" in output
+    assert "Does not change the Strategic Overview" in output
+
+
+def _finalize(report: str | None, run_context: dict[str, str], *, json_output: bool) -> int:
+    return finalize_research_command(
+        result_path=report,
+        run_context=run_context,
+        company_name=COMPANY,
+        website=WEBSITE,
+        mode="full",
+        json_output=json_output,
+        open_after=False,
+        open_result=lambda path: None,
+    )
+
+
+@pytest.mark.parametrize("json_output", [False, True])
+def test_requested_leadership_writes_a_sparse_brief_beside_the_report(
+    tmp_path, capsys, json_output: bool
+) -> None:
+    report = tmp_path / "ExampleCo_Strategic_Overview.md"
+    original = "# ExampleCo\n\nPrimary overview.\n"
+    report.write_text(original, encoding="utf-8")
+
+    _finalize(str(report), {"leadership": "requested"}, json_output=json_output)
+
+    assert report.read_text(encoding="utf-8") == original
+    brief = tmp_path / "ExampleCo_leadership_context.md"
+    word = tmp_path / "ExampleCo_leadership_context.docx"
+    assert brief.is_file()
+    assert word.is_file()
+    text = brief.read_text(encoding="utf-8")
+    assert "This research run did not supply structured leadership sources." in text
+    assert "An empty source list is not a finding that the company has no leaders." in text
+    assert "Ada Lovelace" not in text
+    assert infer_artifact_role(brief) == "leadership_context"
+    output = capsys.readouterr().out
+    if json_output:
+        json.loads(output)
+        assert "Leadership context:" not in output
+    else:
+        assert f"Leadership context: {brief}" in output
+
+
+def test_report_without_a_leadership_request_writes_no_brief(tmp_path) -> None:
+    report = tmp_path / "ExampleCo_Strategic_Overview.md"
+    report.write_text("primary overview", encoding="utf-8")
+
+    _finalize(str(report), {"working_folder": str(tmp_path)}, json_output=True)
+
+    names = {path.name for path in tmp_path.iterdir()}
+    assert "ExampleCo_leadership_context.md" not in names
+    assert "ExampleCo_leadership_context.docx" not in names
+    assert report.read_text(encoding="utf-8") == "primary overview"
+
+
+def test_leadership_request_without_a_report_file_writes_nothing(tmp_path) -> None:
+    missing = tmp_path / "missing.md"
+
+    _finalize(str(missing), {"leadership": "requested"}, json_output=True)
+    _finalize(None, {"leadership": "requested"}, json_output=True)
+
+    assert list(tmp_path.iterdir()) == []
