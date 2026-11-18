@@ -41,7 +41,7 @@ it. Never frame report quality as fact verification. The hard floors
 (citations resolve, artifacts render, spend is gated) stay.
 
 1. Set up the dev env (`uv sync --locked --all-extras`, then
-   `uv run playwright install chromium`) - see
+   `uv run playwright install chromium` and `uv run patchright install chromium`) - see
    [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 2. Put code in the package that owns it (see Architecture Pointers). Use the
    existing **seam** rather than inventing a second way to do the same thing.

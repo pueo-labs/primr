@@ -20,11 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The deployment and OpenClaw images build and run on the refreshed Python
   3.15 slim image. CodeQL analysis and Scorecard uploads use CodeQL Action
   4.39.3. All four container stages and all three action references are pinned.
-- The source and deployment locks refresh 15 direct dependencies, including
+- The source and deployment locks refresh 16 direct dependencies, including
   OpenAI 3.54.0, FastAPI 0.163.2 and python-multipart 0.0.34. The source
   installers and both container recipes bootstrap pip 26.3 from its verified
-  wheel. Playwright stays at 1.64.1 to share Chromium revision 1248 with
-  Patchright 1.64.4 in installations that download one browser.
+  wheel. Native tests provision each browser driver’s Chromium revision so
+  Playwright 1.65.2 and Patchright 1.64.4 can both render pages offline.
 
 ## [1.39.39] - 2026-11-17
 

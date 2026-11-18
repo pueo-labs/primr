@@ -101,6 +101,7 @@ jobs:
               sudo tee /etc/apt/apt-mirrors.txt > /dev/null
           fi
           uv run --no-sync playwright install --with-deps chromium
+          uv run --no-sync patchright install chromium
 
       - name: Native browser compatibility on newest stable
         env:
@@ -329,6 +330,7 @@ jobs:
         timeout-minutes: 5
         run: |
           uv run --no-sync playwright install chromium
+          uv run --no-sync patchright install chromium
           uv run --no-sync pytest tests/test_data/test_scraping/test_native_browser_runtime.py -q
 
       - name: Test
