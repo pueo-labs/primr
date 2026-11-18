@@ -9,7 +9,7 @@
 FROM python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928 AS builder
 
 # Hash-bootstrap pip before using its vendored TLS trust store.
-RUN python -m pip install --no-cache-dir --no-deps "https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
+RUN python -m pip install --require-hashes --no-cache-dir --no-deps "https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
 
 WORKDIR /build
 
@@ -50,7 +50,7 @@ USER primr
 # Add local bin to PATH for pip --user installs
 ENV PATH="/home/primr/.local/bin:${PATH}"
 
-RUN python -m pip install --no-cache-dir --no-deps --user "https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
+RUN python -m pip install --require-hashes --no-cache-dir --no-deps --user "https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
 
 # Install exact hash-verified dependencies and the locally built project wheel.
 RUN pip install --no-cache-dir --require-hashes --user \
