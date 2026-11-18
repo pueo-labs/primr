@@ -296,5 +296,5 @@ def test_shared_installer_repair_is_verified_before_package_install(installer):
     assert result.returncode != 0
     repair = next(call for call in calls if call[:2] == ["pipx", "upgrade-shared"])
     assert "--no-index --no-deps https://files.pythonhosted.org/" in repair[-1]
-    assert "#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70" in repair[-1]
+    assert "#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13" in repair[-1]
     assert not any(call[:2] == ["pipx", "install"] for call in calls)

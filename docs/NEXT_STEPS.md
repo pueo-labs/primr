@@ -1,6 +1,6 @@
 # Next Steps
 
-Released baseline: **v1.39.39**
+Released baseline: **v1.39.40**
 
 Next implementation candidate: **v1.40.0**
 
@@ -40,7 +40,7 @@ product.
 
 ## Current executable card
 
-v1.39.39 is the released baseline. A completed research run with `--execs`
+v1.39.40 refreshes the source and deployment dependencies. Since v1.39.39, a completed research run with `--execs`
 writes a leadership brief beside the report and records that the run supplied
 no structured leadership sources. The brief does not search the web, call a
 model, or change the Strategic Overview. The leadership comparison remains
@@ -269,7 +269,7 @@ support. Use the [compatibility review](ROADMAP_REVIEW.md) as a dated evidence
 snapshot, then recheck primary sources when upgrading. Keep transport and
 installed-layout regressions in the normal free release gate.
 
-## Version gates after v1.39.39
+## Version gates after v1.39.40
 
 Later bands advance in dependency order. A version is cut when its exit criteria
 hold, not because a date or effort estimate was written down.

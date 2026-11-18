@@ -79,7 +79,7 @@ def test_affected_installer_uses_hash_bootstrap_and_stops_on_failure(monkeypatch
         setup_env.ensure_patched_installer()
     cmd, kwargs = captured[0]
     assert cmd[-1] == installer_trust.PATCHED_PIP_URL
-    assert "#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70" in cmd[-1]
+    assert "#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13" in cmd[-1]
     assert "--no-deps" in cmd
     assert kwargs["check"] is True
 
