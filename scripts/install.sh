@@ -37,7 +37,7 @@ if command -v uv >/dev/null 2>&1; then
         exit 1
     fi
 fi
-PATCHED_PIP_URL="https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+PATCHED_PIP_URL="https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
 
 # Keep an existing pipx install with its manager; prefer uv for fresh installs.
 PIPX_INSTALLED=false

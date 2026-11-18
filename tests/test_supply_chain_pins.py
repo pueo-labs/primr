@@ -384,6 +384,8 @@ def test_container_installs_are_hash_locked_and_local_project_only() -> None:
 
 
 def test_installer_trust_stores_are_separate_from_application_dependencies() -> None:
+    from scripts.installer_trust import PATCHED_PIP_URL
+
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())
     runtime = {Requirement(value).name for value in project["project"]["dependencies"]}
     assert "pip" not in runtime
@@ -394,7 +396,11 @@ def test_installer_trust_stores_are_separate_from_application_dependencies() -> 
     assert "26.2.1" not in release["pip"].specifier
     assert "26.2.2" in release["pip"].specifier
     exported = (ROOT / "deploy/build-requirements.lock").read_text()
-    assert "pip==26.2.2" in exported
+    lock = tomllib.loads((ROOT / "uv.lock").read_text())
+    locked_pip = next(package["version"] for package in lock["package"] if package["name"] == "pip")
+    assert locked_pip in release["pip"].specifier
+    assert f"pip=={locked_pip} " in exported
+    assert f"/pip-{locked_pip}-py3-none-any.whl#sha256=" in PATCHED_PIP_URL
     publisher = (WORKFLOW_DIR / "release.yml").read_text()
     assert "pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086" in publisher
     assert "id-token: write" in publisher

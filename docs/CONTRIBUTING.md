@@ -26,11 +26,14 @@ Source: `docs/images/primr-demo-terminal.html`. Requires Playwright Chromium
    cd primr
    uv sync --locked --all-extras   # matches the primary CI environment
    uv run playwright install chromium
+   uv run patchright install chromium
    # run tooling without activating a venv:
    uv run --no-sync pytest tests/test_architecture.py -q
    uv run --no-sync ruff check src/primr/
    # Complete verification: AGENTS.md, including filtered tests and coverage.
    ```
+   For offline browser use, install both Chromium revisions with the same
+   environment, user and browser-cache path that will run Primr.
    `uv sync --locked` rejects a lockfile that is stale relative to
    `pyproject.toml`, then installs its exact pinned set so your environment
    matches CI and other contributors. After changing dependencies in
@@ -56,9 +59,10 @@ Source: `docs/images/primr-demo-terminal.html`. Requires Playwright Chromium
    python -m venv .venv
    .venv\Scripts\activate  # Windows
    # or: source .venv/bin/activate  # macOS/Linux
-   python -m pip install --no-deps "https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+   python -m pip install --no-deps "https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
    pip install -e ".[dev]"
    playwright install chromium
+   patchright install chromium
    ```
 
    **Option C - guided bootstrap (Windows-friendly):**

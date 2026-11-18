@@ -16,7 +16,7 @@
 FROM python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928 AS builder
 
 # Hash-bootstrap pip before using its vendored TLS trust store.
-RUN python -m pip install --no-cache-dir --no-deps "https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+RUN python -m pip install --no-cache-dir --no-deps "https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
 
 WORKDIR /build
 
@@ -59,7 +59,7 @@ COPY --from=builder /build/dist/*.whl /app/
 COPY deploy/build-requirements.lock /app/build-requirements.lock
 COPY deploy/runtime-requirements.lock /app/runtime-requirements.lock
 
-RUN python -m pip install --no-cache-dir --no-deps "https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+RUN python -m pip install --no-cache-dir --no-deps "https://files.pythonhosted.org/packages/07/25/ee8c38ae72d66b844ce8eb9711ba905dba21ca1a8a0c960057c41cd23337/pip-26.3-py3-none-any.whl#sha256=f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
 
 # Install only hash-verified locked dependencies, then the locally built wheel.
 # The build toolchain supports the small number of locked source distributions

@@ -1,6 +1,6 @@
 # Primr Roadmap
 
-Current State: v1.39.39
+Current State: v1.39.40
 
 Primr takes a company name and website, researches the company, and produces
 evidence-grounded, long-form strategic reports as polished Word and Markdown
@@ -53,7 +53,7 @@ releases inside a band; only cut the major when its pillars hold together.
 
 | Band | Theme | Why this order |
 |------|--------|----------------|
-| **v1.39.x** (current) | Operator polish, security floors, routing honesty, maintainable stage ownership | Ship safe defaults and truthful CLI/MCP surfaces while quality instrumentation matures. The published tip is v1.39.39. The v1.40 gate is still the unread Overview comparison. |
+| **v1.39.x** (current) | Operator polish, security floors, routing honesty, maintainable stage ownership | Ship safe defaults and truthful CLI/MCP surfaces while quality instrumentation matures. The published tip is v1.39.40. The v1.40 gate is still the unread Overview comparison. |
 | **v1.40** | Strategic Overview depth and quality | The Overview is the primary product: a 50+ page consultant-prep document with clear sections where every section adds depth. Confirm each change by reading outputs side by side. |
 | **v1.41** | Strategy library quality | AI Strategy is the default of a YAML library. Every listed strategy is complete, role-agnostic, and 30+ pages; placeholders are finished or clearly marked. |
 | **v1.42** | Skill packs tied to roles and strategy | From the same research, especially hiring, identify the roles that matter and draft skills that accelerate their work and parts of the strategy. |
@@ -2277,6 +2277,7 @@ live in [the changelog](docs/CHANGELOG.md) and
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.39.40 | Nov 2026 | Refreshed the source, installer and container toolchains, including hash-verified pip 26.3. |
 | 1.39.39 | Nov 2026 | **Sparse leadership brief.** A completed research run with `--execs` writes a leadership brief beside the report. The brief records that the run supplied no structured leadership sources. It does not search, call a model, or change the Strategic Overview. The leadership comparison remains later. v1.40 still waits on the Overview side-by-side read. |
 | 1.39.38 | Nov 2026 | **Pack report linkage.** A skill-pack report repeats recorded opportunity links and refusals. A recorded skill is marked included or not included. A refusal stays out of the skill body. v1.40 still waits on the Overview side-by-side read. |
 | 1.39.37 | Nov 2026 | **Intervention choice.** The AI Strategy card names a reusable skill, a deterministic workflow, a bounded agent, or a human-led, defer, or no-AI alternative. A skill-pack role plan can record that choice as a link or a refusal. v1.40 still waits on the Overview side-by-side read. |
