@@ -14,7 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   can land on either image. Windows and macOS stay on their latest labels
   because those already select the current generally available images. Each
   job still installs its own interpreter from the checked-in CPython 3.15.2
-  manifest. The uv pin stays 0.13.5. Container image digests are unchanged.
+  manifest. The uv pin stays 0.13.5.
+- The deployment and OpenClaw images build and run on the refreshed Python
+  3.15 slim image. CodeQL analysis and Scorecard uploads use CodeQL Action
+  4.39.3. All four container stages and all three action references are pinned.
 
 ## [1.39.39] - 2026-11-17
 
