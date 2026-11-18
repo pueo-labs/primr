@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import tempfile
@@ -413,8 +414,17 @@ def test_container_installers_are_hash_bootstrapped_before_dependency_downloads(
         stages = re.split(r"^FROM ", path.read_text(), flags=re.MULTILINE)[1:]
         assert len(stages) == 2
         for stage in stages:
-            assert PATCHED_PIP_URL in stage
-            assert stage.index(PATCHED_PIP_URL) < stage.index("--require-hashes")
+            installs = [
+                line
+                for line in stage.splitlines()
+                if line.startswith(("RUN pip install", "RUN python -m pip install"))
+            ]
+            bootstrap = shlex.split(installs[0])
+            assert bootstrap[:5] == ["RUN", "python", "-m", "pip", "install"]
+            assert "--require-hashes" in bootstrap
+            assert "--no-deps" in bootstrap
+            assert bootstrap[-1] == PATCHED_PIP_URL
+            assert "--require-hashes" in installs[1]
         if path.name == "Dockerfile.primr":
             assert stages[1].index("USER primr") < stages[1].index(PATCHED_PIP_URL)
             assert "--no-deps --user" in stages[1]
